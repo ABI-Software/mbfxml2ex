@@ -53,6 +53,16 @@ class DetermineConnectivityTestCase(unittest.TestCase):
         tree = [NeurolucidaPoint(3, 3, 4, 2), [NeurolucidaPoint(2, 1, 5, 7)], [NeurolucidaPoint(2, 4, 8, 5.7)]]
         self.assertListEqual([[1, 2], [1, 3]], determine_connectivity(tree))
 
+    def test_determine_connectivity_multiple_branch(self):
+        reset_node_id()
+        tree = [NeurolucidaPoint(3, 3, 4, 2), NeurolucidaPoint(3, 3, 4, 2), NeurolucidaPoint(3, 3, 4, 2),
+                [NeurolucidaPoint(2, 1, 5, 7), NeurolucidaPoint(2, 1, 5, 7), NeurolucidaPoint(2, 1, 5, 7),
+                 [NeurolucidaPoint(2, 4, 8, 5.7), NeurolucidaPoint(2, 4, 8, 5.7), NeurolucidaPoint(2, 4, 8, 5.7),
+                  NeurolucidaPoint(2, 4, 8, 5.7)],
+                 [NeurolucidaPoint(2, 4, 8, 5.7), NeurolucidaPoint(2, 4, 8, 5.7), NeurolucidaPoint(2, 4, 8, 5.7)]],
+                [NeurolucidaPoint(2, 4, 8, 5.7), NeurolucidaPoint(2, 4, 8, 5.7)]]
+        self.assertListEqual([[1, 2], [2, 3], [3, 4]], determine_connectivity(tree))
+
 
 class ExWritingTestCase(unittest.TestCase):
 
