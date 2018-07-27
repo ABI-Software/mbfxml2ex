@@ -61,7 +61,8 @@ class DetermineConnectivityTestCase(unittest.TestCase):
                   NeurolucidaPoint(2, 4, 8, 5.7)],
                  [NeurolucidaPoint(2, 4, 8, 5.7), NeurolucidaPoint(2, 4, 8, 5.7), NeurolucidaPoint(2, 4, 8, 5.7)]],
                 [NeurolucidaPoint(2, 4, 8, 5.7), NeurolucidaPoint(2, 4, 8, 5.7)]]
-        self.assertListEqual([[1, 2], [2, 3], [3, 4]], determine_connectivity(tree))
+        self.assertListEqual([[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9],
+                              [9, 10], [6, 11], [11, 12], [12, 13], [3, 14], [14,15]], determine_connectivity(tree))
 
 
 class ExWritingTestCase(unittest.TestCase):

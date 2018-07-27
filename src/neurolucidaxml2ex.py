@@ -3,7 +3,6 @@ __version__ = "0.1.1"
 
 import os
 import sys
-import math
 import argparse
 import xml.etree.ElementTree as ElTree
 from xml.etree.ElementTree import ParseError
@@ -16,24 +15,6 @@ from opencmiss.utils.zinc import createNode
 
 
 node_id = 0
-branch_visits = []
-
-
-class BranchVisitor(object):
-
-    def __init__(self, branch_node_id):
-        self._node_id = branch_node_id
-        self._left_visited = False
-        self._right_visited = False
-
-    def visitBranch(self):
-        if not self._left_visited:
-            self._left_visited = True
-        elif not self._right_visited:
-            self._right_visited = True
-
-    def visited(self):
-        return self._left_visited and self._right_visited
 
 
 class ProgramArguments(object):
@@ -150,9 +131,9 @@ def reset_node_id():
     node_id = 0
 
 
-def determine_connectivity(tree):
+def determine_connectivity(tree, parent_node_id=None):
     global node_id
-    global branch_visits
+    branchiing_node_id = None
 
     connectivity = []
     node_pair = [None, None]
@@ -160,18 +141,15 @@ def determine_connectivity(tree):
         if isinstance(pt, list):
             # We have a branch
             br = pt[:]
-            if branch_visits == 0:
-                branching_node_id.append(node_id)
-
-            print(branching_node_id, br)
-            connectivity.extend(determine_connectivity(br))
-            branch_visits += 1
+            if branchiing_node_id is None:
+                branchiing_node_id = node_id
+            connectivity.extend(determine_connectivity(br, branchiing_node_id))
         else:
             node_id += 1
             if node_pair[0] is None:
                 node_pair[0] = node_id
-                if branching_node_id is not None:
-                    connectivity.append([branching_node_id, node_id])
+                if parent_node_id is not None:
+                    connectivity.append([parent_node_id, node_id])
             elif node_pair[1] is None:
                 node_pair[1] = node_id
                 connectivity.append(node_pair)
