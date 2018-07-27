@@ -42,7 +42,7 @@ setup(
             'neurolucidaxml2exconverter=neurolucidaxml2ex:main',
         ]
     },
-    license="",
+    license="Apache Software License",
     keywords="Neurolucida OpenCMISS-Zinc",
     url="https://github.com/hsorby/neurolucidaxml2ex",
     download_url="",

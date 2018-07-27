@@ -1,8 +1,9 @@
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 import os
 import sys
+import math
 import argparse
 import xml.etree.ElementTree as ElTree
 from xml.etree.ElementTree import ParseError
@@ -15,6 +16,24 @@ from opencmiss.utils.zinc import createNode
 
 
 node_id = 0
+branch_visits = []
+
+
+class BranchVisitor(object):
+
+    def __init__(self, branch_node_id):
+        self._node_id = branch_node_id
+        self._left_visited = False
+        self._right_visited = False
+
+    def visitBranch(self):
+        if not self._left_visited:
+            self._left_visited = True
+        elif not self._right_visited:
+            self._right_visited = True
+
+    def visited(self):
+        return self._left_visited and self._right_visited
 
 
 class ProgramArguments(object):
@@ -37,6 +56,9 @@ class NeurolucidaPoint(object):
 
     def radius(self):
         return self._radius
+
+    def __repr__(self):
+        return 'x="{0} y="{1}" z="{2}" d="{3}"'.format(self._x, self._y, self._z, self._radius)
 
 
 class NeurolucidaXMLException(Exception):
@@ -123,68 +145,33 @@ def create_line_elements(field_module, element_node_set, field_names):
         mesh.defineElement(-1, element_template)
 
 
-def createElements(finite_element_field, element_node_set):
-    """
-    Create an element for every element_node_set
-
-    :param finite_element_field:
-    :param element_node_set:
-    :return: None
-    """
-    fieldmodule = finite_element_field.getFieldmodule()
-    mesh = fieldmodule.findMeshByDimension(2)
-    nodeset = fieldmodule.findNodesetByName('nodes')
-    element_template = mesh.createElementtemplate()
-    element_template.setElementShapeType(Element.SHAPE_TYPE_TRIANGLE)
-    element_node_count = 3
-    element_template.setNumberOfNodes(element_node_count)
-    # Specify the dimension and the interpolation function for the element basis function
-    linear_basis = fieldmodule.createElementbasis(2, Elementbasis.FUNCTION_TYPE_LINEAR_SIMPLEX)
-    # the indecies of the nodes in the node template we want to use.
-    node_indexes = [1, 2, 3]
-
-    # Define a nodally interpolated element field or field component in the
-    # element_template
-    element_template.defineFieldSimpleNodal(finite_element_field, -1, linear_basis, node_indexes)
-
-    for element_nodes in element_node_set:
-        for i, node_identifier in enumerate(element_nodes):
-            node = nodeset.findNodeByIdentifier(node_identifier)
-            element_template.setNode(i + 1, node)
-
-        mesh.defineElement(-1, element_template)
-
-
-#     fieldmodule.defineAllFaces()
-
-
 def reset_node_id():
     global node_id
     node_id = 0
 
 
 def determine_connectivity(tree):
-    connectivity = []
     global node_id
+    global branch_visits
+
+    connectivity = []
     node_pair = [None, None]
-    branching_node_id = None
     for pt in tree:
         if isinstance(pt, list):
             # We have a branch
-            node_pair = [None, None]
             br = pt[:]
-            if branching_node_id is None:
-                connectivity.append([node_id, node_id + 1])
-                branching_node_id = node_id
-            else:
-                connectivity.append([branching_node_id, node_id + 1])
-                branching_node_id = None
+            if branch_visits == 0:
+                branching_node_id.append(node_id)
 
+            print(branching_node_id, br)
             connectivity.extend(determine_connectivity(br))
+            branch_visits += 1
         else:
             node_id += 1
             if node_pair[0] is None:
                 node_pair[0] = node_id
+                if branching_node_id is not None:
+                    connectivity.append([branching_node_id, node_id])
             elif node_pair[1] is None:
                 node_pair[1] = node_id
                 connectivity.append(node_pair)
@@ -219,9 +206,10 @@ def write_ex(file_name, data):
 
     region.writeFile(file_name)
 
+
 def main():
     args = parse_args()
-    if args.input_xml:
+    if os.path.exists(args.input_xml):
         if args.output_ex is None:
             output_ex = args.input_xml + '.ex'
         else:
@@ -231,7 +219,6 @@ def main():
         write_ex(output_ex, contents)
     else:
         sys.exit(-1)
-
 
 
 def parse_args():
