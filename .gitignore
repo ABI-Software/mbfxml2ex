@@ -108,3 +108,6 @@ venv.bak/
 
 # Testing output files
 tests/resources/*.ex
+
+# SPARC prefixed files
+SPARC_*
