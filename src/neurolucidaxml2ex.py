@@ -50,15 +50,30 @@ class NeurolucidaData(object):
 
     def __init__(self):
         self._trees = []
+        self._contours = []
 
     def add_tree(self, tree_data):
         self._trees.append(tree_data)
 
-    def get_tree(self):
+    def get_trees(self):
         return self._trees
 
+    def add_contour(self, contour_data):
+        self._contours.append(contour_data)
+
+    def get_contours(self):
+        return self._contours
+
     def __len__(self):
-        return len(self._trees)
+        len_trees = len(self._trees)
+        if len_trees:
+            return len_trees
+
+        len_contours = len(self._contours)
+        if len_contours:
+            return len_contours
+
+        return 0
 
 
 def get_raw_tag(element):
@@ -81,9 +96,33 @@ def parse_tree(tree_root):
         elif raw_tag == "branch":
             tree.append(parse_tree(child))
         else:
-            raise NeurolucidaXMLException("XML format violation unkonwn tag {0}".format(raw_tag))
+            raise NeurolucidaXMLException("XML format violation unknown tag {0}".format(raw_tag))
 
     return tree
+
+
+def parse_contour(contour_root):
+    contour = {'colour': contour_root.attrib['color'],
+               'closed': contour_root.attrib['closed'] == 'true',
+               'name': contour_root.attrib['name']}
+    data = []
+    for child in contour_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == "point":
+            data.append(NeurolucidaPoint(float(child.attrib['x']),
+                                         float(child.attrib['y']),
+                                         float(child.attrib['z']),
+                                         float(child.attrib['d'])))
+        elif raw_tag == "property":
+            pass
+        elif raw_tag == "resolution":
+            pass
+        else:
+            raise NeurolucidaXMLException("XML format violation unknown tag {0}".format(raw_tag))
+
+    contour['data'] = data
+
+    return contour
 
 
 def read_xml(file_name):
@@ -101,6 +140,9 @@ def read_xml(file_name):
             if raw_tag == "tree":
                 tree_data = parse_tree(child)
                 data.add_tree(tree_data)
+            elif raw_tag == "contour":
+                contour_data = parse_contour(child)
+                data.add_contour(contour_data)
 
         return data
 
@@ -177,7 +219,7 @@ def write_ex(file_name, data):
     createFiniteElementField(region, field_name='radius', dimension=1, type_coordinate=False)
     field_module = region.getFieldmodule()
     reset_node_id()
-    for tree in data.get_tree():
+    for tree in data.get_trees():
         connectivity = determine_connectivity(tree)
         create_nodes(field_module, tree)
         create_elements(field_module, connectivity)
