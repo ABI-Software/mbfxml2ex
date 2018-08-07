@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" xmlns="http://www.mbfbioscience.com/2007/neurolucida" xmlns:nl="http://www.mbfbioscience.com/2007/neurolucida" appname="Neurolucida 360" appversion="2018.2.1 (64-bit)">
+<contour name="Heart (7088)" color="#FF0000" closed="true" shape="Contour">
+  <property name="GUID"><s></s></property>
+  <property name="FillDensity"><n>0</n></property>
+  <resolution>1.297297</resolution>
+  <point x="8794.46" y="-13013.48" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8871.00" y="-13069.26" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8939.76" y="-13091.31" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8994.25" y="-13074.45" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="9066.90" y="-13042.02" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="9108.41" y="-12977.15" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="9060.41" y="-12899.31" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8972.19" y="-12844.83" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8886.57" y="-12816.29" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8816.52" y="-12814.99" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8736.08" y="-12856.50" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8673.81" y="-12896.72" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8672.52" y="-12962.88" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8732.19" y="-12979.75" z="-5355.00" d="1.00" sid="S1072"/>
+</contour>
+</mbf>

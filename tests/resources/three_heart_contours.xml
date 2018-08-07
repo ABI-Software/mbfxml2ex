@@ -1,0 +1,66 @@
+        
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" xmlns="http://www.mbfbioscience.com/2007/neurolucida" xmlns:nl="http://www.mbfbioscience.com/2007/neurolucida" appname="Neurolucida 360" appversion="2018.2.1 (64-bit)">
+<contour name="Heart (7088)" color="#FF0000" closed="true" shape="Contour">
+  <property name="GUID"><s></s></property>
+  <property name="FillDensity"><n>0</n></property>
+  <resolution>1.297297</resolution>
+  <point x="8794.46" y="-13013.48" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8871.00" y="-13069.26" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8939.76" y="-13091.31" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8994.25" y="-13074.45" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="9066.90" y="-13042.02" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="9108.41" y="-12977.15" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="9060.41" y="-12899.31" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8972.19" y="-12844.83" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8886.57" y="-12816.29" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8816.52" y="-12814.99" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8736.08" y="-12856.50" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8673.81" y="-12896.72" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8672.52" y="-12962.88" z="-5355.00" d="1.00" sid="S1072"/>
+  <point x="8732.19" y="-12979.75" z="-5355.00" d="1.00" sid="S1072"/>
+</contour>
+<contour name="Heart (7088)" color="#FF0000" closed="true" shape="Contour">
+  <property name="GUID"><s></s></property>
+  <property name="FillDensity"><n>0</n></property>
+  <resolution>1.297297</resolution>
+  <point x="8679.00" y="-13001.15" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8738.68" y="-13033.58" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8781.49" y="-13053.04" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8834.68" y="-13075.10" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8867.11" y="-13095.85" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8880.08" y="-13121.80" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8911.22" y="-13160.72" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8935.87" y="-13168.50" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8371.54" y="-12936.29" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8410.46" y="-12968.72" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8450.68" y="-12979.10" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8471.44" y="-12977.80" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8496.08" y="-12970.02" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8528.52" y="-12985.58" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8590.79" y="-12981.69" z="-5305.00" d="1.00" sid="S1062"/>
+  <point x="8621.92" y="-12979.10" z="-5305.00" d="1.00" sid="S1062"/>
+</contour>
+<contour name="Intrinsic Cardiac Ganglia " color="#00FF00" closed="true" shape="Contour">
+  <property name="GUID"><s></s></property>
+  <property name="FillDensity"><n>0</n></property>
+  <resolution>0.600000</resolution>
+  <point x="5244.87" y="-7917.96" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5238.87" y="-7892.16" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5252.67" y="-7877.76" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5268.87" y="-7876.56" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5282.07" y="-7880.16" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5301.87" y="-7882.56" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5319.87" y="-7888.56" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5342.67" y="-7914.96" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5337.87" y="-7932.36" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5322.27" y="-7949.16" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5325.87" y="-7966.56" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5292.87" y="-7966.56" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5274.87" y="-7977.36" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5253.87" y="-7974.96" z="-2030.00" d="1.00" sid="S407"/>
+  <point x="5244.27" y="-7936.56" z="-2030.00" d="1.00" sid="S407"/>
+</contour>
+</mbf>
+
+      

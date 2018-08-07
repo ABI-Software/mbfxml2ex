@@ -11,14 +11,14 @@ from neurolucidaxml2ex import reset_node_id
 here = os.path.abspath(os.path.dirname(__file__))
 
 
-class NeurolucidaXmlTestCase(unittest.TestCase):
+class NeurolucidaXmlReadTreesTestCase(unittest.TestCase):
 
     def test_not_existing_xml_file(self):
         xml_file = os.path.join(here, "resources", "missing.xml")
         contents = read_xml(xml_file)
         self.assertIsNone(contents)
 
-    def test_read_xml(self):
+    def test_read_multi_tree_xml(self):
         xml_file = os.path.join(here, "resources", "multi_tree.xml")
         contents = read_xml(xml_file)
         self.assertEqual(3, len(contents))
@@ -27,6 +27,14 @@ class NeurolucidaXmlTestCase(unittest.TestCase):
         not_xml_file = os.path.join(here, "resources", "random_file.txt")
         contents = read_xml(not_xml_file)
         self.assertIsNone(contents)
+
+
+class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
+
+    def test_read_basic_contour_xml(self):
+        xml_file = os.path.join(here, "resources", "basic_heart_contours.xml")
+        contents = read_xml(xml_file)
+        self.assertEqual(1, len(contents))
 
 
 class NeurolucidaPointTestCase(unittest.TestCase):
@@ -65,7 +73,7 @@ class DetermineConnectivityTestCase(unittest.TestCase):
                               [9, 10], [6, 11], [11, 12], [12, 13], [3, 14], [14,15]], determine_connectivity(tree))
 
 
-class ExWritingTestCase(unittest.TestCase):
+class ExWritingTreeTestCase(unittest.TestCase):
 
     def test_write_ex_basic(self):
         ex_file = os.path.join(here, "resources", "basic_tree.ex")
@@ -85,6 +93,24 @@ class ExWritingTestCase(unittest.TestCase):
 
         data = NeurolucidaData()
         data.add_tree([NeurolucidaPoint(3, 3, 4, 2), [NeurolucidaPoint(2, 1, 5, 7)], [NeurolucidaPoint(2, 4, 8, 5.7)]])
+
+        write_ex(ex_file, data)
+        self.assertTrue(os.path.exists(ex_file))
+
+
+class ExWritingContoursTestCase(unittest.TestCase):
+
+    def test_write_ex_basic(self):
+        ex_file = os.path.join(here, "resources", "basic_contour.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        data = NeurolucidaData()
+        contour = {'colour': '#00ff00',
+               'closed': True,
+               'name': 'Heart'}
+        contour['data'] = [NeurolucidaPoint(3, 3, 4, 2), NeurolucidaPoint(2, 1, 5, 7), NeurolucidaPoint(3, 1, 4.2, 7.1)]
+        data.add_contour(contour)
 
         write_ex(ex_file, data)
         self.assertTrue(os.path.exists(ex_file))
