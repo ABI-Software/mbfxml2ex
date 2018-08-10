@@ -1,11 +1,11 @@
 
 import os
 import unittest
-from neurolucidaxml2ex import read_xml
+from neurolucidaxml2ex import read_xml, determine_contour_connectivity
 from neurolucidaxml2ex import NeurolucidaPoint
 from neurolucidaxml2ex import NeurolucidaData
 from neurolucidaxml2ex import write_ex
-from neurolucidaxml2ex import determine_connectivity
+from neurolucidaxml2ex import determine_tree_connectivity
 from neurolucidaxml2ex import reset_node_id
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -49,17 +49,17 @@ class NeurolucidaPointTestCase(unittest.TestCase):
         self.assertListEqual([6, 3, 4, 9], p.get())
 
 
-class DetermineConnectivityTestCase(unittest.TestCase):
+class DetermineTreeConnectivityTestCase(unittest.TestCase):
 
     def test_determine_connectivity_basic(self):
         reset_node_id()
         tree = [NeurolucidaPoint(3, 3, 4, 2), NeurolucidaPoint(2, 1, 5, 7), NeurolucidaPoint(3, 1, 4.2, 7.1)]
-        self.assertListEqual([[1, 2], [2, 3]], determine_connectivity(tree))
+        self.assertListEqual([[1, 2], [2, 3]], determine_tree_connectivity(tree))
 
     def test_determine_connectivity_branch(self):
         reset_node_id()
         tree = [NeurolucidaPoint(3, 3, 4, 2), [NeurolucidaPoint(2, 1, 5, 7)], [NeurolucidaPoint(2, 4, 8, 5.7)]]
-        self.assertListEqual([[1, 2], [1, 3]], determine_connectivity(tree))
+        self.assertListEqual([[1, 2], [1, 3]], determine_tree_connectivity(tree))
 
     def test_determine_connectivity_multiple_branch(self):
         reset_node_id()
@@ -70,7 +70,24 @@ class DetermineConnectivityTestCase(unittest.TestCase):
                  [NeurolucidaPoint(2, 4, 8, 5.7), NeurolucidaPoint(2, 4, 8, 5.7), NeurolucidaPoint(2, 4, 8, 5.7)]],
                 [NeurolucidaPoint(2, 4, 8, 5.7), NeurolucidaPoint(2, 4, 8, 5.7)]]
         self.assertListEqual([[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9],
-                              [9, 10], [6, 11], [11, 12], [12, 13], [3, 14], [14,15]], determine_connectivity(tree))
+                              [9, 10], [6, 11], [11, 12], [12, 13], [3, 14], [14,15]], determine_tree_connectivity(tree))
+
+
+class DetermineContourConnectivityTestCase(unittest.TestCase):
+
+    def test_determine_connectivity_open_contour(self):
+        reset_node_id()
+        contour = {'colour': '#00ff00', 'closed': False, 'name': 'Heart',
+                   'data': [NeurolucidaPoint(3, 3, 4, 1), NeurolucidaPoint(2, 1, 5, 1),
+                            NeurolucidaPoint(3, 1, 4.2, 1)]}
+        self.assertListEqual([[1, 2], [2, 3]], determine_contour_connectivity(contour['data'], contour['closed']))
+
+    def test_determine_connectivity_closed_contour(self):
+        reset_node_id()
+        contour = {'colour': '#00ff00', 'closed': True, 'name': 'Heart',
+                   'data': [NeurolucidaPoint(3, 3, 4, 1), NeurolucidaPoint(2, 1, 5, 1),
+                            NeurolucidaPoint(3, 1, 4.2, 1)]}
+        self.assertListEqual([[1, 2], [2, 3], [3, 1]], determine_contour_connectivity(contour['data'], contour['closed']))
 
 
 class ExWritingTreeTestCase(unittest.TestCase):
@@ -106,10 +123,9 @@ class ExWritingContoursTestCase(unittest.TestCase):
             os.remove(ex_file)
 
         data = NeurolucidaData()
-        contour = {'colour': '#00ff00',
-               'closed': True,
-               'name': 'Heart'}
-        contour['data'] = [NeurolucidaPoint(3, 3, 4, 2), NeurolucidaPoint(2, 1, 5, 7), NeurolucidaPoint(3, 1, 4.2, 7.1)]
+        contour = {'colour': '#00ff00', 'closed': True, 'name': 'Heart',
+                   'data': [NeurolucidaPoint(3, 3, 4, 1), NeurolucidaPoint(2, 1, 5, 1),
+                            NeurolucidaPoint(3, 1, 4.2, 1)]}
         data.add_contour(contour)
 
         write_ex(ex_file, data)
