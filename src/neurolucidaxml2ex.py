@@ -173,9 +173,9 @@ def reset_node_id():
     node_id = 0
 
 
-def determine_connectivity(tree, parent_node_id=None):
+def determine_tree_connectivity(tree, parent_node_id=None):
     global node_id
-    branchiing_node_id = None
+    branching_node_id = None
 
     connectivity = []
     node_pair = [None, None]
@@ -183,9 +183,9 @@ def determine_connectivity(tree, parent_node_id=None):
         if isinstance(pt, list):
             # We have a branch
             br = pt[:]
-            if branchiing_node_id is None:
-                branchiing_node_id = node_id
-            connectivity.extend(determine_connectivity(br, branchiing_node_id))
+            if branching_node_id is None:
+                branching_node_id = node_id
+            connectivity.extend(determine_tree_connectivity(br, branching_node_id))
         else:
             node_id += 1
             if node_pair[0] is None:
@@ -196,6 +196,30 @@ def determine_connectivity(tree, parent_node_id=None):
                 node_pair[1] = node_id
                 connectivity.append(node_pair)
                 node_pair = [node_id, None]
+
+    return connectivity
+
+
+def determine_contour_connectivity(contour, closed):
+    global node_id
+
+    connectivity = []
+    node_pair = [None, None]
+    first_node = None
+    last_node = None
+    for _ in contour:
+        node_id += 1
+        if node_pair[0] is None:
+            node_pair[0] = node_id
+            first_node = node_id
+        else:
+            node_pair[1] = node_id
+            connectivity.append(node_pair)
+            node_pair = [node_id, None]
+            last_node = node_id
+
+    if closed:
+        connectivity.append([last_node, first_node])
 
     return connectivity
 
@@ -220,8 +244,12 @@ def write_ex(file_name, data):
     field_module = region.getFieldmodule()
     reset_node_id()
     for tree in data.get_trees():
-        connectivity = determine_connectivity(tree)
+        connectivity = determine_tree_connectivity(tree)
         create_nodes(field_module, tree)
+        create_elements(field_module, connectivity)
+    for contour in data.get_contours():
+        connectivity = determine_contour_connectivity(contour['data'], contour['closed'])
+        create_nodes(field_module, contour['data'])
         create_elements(field_module, connectivity)
 
     region.writeFile(file_name)
