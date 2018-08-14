@@ -1,5 +1,5 @@
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 import os
 import sys
@@ -51,6 +51,7 @@ class NeurolucidaData(object):
     def __init__(self):
         self._trees = []
         self._contours = []
+        self._markers = []
 
     def add_tree(self, tree_data):
         self._trees.append(tree_data)
@@ -64,16 +65,30 @@ class NeurolucidaData(object):
     def get_contours(self):
         return self._contours
 
+    def add_marker(self, marker_data):
+        self._markers.append(marker_data)
+
+    def get_markers(self):
+        return self._markers
+
     def __len__(self):
         len_trees = len(self._trees)
-        if len_trees:
-            return len_trees
-
         len_contours = len(self._contours)
-        if len_contours:
-            return len_contours
+        len_markers = len(self._markers)
 
-        return 0
+        return len_trees + len_markers + len_contours
+
+
+def convert_hex_to_rgb(hex_string):
+    """
+    Convert a hexadecimal string with leading hash into a three item list of values between [0, 1].
+
+      E.g. #00ff00 --> [0, 1, 0]
+
+    :return: The value of the hexadecimal string as a three element list with values in the range [0. 1].
+    """
+    hex_string = hex_string.lstrip('#')
+    return [int(hex_string[i:i+2], 16)/255.0 for i in (0, 2, 4)]
 
 
 def get_raw_tag(element):
@@ -84,7 +99,7 @@ def get_raw_tag(element):
     return element_tag
 
 
-def parse_tree(tree_root):
+def parse_tree_structure(tree_root):
     tree = []
     for child in tree_root:
         raw_tag = get_raw_tag(child)
@@ -94,15 +109,23 @@ def parse_tree(tree_root):
                                          float(child.attrib['z']),
                                          float(child.attrib['d'])))
         elif raw_tag == "branch":
-            tree.append(parse_tree(child))
+            tree.append(parse_tree_structure(child))
         else:
             raise NeurolucidaXMLException("XML format violation unknown tag {0}".format(raw_tag))
 
     return tree
 
 
+def parse_tree(tree_root):
+    tree = {'colour': tree_root.attrib['color'], 'rgb': convert_hex_to_rgb(tree_root.attrib['color']),
+            'type': tree_root.attrib['type'], 'leaf': tree_root.attrib['leaf'], 'data': parse_tree_structure(tree_root)}
+
+    return tree
+
+
 def parse_contour(contour_root):
     contour = {'colour': contour_root.attrib['color'],
+               'rgb': convert_hex_to_rgb(contour_root.attrib['color']),
                'closed': contour_root.attrib['closed'] == 'true',
                'name': contour_root.attrib['name']}
     data = []
@@ -125,12 +148,36 @@ def parse_contour(contour_root):
     return contour
 
 
+def parse_marker(marker_root):
+    marker = {'colour': marker_root.attrib['color'],
+              'rgb': convert_hex_to_rgb(marker_root.attrib['color']),
+              'name': marker_root.attrib['name'],
+              'type': marker_root.attrib['type'],
+              'varicosity': marker_root.attrib['varicosity'] == "true"}
+
+    data = []
+    for child in marker_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == "point":
+            data.append(NeurolucidaPoint(float(child.attrib['x']),
+                                         float(child.attrib['y']),
+                                         float(child.attrib['z']),
+                                         float(child.attrib['d'])))
+        else:
+            raise NeurolucidaXMLException("XML format violation unknown tag {0}".format(raw_tag))
+
+    marker['data'] = data
+
+    return marker
+
+
 def read_xml(file_name):
     if os.path.exists(file_name):
         data = NeurolucidaData()
         try:
             tree = ElTree.parse(file_name)
-        except ParseError:
+        except ParseError as e:
+            print(e)
             return None
 
         root = tree.getroot()
@@ -143,6 +190,9 @@ def read_xml(file_name):
             elif raw_tag == "contour":
                 contour_data = parse_contour(child)
                 data.add_contour(contour_data)
+            elif raw_tag == "marker":
+                marker_data = parse_marker(child)
+                data.add_marker(marker_data)
 
         return data
 
@@ -160,12 +210,58 @@ def create_line_elements(field_module, element_node_set, field_names):
         field = field_module.findFieldByName(field_name)
         element_template.defineFieldSimpleNodal(field, -1, linear_basis, [1, 2])
 
+    element_identifiers = []
     for element_nodes in element_node_set:
         for i, node_identifier in enumerate(element_nodes):
             node = nodeset.findNodeByIdentifier(node_identifier)
             element_template.setNode(i + 1, node)
 
         mesh.defineElement(-1, element_template)
+        element_identifiers.append(mesh.getSize())
+
+    return element_identifiers
+
+
+def create_field(field_module, field_info):
+    if field_info['name'] == 'constant':
+        field = field_module.createFieldConstant(field_info['values'])
+    else:
+        raise NotImplementedError('Field "{0}" creation is not implemented for this field'.format(field_info['name']))
+    return field
+
+
+def merge_fields_with_nodes(field_module, node_identifiers, field_information):
+    field_cache = field_module.createFieldcache()
+    nodeset = field_module.findNodesetByName('nodes')
+    node_template = nodeset.createNodetemplate()
+
+    for node_identifier in node_identifiers:
+        node = nodeset.findNodeByIdentifier(node_identifier)
+        for field_name in field_information:
+            field = field_module.findFieldByName(field_name)
+            field_values = field_information[field_name]
+            node_template.defineField(field)
+            node.merge(node_template)
+            field_cache.setNode(node)
+            field.assignReal(field_cache, field_values)
+
+
+def merge_additional_fields(field_module, element_field_template, additional_field_info, element_identifiers):
+    mesh = field_module.findMeshByDimension(1)
+    constant_basis = field_module.createElementbasis(1, Elementbasis.FUNCTION_TYPE_CONSTANT)
+    element_template = mesh.createElementtemplate()
+    additional_fields = []
+    for field_info in additional_field_info:
+        field = create_field(field_module, field_info)
+        additional_fields.append(field)
+
+    element_field_template.setParameterMappingMode(element_field_template.PARAMETER_MAPPING_MODE_ELEMENT)
+    for field in additional_fields:
+        element_template.defineField(field, -1, element_field_template)
+
+    for element_identifier in element_identifiers:
+        element = mesh.findElementByIdentifier(element_identifier)
+        print(element.merge(element_template))
 
 
 def reset_node_id():
@@ -224,16 +320,31 @@ def determine_contour_connectivity(contour, closed):
     return connectivity
 
 
-def create_nodes(field_module, tree):
-    for pt in tree:
+def create_nodes(field_module, embedded_lists):
+    node_identifiers = []
+    for pt in embedded_lists:
         if isinstance(pt, list):
-            create_nodes(field_module, pt)
+            node_ids = create_nodes(field_module, pt)
+            node_identifiers.extend(node_ids)
         else:
-            createNode(field_module, ['coordinates', 'radius'], pt)
+            node_id = createNode(field_module, ['coordinates', 'radius'], pt)
+            node_identifiers.append(node_id)
+
+    return node_identifiers
 
 
-def create_elements(field_module, connectivity):
-    create_line_elements(field_module, connectivity, ['coordinates', 'radius'])
+def create_elements(field_module, connectivity, field_names=None):
+    if field_names is None:
+        field_names = ['coordinates']
+    return create_line_elements(field_module, connectivity, field_names)
+
+
+def get_element_field_template(field_module, element_identifier):
+    coordinate_field = field_module.findFieldByName('coordinates')
+    mesh = field_module.findMeshByDimension(1)
+    element = mesh.findElementByIdentifier(element_identifier)
+    element_field_template = element.getElementfieldtemplate(coordinate_field, -1)
+    return element_field_template
 
 
 def write_ex(file_name, data):
@@ -241,16 +352,25 @@ def write_ex(file_name, data):
     region = context.getDefaultRegion()
     createFiniteElementField(region)
     createFiniteElementField(region, field_name='radius', dimension=1, type_coordinate=False)
+    createFiniteElementField(region, field_name='rgb', type_coordinate=False)
     field_module = region.getFieldmodule()
     reset_node_id()
     for tree in data.get_trees():
-        connectivity = determine_tree_connectivity(tree)
-        create_nodes(field_module, tree)
-        create_elements(field_module, connectivity)
+        connectivity = determine_tree_connectivity(tree['data'])
+        node_identifiers = create_nodes(field_module, tree['data'])
+        field_info = {'rgb': tree['rgb']}
+        merge_fields_with_nodes(field_module, node_identifiers, field_info)
+        create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
     for contour in data.get_contours():
         connectivity = determine_contour_connectivity(contour['data'], contour['closed'])
-        create_nodes(field_module, contour['data'])
-        create_elements(field_module, connectivity)
+        node_identifiers = create_nodes(field_module, contour['data'])
+        field_info = {'rgb': contour['rgb']}
+        merge_fields_with_nodes(field_module, node_identifiers, field_info)
+        create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
+    for marker in data.get_markers():
+        node_identifiers = create_nodes(field_module, marker['data'])
+        field_info = {'rgb': marker['rgb']}
+        merge_fields_with_nodes(field_module, node_identifiers, field_info)
 
     region.writeFile(file_name)
 
@@ -264,7 +384,10 @@ def main():
             output_ex = args.output_ex
 
         contents = read_xml(args.input_xml)
-        write_ex(output_ex, contents)
+        if contents is None:
+            sys.exit(-2)
+        else:
+            write_ex(output_ex, contents)
     else:
         sys.exit(-1)
 

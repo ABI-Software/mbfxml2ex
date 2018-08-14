@@ -97,8 +97,10 @@ class ExWritingTreeTestCase(unittest.TestCase):
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
+        tree = {'rgb': [0, 0, 0],
+                'data': [NeurolucidaPoint(3, 3, 4, 2), NeurolucidaPoint(2, 1, 5, 7), NeurolucidaPoint(3, 1, 4.2, 7.1)]}
         data = NeurolucidaData()
-        data.add_tree([NeurolucidaPoint(3, 3, 4, 2), NeurolucidaPoint(2, 1, 5, 7), NeurolucidaPoint(3, 1, 4.2, 7.1)])
+        data.add_tree(tree)
 
         write_ex(ex_file, data)
         self.assertTrue(os.path.exists(ex_file))
@@ -108,8 +110,10 @@ class ExWritingTreeTestCase(unittest.TestCase):
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
+        tree = {'rgb': [0, 0, 0],
+                'data': [NeurolucidaPoint(3, 3, 4, 2), [NeurolucidaPoint(2, 1, 5, 7)], [NeurolucidaPoint(2, 4, 8, 5.7)]]}
         data = NeurolucidaData()
-        data.add_tree([NeurolucidaPoint(3, 3, 4, 2), [NeurolucidaPoint(2, 1, 5, 7)], [NeurolucidaPoint(2, 4, 8, 5.7)]])
+        data.add_tree(tree)
 
         write_ex(ex_file, data)
         self.assertTrue(os.path.exists(ex_file))
@@ -123,7 +127,7 @@ class ExWritingContoursTestCase(unittest.TestCase):
             os.remove(ex_file)
 
         data = NeurolucidaData()
-        contour = {'colour': '#00ff00', 'closed': True, 'name': 'Heart',
+        contour = {'colour': '#00ff00', 'rgb': [0, 1, 0], 'closed': True, 'name': 'Heart',
                    'data': [NeurolucidaPoint(3, 3, 4, 1), NeurolucidaPoint(2, 1, 5, 1),
                             NeurolucidaPoint(3, 1, 4.2, 1)]}
         data.add_contour(contour)
