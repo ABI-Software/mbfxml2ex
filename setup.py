@@ -5,8 +5,8 @@ from setuptools import setup, find_packages
 from codecs import open
 
 
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+def read(file_name):
+    return open(os.path.join(os.path.dirname(__file__), file_name)).read()
 
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -22,9 +22,8 @@ if not version:
 with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
-reqs = ['opencmiss.zinc']
+dependencies = ['opencmiss.zinc', 'opencmiss.utils']
 
-print(find_packages("src"))
 
 setup(
     name="neurolucidaxml2ex",
@@ -36,7 +35,7 @@ setup(
     py_modules=["neurolucidaxml2ex"],
     package_dir={"": "src"},
     zip_safe=False,
-    install_requires=reqs,
+    install_requires=dependencies,
     entry_points={
         'console_scripts': [
             'neurolucidaxml2exconverter=neurolucidaxml2ex:main',

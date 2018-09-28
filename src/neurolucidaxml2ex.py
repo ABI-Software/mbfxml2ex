@@ -1,5 +1,4 @@
-
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 import os
 import sys
@@ -12,7 +11,7 @@ from opencmiss.zinc.element import Element
 from opencmiss.zinc.element import Elementbasis
 from opencmiss.utils.zinc import createFiniteElementField
 from opencmiss.utils.zinc import createNode
-
+from opencmiss.utils.zinc import AbstractNodeDataObject
 
 node_id = 0
 
@@ -21,9 +20,10 @@ class ProgramArguments(object):
     pass
 
 
-class NeurolucidaPoint(object):
+class NeurolucidaPoint(AbstractNodeDataObject):
 
     def __init__(self, x, y, z, radius):
+        super(NeurolucidaPoint, self).__init__(['coordinates', 'radius'])
         self._x = x
         self._y = y
         self._z = z
@@ -88,7 +88,7 @@ def convert_hex_to_rgb(hex_string):
     :return: The value of the hexadecimal string as a three element list with values in the range [0. 1].
     """
     hex_string = hex_string.lstrip('#')
-    return [int(hex_string[i:i+2], 16)/255.0 for i in (0, 2, 4)]
+    return [int(hex_string[i:i + 2], 16) / 255.0 for i in (0, 2, 4)]
 
 
 def get_raw_tag(element):
@@ -327,7 +327,7 @@ def create_nodes(field_module, embedded_lists):
             node_ids = create_nodes(field_module, pt)
             node_identifiers.extend(node_ids)
         else:
-            node_id = createNode(field_module, ['coordinates', 'radius'], pt)
+            node_id = createNode(field_module, pt)
             node_identifiers.append(node_id)
 
     return node_identifiers
