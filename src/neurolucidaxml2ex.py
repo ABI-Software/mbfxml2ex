@@ -251,13 +251,13 @@ def create_field(field_module, field_info):
 def merge_fields_with_nodes(field_module, node_identifiers, field_information, node_set_name='nodes'):
     field_cache = field_module.createFieldcache()
     node_set = field_module.findNodesetByName(node_set_name)
-    node_template = node_set.createNodetemplate()
 
     for node_identifier in node_identifiers:
         node = node_set.findNodeByIdentifier(node_identifier)
         for field_name in field_information:
             field = field_module.findFieldByName(field_name)
             field_values = field_information[field_name]
+            node_template = node_set.createNodetemplate()
             node_template.defineField(field)
             node.merge(node_template)
             field_cache.setNode(node)
