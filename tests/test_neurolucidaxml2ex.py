@@ -29,6 +29,36 @@ class NeurolucidaXmlReadTreesTestCase(unittest.TestCase):
         self.assertIsNone(contents)
 
 
+class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
+
+    def test_read_tree_with_markers(self):
+        xml_file = os.path.join(here, "resources", "tree_with_markers.xml")
+        neurolucida_data = read_xml(xml_file)
+        self.assertEqual(0, neurolucida_data.contours_count())
+        self.assertEqual(2, neurolucida_data.markers_count())
+        self.assertEqual(1, neurolucida_data.trees_count())
+
+        tree = neurolucida_data.get_tree(0)
+        marker = neurolucida_data.get_marker(1)
+
+        self.assertTrue('colour' in tree)
+        self.assertTrue('rgb' in tree)
+        self.assertTrue('type' in tree)
+        self.assertTrue('leaf' in tree)
+        self.assertTrue('data' in tree)
+
+        self.assertEqual([1.0, 0.0, 1.0], tree['rgb'])
+
+        self.assertTrue('colour' in marker)
+        self.assertTrue('rgb' in marker)
+        self.assertTrue('name' in marker)
+        self.assertTrue('type' in marker)
+        self.assertTrue('varicosity' in marker)
+        self.assertTrue('data' in marker)
+
+        self.assertEqual('Dot', marker['type'])
+
+
 class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
 
     def test_read_basic_contour_xml(self):

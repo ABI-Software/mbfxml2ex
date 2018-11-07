@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" xmlns="http://www.mbfbioscience.com/2007/neurolucida" xmlns:nl="http://www.mbfbioscience.com/2007/neurolucida" appname="Neurolucida 360" appversion="2018.2.1 (64-bit)">
+    <marker type="Dot" color="#00FFFF" name="RCA ostium" varicosity="false">
+      <point x="7034.19" y="-2748.31" z="-656.10" d="1.66"/>
+    </marker>
+    <marker type="Dot" color="#00FFFF" name="LCA ostium" varicosity="false">
+      <point x="7024.35" y="-2554.28" z="-656.10" d="1.66"/>
+    </marker>
+    <tree color="#FF00FF" type="Dendrite" leaf="Normal">
+      <point x="2391.77" y="-2533.35" z="-1450.71" d="4.98"/>
+      <point x="2395.09" y="-2535.01" z="-1443.42" d="4.98"/>
+      <branch>
+        <point x="2386.79" y="-2543.31" z="-1436.13" d="6.85"/>
+        <point x="2384.84" y="-2550.66" z="-1431.02" d="7.43"/>
+        <point x="2378.49" y="-2558.26" z="-1443.42" d="7.43"/>
+        <point x="2373.51" y="-2566.56" z="-1443.42" d="7.43"/>
+        <point x="2370.18" y="-2574.86" z="-1443.42" d="5.99"/>
+        <point x="2365.20" y="-2584.83" z="-1443.42" d="5.99"/>
+        <point x="2361.88" y="-2583.17" z="-1436.13" d="8.30"/>
+      </branch>
+      <branch>
+        <point x="2394.07" y="-2523.49" z="-1421.55" d="6.64"/>
+        <point x="2395.73" y="-2523.49" z="-1428.84" d="4.90"/>
+        <point x="2395.16" y="-2516.83" z="-1421.54" d="4.98"/>
+        <point x="2395.73" y="-2506.89" z="-1421.55" d="5.25"/>
+        <point x="2390.75" y="-2500.24" z="-1421.55" d="5.25"/>
+        <point x="2388.75" y="-2490.55" z="-1416.07" d="6.64"/>
+        <point x="2384.11" y="-2483.64" z="-1421.55" d="7.80"/>
+        <point x="2383.98" y="-2474.97" z="-1414.67" d="6.64"/>
+        <point x="2389.09" y="-2467.03" z="-1421.55" d="6.64"/>
+      </branch>
+    </tree>
+</mbf>
