@@ -1,4 +1,4 @@
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 import os
 import sys
@@ -9,8 +9,8 @@ from xml.etree.ElementTree import ParseError
 from opencmiss.zinc.context import Context
 from opencmiss.zinc.element import Element
 from opencmiss.zinc.element import Elementbasis
-from opencmiss.utils.zinc import createFiniteElementField
-from opencmiss.utils.zinc import createNode
+from opencmiss.utils.zinc import create_finite_element_field
+from opencmiss.utils.zinc import create_node as create_zinc_node
 from opencmiss.utils.zinc import AbstractNodeDataObject
 
 node_id = 0
@@ -59,17 +59,35 @@ class NeurolucidaData(object):
     def get_trees(self):
         return self._trees
 
+    def get_tree(self, index):
+        return self._trees[index]
+
+    def trees_count(self):
+        return len(self._trees)
+
     def add_contour(self, contour_data):
         self._contours.append(contour_data)
 
     def get_contours(self):
         return self._contours
 
+    def get_contour(self, index):
+        return self._contours[index]
+
+    def contours_count(self):
+        return len(self._contours)
+
     def add_marker(self, marker_data):
         self._markers.append(marker_data)
 
     def get_markers(self):
         return self._markers
+
+    def get_marker(self, index):
+        return self._markers[index]
+
+    def markers_count(self):
+        return len(self._markers)
 
     def __len__(self):
         len_trees = len(self._trees)
@@ -230,20 +248,23 @@ def create_field(field_module, field_info):
     return field
 
 
-def merge_fields_with_nodes(field_module, node_identifiers, field_information):
+def merge_fields_with_nodes(field_module, node_identifiers, field_information, node_set_name='nodes'):
     field_cache = field_module.createFieldcache()
-    nodeset = field_module.findNodesetByName('nodes')
-    node_template = nodeset.createNodetemplate()
+    node_set = field_module.findNodesetByName(node_set_name)
+    node_template = node_set.createNodetemplate()
 
     for node_identifier in node_identifiers:
-        node = nodeset.findNodeByIdentifier(node_identifier)
+        node = node_set.findNodeByIdentifier(node_identifier)
         for field_name in field_information:
             field = field_module.findFieldByName(field_name)
             field_values = field_information[field_name]
             node_template.defineField(field)
             node.merge(node_template)
             field_cache.setNode(node)
-            field.assignReal(field_cache, field_values)
+            if isinstance(field_values, ("".__class__, u"".__class__)):
+                field.assignString(field_cache, field_values)
+            else:
+                field.assignReal(field_cache, field_values)
 
 
 def merge_additional_fields(field_module, element_field_template, additional_field_info, element_identifiers):
@@ -320,15 +341,15 @@ def determine_contour_connectivity(contour, closed):
     return connectivity
 
 
-def create_nodes(field_module, embedded_lists):
+def create_nodes(field_module, embedded_lists, node_set_name='nodes'):
     node_identifiers = []
     for pt in embedded_lists:
         if isinstance(pt, list):
-            node_ids = create_nodes(field_module, pt)
+            node_ids = create_nodes(field_module, pt, node_set_name=node_set_name)
             node_identifiers.extend(node_ids)
         else:
-            node_id = createNode(field_module, pt)
-            node_identifiers.append(node_id)
+            local_node_id = create_zinc_node(field_module, pt, node_set_name=node_set_name)
+            node_identifiers.append(local_node_id)
 
     return node_identifiers
 
@@ -350,9 +371,9 @@ def get_element_field_template(field_module, element_identifier):
 def write_ex(file_name, data):
     context = Context("Neurolucida")
     region = context.getDefaultRegion()
-    createFiniteElementField(region)
-    createFiniteElementField(region, field_name='radius', dimension=1, type_coordinate=False)
-    createFiniteElementField(region, field_name='rgb', type_coordinate=False)
+    create_finite_element_field(region)
+    create_finite_element_field(region, field_name='radius', dimension=1, type_coordinate=False)
+    create_finite_element_field(region, field_name='rgb', type_coordinate=False)
     field_module = region.getFieldmodule()
     reset_node_id()
     for tree in data.get_trees():
@@ -368,9 +389,14 @@ def write_ex(file_name, data):
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
     for marker in data.get_markers():
-        node_identifiers = create_nodes(field_module, marker['data'])
+        node_identifiers = create_nodes(field_module, marker['data'], node_set_name='datapoints')
         field_info = {'rgb': marker['rgb']}
-        merge_fields_with_nodes(field_module, node_identifiers, field_info)
+        if 'name' in marker:
+            stored_string_field = field_module.createFieldStoredString()
+            stored_string_field.setManaged(True)
+            stored_string_field.setName('marker_name')
+            field_info['marker_name'] = marker['name']
+        merge_fields_with_nodes(field_module, node_identifiers, field_info, node_set_name='datapoints')
 
     region.writeFile(file_name)
 
