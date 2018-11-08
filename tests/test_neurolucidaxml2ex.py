@@ -59,6 +59,18 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertEqual('Dot', marker['type'])
 
 
+class NeurolucidaReadScaleInformation(unittest.TestCase):
+
+    def test_read_scale(self):
+        xml_file = os.path.join(here, "resources", "scale_example.xml")
+        neurolucida_data = read_xml(xml_file)
+        self.assertEqual(1, neurolucida_data.contours_count())
+        contour = neurolucida_data.get_contour(0)
+        raw_data = contour['data']
+        pt1 = raw_data[0]
+        self.assertAlmostEqual(5276.676, pt1.coordinates()[0])
+
+
 class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
 
     def test_read_basic_contour_xml(self):
@@ -72,11 +84,11 @@ class NeurolucidaPointTestCase(unittest.TestCase):
     def test_point(self):
         p = NeurolucidaPoint(1, 2, 4, 5)
         self.assertListEqual([1, 2, 4], p.coordinates())
-        self.assertEqual(5, p.radius())
+        self.assertEqual(2.5, p.radius())
 
     def test_point_set(self):
         p = NeurolucidaPoint(6, 3, 4, 9)
-        self.assertListEqual([6, 3, 4, 9], p.get())
+        self.assertListEqual([6, 3, 4, 4.5], p.get())
 
 
 class DetermineTreeConnectivityTestCase(unittest.TestCase):
