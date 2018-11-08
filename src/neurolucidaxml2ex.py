@@ -15,19 +15,29 @@ from opencmiss.utils.zinc import AbstractNodeDataObject
 
 node_id = 0
 
+MBF_INTERNAL_DATA_SET_TAGS = ["filefacts", "thumbnail", "description", "property", "processedlocations"]
+
 
 class ProgramArguments(object):
     pass
 
 
+class NeurolucidaXMLException(Exception):
+    pass
+
+
+class NeurolucidaImagesException(Exception):
+    pass
+
+
 class NeurolucidaPoint(AbstractNodeDataObject):
 
-    def __init__(self, x, y, z, radius):
+    def __init__(self, x, y, z, diameter=0.0):
         super(NeurolucidaPoint, self).__init__(['coordinates', 'radius'])
         self._x = x
         self._y = y
         self._z = z
-        self._radius = radius
+        self._radius = diameter / 2.0
 
     def get(self):
         return [self._x, self._y, self._z, self._radius]
@@ -38,12 +48,60 @@ class NeurolucidaPoint(AbstractNodeDataObject):
     def radius(self):
         return self._radius
 
+    def scale(self, scale):
+        self._x = self._x * scale[0]
+        self._y = self._y * scale[1]
+
+    def offset(self, offset):
+        self._x = self._x + offset[0]
+        self._y = self._y + offset[1]
+        self._z = self._z + offset[2]
+
     def __repr__(self):
-        return 'x="{0} y="{1}" z="{2}" d="{3}"'.format(self._x, self._y, self._z, self._radius)
+        return 'x="{0}" y="{1}" z="{2}" d="{3}"'.format(self._x, self._y, self._z, self._radius)
 
 
-class NeurolucidaXMLException(Exception):
-    pass
+class NeurolucidaZSpacing(object):
+
+    def __init__(self, z=1.0, slices=0):
+        self._z = z
+        self._slices = slices
+
+    def get_z(self):
+        return self._z
+
+    def get_slices(self):
+        return self._slices
+
+    def __repr__(self):
+        return 'z = "{0}", slices = "{1}"'.format(self._z, self._slices)
+
+
+class NeurolucidaChannel(object):
+
+    def __init__(self, identifier=None, source=None):
+        self._identifier = identifier
+        self._source = source
+
+    def __repr__(self):
+        return 'id = "{0}", source = "{1}"'.format(self._identifier, self._source)
+
+
+class NeurolucidaChannels(object):
+
+    def __init__(self, merge):
+        self._merge = merge
+        self._channels = []
+
+    def add_channel(self, channel):
+        self._channels.append(channel)
+
+    def __repr__(self):
+        rep = 'merge = "{0}" ['.format(self._merge)
+        rep += '; '.join([str(channel) for channel in self._channels])
+        rep += "]"
+
+        return rep
 
 
 class NeurolucidaData(object):
@@ -52,6 +110,7 @@ class NeurolucidaData(object):
         self._trees = []
         self._contours = []
         self._markers = []
+        self._images = []
 
     def add_tree(self, tree_data):
         self._trees.append(tree_data)
@@ -89,12 +148,45 @@ class NeurolucidaData(object):
     def markers_count(self):
         return len(self._markers)
 
+    def set_images(self, images):
+        self._images = images
+
+    def _scale_and_offset_contours(self, scale, offset):
+        for contour in self._contours:
+            for data in contour['data']:
+                data.scale(scale)
+                data.offset(offset)
+
+    def _scale_and_offset_markers(self, scale, offset):
+        for marker in self._markers:
+            for data in marker['data']:
+                data.scale(scale)
+                data.offset(offset)
+
+    def _scale_and_offset_trees(self, scale, offset):
+        for tree in self._trees:
+            for data in tree['data']:
+                data.scale(scale)
+                data.offset(offset)
+
+    def process_scaling_and_offset(self):
+        if len(self._images) > 0:
+            if len(self._images) == 1:
+                image_info = self._images[0]
+                if image_info['scale'] != [1.0, 1.0]:
+                    self._scale_and_offset_contours(image_info['scale'], image_info['offset'])
+                    self._scale_and_offset_markers(image_info['scale'], image_info['offset'])
+
+            else:
+                raise NeurolucidaImagesException("Multiple individual images not yet handled.")
+
     def __len__(self):
         len_trees = len(self._trees)
         len_contours = len(self._contours)
         len_markers = len(self._markers)
+        len_images = len(self._images)
 
-        return len_trees + len_markers + len_contours
+        return len_trees + len_markers + len_contours + len_images
 
 
 def convert_hex_to_rgb(hex_string):
@@ -189,6 +281,47 @@ def parse_marker(marker_root):
     return marker
 
 
+def parse_channels(channels_root):
+    channels = NeurolucidaChannels(channels_root.attrib['merge'])
+
+    for child in channels_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == "channel":
+            channels.add_channel(NeurolucidaChannel(child.attrib['id'], child.attrib['source']))
+        else:
+            raise NeurolucidaXMLException("XML format violation unknown tag {0} in channels.".format(raw_tag))
+
+    return channels
+
+
+def parse_image(image_root):
+    image = {'filename': '', 'channels': [], 'scale': [1.0, 1.0], 'offset': [0.0, 0.0, 0.0], 'z_spacing': None}
+
+    for child in image_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == "filename":
+            image['filename'] = child.text
+        elif raw_tag == "channels":
+            image['channels'] = parse_channels(child)
+        elif raw_tag == "scale":
+            image['scale'] = [float(child.attrib['x']), float(child.attrib['y'])]
+        elif raw_tag == "coord":
+            image['offset'] = [float(child.attrib['x']), float(child.attrib['y']), float(child.attrib['z'])]
+        elif raw_tag == "zspacing":
+            image['z_spacing'] = NeurolucidaZSpacing(float(child.attrib['z']), int(child.attrib['slices']))
+
+    return image
+
+
+def parse_images(images_root):
+    images = []
+
+    for child in images_root:
+        images.append(parse_image(child))
+
+    return images
+
+
 def read_xml(file_name):
     if os.path.exists(file_name):
         data = NeurolucidaData()
@@ -201,7 +334,6 @@ def read_xml(file_name):
         root = tree.getroot()
         for child in root:
             raw_tag = get_raw_tag(child)
-            # Only looking to deal with 'tree' elements
             if raw_tag == "tree":
                 tree_data = parse_tree(child)
                 data.add_tree(tree_data)
@@ -211,6 +343,15 @@ def read_xml(file_name):
             elif raw_tag == "marker":
                 marker_data = parse_marker(child)
                 data.add_marker(marker_data)
+            elif raw_tag == "images":
+                images_data = parse_images(child)
+                data.set_images(images_data)
+            elif raw_tag in MBF_INTERNAL_DATA_SET_TAGS:
+                pass  # Do nothing.
+            else:
+                print('Unhandled tag: ', raw_tag)
+
+        data.process_scaling_and_offset()
 
         return data
 
