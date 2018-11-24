@@ -163,11 +163,24 @@ class NeurolucidaData(object):
                 data.scale(scale)
                 data.offset(offset)
 
+    def _scale_and_offset_tree(self, tree, scale, offset):
+        modified_tree = []
+        for pt in tree:
+            if isinstance(pt, list):
+                modified_tree.append(self._scale_and_offset_tree(pt, scale, offset))
+            else:
+                pt.scale(scale)
+                pt.offset(offset)
+                modified_tree.append(pt)
+
+        return modified_tree
+
     def _scale_and_offset_trees(self, scale, offset):
+        modified_trees = []
         for tree in self._trees:
-            for data in tree['data']:
-                data.scale(scale)
-                data.offset(offset)
+            modified_trees.append(self._scale_and_offset_tree(tree, scale, offset))
+
+        self._trees = modified_trees
 
     def process_scaling_and_offset(self):
         if len(self._images) > 0:
@@ -176,6 +189,7 @@ class NeurolucidaData(object):
                 if image_info['scale'] != [1.0, 1.0]:
                     self._scale_and_offset_contours(image_info['scale'], image_info['offset'])
                     self._scale_and_offset_markers(image_info['scale'], image_info['offset'])
+                    self._scale_and_offset_trees(image_info['scale'], image_info['offset'])
 
             else:
                 raise NeurolucidaImagesException("Multiple individual images not yet handled.")
