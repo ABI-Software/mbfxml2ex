@@ -1,12 +1,12 @@
 
 import os
 import unittest
-from neurolucidaxml2ex import read_xml, determine_contour_connectivity
-from neurolucidaxml2ex import NeurolucidaPoint
-from neurolucidaxml2ex import NeurolucidaData
-from neurolucidaxml2ex import write_ex
-from neurolucidaxml2ex import determine_tree_connectivity
-from neurolucidaxml2ex import reset_node_id
+from mbfxml2ex import read_xml, determine_contour_connectivity
+from mbfxml2ex import NeurolucidaPoint
+from mbfxml2ex import MBFData
+from mbfxml2ex import write_ex
+from mbfxml2ex import determine_tree_connectivity
+from mbfxml2ex import reset_node_id
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -79,6 +79,14 @@ class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
         self.assertEqual(1, len(contents))
 
 
+class VessellucidaXmlReadTestCase(unittest.TestCase):
+
+    def test_read_vessel_xml(self):
+        xml_file = os.path.join(here, "resources", "tracing_vessels_and_markers.xml")
+        contents = read_xml(xml_file)
+        self.assertEqual(1, len(contents))
+
+
 class NeurolucidaPointTestCase(unittest.TestCase):
 
     def test_point(self):
@@ -141,7 +149,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
 
         tree = {'rgb': [0, 0, 0],
                 'data': [NeurolucidaPoint(3, 3, 4, 2), NeurolucidaPoint(2, 1, 5, 7), NeurolucidaPoint(3, 1, 4.2, 7.1)]}
-        data = NeurolucidaData()
+        data = MBFData()
         data.add_tree(tree)
 
         write_ex(ex_file, data)
@@ -154,7 +162,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
 
         tree = {'rgb': [0, 0, 0],
                 'data': [NeurolucidaPoint(3, 3, 4, 2), [NeurolucidaPoint(2, 1, 5, 7)], [NeurolucidaPoint(2, 4, 8, 5.7)]]}
-        data = NeurolucidaData()
+        data = MBFData()
         data.add_tree(tree)
 
         write_ex(ex_file, data)
@@ -168,7 +176,7 @@ class ExWritingContoursTestCase(unittest.TestCase):
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
-        data = NeurolucidaData()
+        data = MBFData()
         contour = {'colour': '#00ff00', 'rgb': [0, 1, 0], 'closed': True, 'name': 'Heart',
                    'data': [NeurolucidaPoint(3, 3, 4, 1), NeurolucidaPoint(2, 1, 5, 1),
                             NeurolucidaPoint(3, 1, 4.2, 1)]}
