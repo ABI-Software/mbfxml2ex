@@ -11,7 +11,7 @@ def read(file_name):
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, 'src', 'neurolucidaxml2ex.py')) as fd:
+with open(os.path.join(here, 'src', 'mbfxml2ex.py')) as fd:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
                         fd.read(), re.MULTILINE).group(1)
 
@@ -26,19 +26,19 @@ dependencies = ['opencmiss.zinc', 'opencmiss.utils']
 
 
 setup(
-    name="neurolucidaxml2ex",
+    name="mbf2ex",
     version=version,
     author="Auckland Bioengineering Institute",
     author_email="h.sorby@auckland.ac.nz",
     description="Python client for generating Ex format model descriptions from Neurolucida XML.",
     long_description=long_description,
-    py_modules=["neurolucidaxml2ex"],
+    py_modules=["mbf2ex"],
     package_dir={"": "src"},
     zip_safe=False,
     install_requires=dependencies,
     entry_points={
         'console_scripts': [
-            'neurolucidaxml2exconverter=neurolucidaxml2ex:main',
+            'mbfxml2exconverter=mbfxml2ex:main',
         ]
     },
     license="Apache Software License",

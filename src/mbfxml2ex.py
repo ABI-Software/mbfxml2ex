@@ -1,4 +1,4 @@
-__version__ = "0.1.5"
+__version__ = "0.2.0"
 
 import os
 import sys
@@ -104,13 +104,14 @@ class NeurolucidaChannels(object):
         return rep
 
 
-class NeurolucidaData(object):
+class MBFData(object):
 
     def __init__(self):
         self._trees = []
         self._contours = []
         self._markers = []
         self._images = []
+        self._vessels = []
 
     def add_tree(self, tree_data):
         self._trees.append(tree_data)
@@ -147,6 +148,18 @@ class NeurolucidaData(object):
 
     def markers_count(self):
         return len(self._markers)
+
+    def add_vessel(self, vessel_data):
+        self._vessels.append(vessel_data)
+
+    def get_vessels(self):
+        return self._vessels
+
+    def get_vessel(self, index):
+        return self._vessels[index]
+
+    def vessel_count(self):
+        return len(self._vessels)
 
     def set_images(self, images):
         self._images = images
@@ -336,9 +349,15 @@ def parse_images(images_root):
     return images
 
 
+def parse_vessel(vessel_root):
+    vessel = {}
+
+    return vessel
+
+
 def read_xml(file_name):
     if os.path.exists(file_name):
-        data = NeurolucidaData()
+        data = MBFData()
         try:
             tree = ElTree.parse(file_name)
         except ParseError as e:
@@ -360,6 +379,9 @@ def read_xml(file_name):
             elif raw_tag == "images":
                 images_data = parse_images(child)
                 data.set_images(images_data)
+            elif raw_tag == "vessel":
+                vessel_data = parse_vessel(child)
+                data.add_vessel(vessel_data)
             elif raw_tag in MBF_INTERNAL_DATA_SET_TAGS:
                 pass  # Do nothing.
             else:
@@ -523,9 +545,7 @@ def get_element_field_template(field_module, element_identifier):
     return element_field_template
 
 
-def write_ex(file_name, data):
-    context = Context("Neurolucida")
-    region = context.getDefaultRegion()
+def load(region, data):
     create_finite_element_field(region)
     create_finite_element_field(region, field_name='radius', dimension=1, type_coordinate=False)
     create_finite_element_field(region, field_name='rgb', type_coordinate=False)
@@ -552,6 +572,13 @@ def write_ex(file_name, data):
             stored_string_field.setName('marker_name')
             field_info['marker_name'] = marker['name']
         merge_fields_with_nodes(field_module, node_identifiers, field_info, node_set_name='datapoints')
+
+
+def write_ex(file_name, data):
+    context = Context("Neurolucida")
+    region = context.getDefaultRegion()
+
+    load(region, data)
 
     region.writeFile(file_name)
 

@@ -1,8 +1,8 @@
 
-Neurolucida XML 2 Ex
-====================
+MBF XML 2 Ex
+============
 
-This program converts Neurolucida XML to Ex format suitable for OpenCMISS-Zinc.
+This program converts MBF XML to Ex format suitable for OpenCMISS-Zinc.
 
 
 Install
@@ -10,14 +10,14 @@ Install
 
 ::
 
-  pip install neurolucidaxml2ex
+  pip install mbfxml2ex
 
 Usage
 -----
 
 ::
 
-  neurolucidaxml2exconverter /path/to/input.xml
+  mbfxml2exconverter /path/to/input.xml
 
 For more information use the help::
 
