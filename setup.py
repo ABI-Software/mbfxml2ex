@@ -26,13 +26,13 @@ dependencies = ['opencmiss.zinc', 'opencmiss.utils']
 
 
 setup(
-    name="mbf2ex",
+    name="mbfxml2ex",
     version=version,
     author="Auckland Bioengineering Institute",
     author_email="h.sorby@auckland.ac.nz",
-    description="Python client for generating Ex format model descriptions from Neurolucida XML.",
+    description="Python client for generating Ex format model descriptions from MBF XML.",
     long_description=long_description,
-    py_modules=["mbf2ex"],
+    py_modules=["mbfxml2ex"],
     package_dir={"": "src"},
     zip_safe=False,
     install_requires=dependencies,
