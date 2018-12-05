@@ -21,4 +21,4 @@ Usage
 
 For more information use the help::
 
-  neurolucidaxml2exconverter --help
+  mbfxml2exconverter --help
