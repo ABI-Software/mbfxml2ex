@@ -42,13 +42,12 @@ setup(
         ]
     },
     license="Apache Software License",
-    keywords="Neurolucida OpenCMISS-Zinc",
-    url="https://github.com/hsorby/neurolucidaxml2ex",
+    keywords="MBF OpenCMISS-Zinc",
+    url="https://github.com/hsorby/mbfxml2ex",
     download_url="",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Topic :: Scientific/Engineering :: Medical Science Apps.",
         "Topic :: Utilities",

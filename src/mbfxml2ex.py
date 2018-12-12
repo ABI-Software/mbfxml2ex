@@ -22,18 +22,18 @@ class ProgramArguments(object):
     pass
 
 
-class NeurolucidaXMLException(Exception):
+class MBFXMLException(Exception):
     pass
 
 
-class NeurolucidaImagesException(Exception):
+class MBFImagesException(Exception):
     pass
 
 
-class NeurolucidaPoint(AbstractNodeDataObject):
+class MBFPoint(AbstractNodeDataObject):
 
     def __init__(self, x, y, z, diameter=0.0):
-        super(NeurolucidaPoint, self).__init__(['coordinates', 'radius'])
+        super(MBFPoint, self).__init__(['coordinates', 'radius'])
         self._x = x
         self._y = y
         self._z = z
@@ -58,7 +58,7 @@ class NeurolucidaPoint(AbstractNodeDataObject):
         self._z = self._z + offset[2]
 
     def __repr__(self):
-        return 'x="{0}" y="{1}" z="{2}" d="{3}"'.format(self._x, self._y, self._z, self._radius)
+        return 'x="{0}" y="{1}" z="{2}" r="{3}"'.format(self._x, self._y, self._z, self._radius)
 
 
 class NeurolucidaZSpacing(object):
@@ -102,6 +102,39 @@ class NeurolucidaChannels(object):
         rep += "]"
 
         return rep
+
+
+class BinaryTreeNode(object):
+
+    def __init__(self, data):
+
+        self._left = None
+        self._right = None
+        self._data = data
+
+    def insert(self, data):
+
+        if self._data:
+            if data < self._data:
+                if self._left is None:
+                    self._left = BinaryTreeNode(data)
+                else:
+                    self._left.insert(data)
+            elif data > self._data:
+                if self._right is None:
+                    self._right = BinaryTreeNode(data)
+                else:
+                    self._right.insert(data)
+        else:
+            self._data = data
+
+    def __contains__(self, data):
+        if data < self._data:
+            return False if self._left is None else data in self._left
+        elif data > self._data:
+            return False if self._right is None else data in self._right
+
+        return True
 
 
 class MBFData(object):
@@ -205,15 +238,16 @@ class MBFData(object):
                     self._scale_and_offset_trees(image_info['scale'], image_info['offset'])
 
             else:
-                raise NeurolucidaImagesException("Multiple individual images not yet handled.")
+                raise MBFImagesException("Multiple individual images not yet handled.")
 
     def __len__(self):
         len_trees = len(self._trees)
         len_contours = len(self._contours)
         len_markers = len(self._markers)
         len_images = len(self._images)
+        len_vessels = len(self._vessels)
 
-        return len_trees + len_markers + len_contours + len_images
+        return len_trees + len_markers + len_contours + len_images + len_vessels
 
 
 def convert_hex_to_rgb(hex_string):
@@ -241,14 +275,14 @@ def parse_tree_structure(tree_root):
     for child in tree_root:
         raw_tag = get_raw_tag(child)
         if raw_tag == "point":
-            tree.append(NeurolucidaPoint(float(child.attrib['x']),
-                                         float(child.attrib['y']),
-                                         float(child.attrib['z']),
-                                         float(child.attrib['d'])))
+            tree.append(MBFPoint(float(child.attrib['x']),
+                                 float(child.attrib['y']),
+                                 float(child.attrib['z']),
+                                 float(child.attrib['d'])))
         elif raw_tag == "branch":
             tree.append(parse_tree_structure(child))
         else:
-            raise NeurolucidaXMLException("XML format violation unknown tag {0}".format(raw_tag))
+            raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
 
     return tree
 
@@ -269,16 +303,16 @@ def parse_contour(contour_root):
     for child in contour_root:
         raw_tag = get_raw_tag(child)
         if raw_tag == "point":
-            data.append(NeurolucidaPoint(float(child.attrib['x']),
-                                         float(child.attrib['y']),
-                                         float(child.attrib['z']),
-                                         float(child.attrib['d'])))
+            data.append(MBFPoint(float(child.attrib['x']),
+                                 float(child.attrib['y']),
+                                 float(child.attrib['z']),
+                                 float(child.attrib['d'])))
         elif raw_tag == "property":
             pass
         elif raw_tag == "resolution":
             pass
         else:
-            raise NeurolucidaXMLException("XML format violation unknown tag {0}".format(raw_tag))
+            raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
 
     contour['data'] = data
 
@@ -296,12 +330,12 @@ def parse_marker(marker_root):
     for child in marker_root:
         raw_tag = get_raw_tag(child)
         if raw_tag == "point":
-            data.append(NeurolucidaPoint(float(child.attrib['x']),
-                                         float(child.attrib['y']),
-                                         float(child.attrib['z']),
-                                         float(child.attrib['d'])))
+            data.append(MBFPoint(float(child.attrib['x']),
+                                 float(child.attrib['y']),
+                                 float(child.attrib['z']),
+                                 float(child.attrib['d'])))
         else:
-            raise NeurolucidaXMLException("XML format violation unknown tag {0}".format(raw_tag))
+            raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
 
     marker['data'] = data
 
@@ -316,7 +350,7 @@ def parse_channels(channels_root):
         if raw_tag == "channel":
             channels.add_channel(NeurolucidaChannel(child.attrib['id'], child.attrib['source']))
         else:
-            raise NeurolucidaXMLException("XML format violation unknown tag {0} in channels.".format(raw_tag))
+            raise MBFXMLException("XML format violation unknown tag {0} in channels.".format(raw_tag))
 
     return channels
 
@@ -349,8 +383,109 @@ def parse_images(images_root):
     return images
 
 
+def parse_node(node_root):
+    node = {'id': node_root.attrib['id'], }
+
+    data = None
+    for child in node_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == "point":
+            data = MBFPoint(float(child.attrib['x']),
+                            float(child.attrib['y']),
+                            float(child.attrib['z']),
+                            float(child.attrib['d']))
+        else:
+            raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
+
+    if data is None:
+        raise MBFXMLException("XML format violation no point tag for node with id {0}".format(node['id']))
+
+    node['data'] = data
+    return node
+
+
+def parse_nodes(nodes_root):
+    nodes = []
+    for child in nodes_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == "node":
+            nodes.append(parse_node(child))
+        else:
+            raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
+
+    return nodes
+
+
+def parse_edge(edge_root):
+    edge = {'id': edge_root.attrib['id']}
+
+    data = []
+    for child in edge_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == "point":
+            data.append(MBFPoint(float(child.attrib['x']),
+                                 float(child.attrib['y']),
+                                 float(child.attrib['z']),
+                                 float(child.attrib['d'])))
+        else:
+            raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
+
+    edge['data'] = data
+    return edge
+
+
+def parse_edges(edges_root):
+    edges = []
+
+    for child in edges_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == "edge":
+            edges.append(parse_edge(child))
+        else:
+            raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
+
+    return edges
+
+
+def parse_edgelist(edgelist_root):
+    edgelist = {'id': edgelist_root.attrib['id'],
+                'edge': edgelist_root.attrib['edge'],
+                'sourcenode': edgelist_root.attrib['sourcenode'],
+                'targetnode': edgelist_root.attrib['targetnode'], }
+
+    return edgelist
+
+
+def parse_edgelists(edgelists_root):
+    edgelists = []
+
+    for child in edgelists_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == "edgelist":
+            edgelists.append(parse_edgelist(child))
+        else:
+            raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
+
+    return edgelists
+
+
 def parse_vessel(vessel_root):
-    vessel = {}
+    vessel = {'version': vessel_root.attrib['version'],
+              'colour': vessel_root.attrib['color'],
+              'rgb': convert_hex_to_rgb(vessel_root.attrib['color']),
+              'type': vessel_root.attrib['type'],
+              'name': vessel_root.attrib['name'], }
+
+    for child in vessel_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == "nodes":
+            vessel['nodes'] = parse_nodes(child)
+        elif raw_tag == "edges":
+            vessel['edges'] = parse_edges(child)
+        elif raw_tag == "edgelists":
+            vessel['edgelists'] = parse_edgelists(child)
+        else:
+            print('Unhandled tag: ', raw_tag)
 
     return vessel
 
@@ -518,6 +653,57 @@ def determine_contour_connectivity(contour, closed):
     return connectivity
 
 
+def determine_vessel_connectivity(vessel):
+    global node_id
+
+    connectivity = []
+    node_map = {}
+    node_pair = [None, None]
+    if 'edges' in vessel:
+        edges = vessel['edges']
+        for edge in edges:
+            edge_map = {}
+            if 'data' in edge:
+                for point in edge['data']:
+                    str_point = str(point)
+                    if str_point not in edge_map:
+                        edge_map[str_point] = node_id
+                        if str_point in node_map:
+                            next_node_id = node_map[str_point]
+                        else:
+                            node_id += 1
+                            next_node_id = node_id
+                            node_map[str_point] = node_id
+                        if node_pair[0] is None:
+                            node_pair[0] = next_node_id
+                        else:
+                            node_pair[1] = next_node_id
+                            connectivity.append(node_pair)
+                            node_pair = [node_id, None]
+                node_pair = [None, None]
+
+    return connectivity
+
+
+def extract_vessel_node_locations(vessel):
+    node_locations = []
+    node_binary_tree = None
+    if 'edges' in vessel:
+        edges = vessel['edges']
+        for edge in edges:
+            if 'data' in edge:
+                for point in edge['data']:
+                    str_point = str(point)
+                    if node_binary_tree is None:
+                        node_binary_tree = BinaryTreeNode(str_point)
+                        node_locations.append(point)
+                    elif str_point not in node_binary_tree:
+                        node_binary_tree.insert(str_point)
+                        node_locations.append(point)
+
+    return node_locations
+
+
 def create_nodes(field_module, embedded_lists, node_set_name='nodes'):
     node_identifiers = []
     for pt in embedded_lists:
@@ -572,6 +758,13 @@ def load(region, data):
             stored_string_field.setName('marker_name')
             field_info['marker_name'] = marker['name']
         merge_fields_with_nodes(field_module, node_identifiers, field_info, node_set_name='datapoints')
+    for vessel in data.get_vessels():
+        connectivity = determine_vessel_connectivity(vessel)
+        node_locations = extract_vessel_node_locations(vessel)
+        node_identifiers = create_nodes(field_module, node_locations)
+        field_info = {'rgb': vessel['rgb']}
+        merge_fields_with_nodes(field_module, node_identifiers, field_info)
+        create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
 
 
 def write_ex(file_name, data):
