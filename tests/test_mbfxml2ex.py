@@ -70,6 +70,15 @@ class NeurolucidaReadScaleInformation(unittest.TestCase):
         pt1 = raw_data[0]
         self.assertAlmostEqual(5276.676, pt1.coordinates()[0])
 
+    def test_read_multi_images(self):
+        xml_file = os.path.join(here, "resources", "scale_example_2.xml")
+        neurolucida_data = read_xml(xml_file)
+        self.assertEqual(1, neurolucida_data.contours_count())
+        contour = neurolucida_data.get_contour(0)
+        raw_data = contour['data']
+        pt1 = raw_data[0]
+        self.assertAlmostEqual(14603.48225272, pt1.coordinates()[0])
+
 
 class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
 
