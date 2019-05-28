@@ -229,16 +229,28 @@ class MBFData(object):
         self._trees = modified_trees
 
     def process_scaling_and_offset(self):
-        if len(self._images) > 0:
-            if len(self._images) == 1:
-                image_info = self._images[0]
-                if image_info['scale'] != [1.0, 1.0]:
-                    self._scale_and_offset_contours(image_info['scale'], image_info['offset'])
-                    self._scale_and_offset_markers(image_info['scale'], image_info['offset'])
-                    self._scale_and_offset_trees(image_info['scale'], image_info['offset'])
+        common_image_info = None
+        for image_info in self._images:
+            if common_image_info is None:
+                common_image_info = image_info
+            elif common_image_info['scale'] != image_info['scale'] and common_image_info['offset'] != image_info['offset']:
+                raise MBFImagesException("Multiple images do not have the same scale and offset.")
 
-            else:
-                raise MBFImagesException("Multiple individual images not yet handled.")
+        if common_image_info and common_image_info['scale'] != [1.0, 1.0]:
+            self._scale_and_offset_contours(image_info['scale'], image_info['offset'])
+            self._scale_and_offset_markers(image_info['scale'], image_info['offset'])
+            self._scale_and_offset_trees(image_info['scale'], image_info['offset'])
+
+        # if len(self._images) > 0:
+        #     if len(self._images) == 1:
+        #         image_info = self._images[0]
+        #         if image_info['scale'] != [1.0, 1.0]:
+        #             self._scale_and_offset_contours(image_info['scale'], image_info['offset'])
+        #             self._scale_and_offset_markers(image_info['scale'], image_info['offset'])
+        #             self._scale_and_offset_trees(image_info['scale'], image_info['offset'])
+        #
+        #     else:
+        #         raise MBFImagesException("Multiple individual images not yet handled.")
 
     def __len__(self):
         len_trees = len(self._trees)
