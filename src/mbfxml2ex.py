@@ -668,8 +668,6 @@ def determine_contour_connectivity(contour, closed):
 def determine_vessel_connectivity(vessel):
     global node_id
 
-    # test branch
-
     connectivity = []
     node_map = {}
     node_pair = [None, None]
