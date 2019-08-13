@@ -293,6 +293,8 @@ def parse_tree_structure(tree_root):
                                  float(child.attrib['d'])))
         elif raw_tag == "branch":
             tree.append(parse_tree_structure(child))
+        elif raw_tag == "property":
+            pass
         else:
             raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
 
@@ -534,7 +536,7 @@ def read_xml(file_name):
             else:
                 print('Unhandled tag: ', raw_tag)
 
-        data.process_scaling_and_offset()
+        # data.process_scaling_and_offset()
 
         return data
 
@@ -748,17 +750,19 @@ def load(region, data):
     create_finite_element_field(region, field_name='radius', dimension=1, type_coordinate=False)
     create_finite_element_field(region, field_name='rgb', type_coordinate=False)
     field_module = region.getFieldmodule()
+    annotation_stored_string_field = field_module.createFieldStoredString()
+    annotation_stored_string_field.setName('annotation')
     reset_node_id()
     for tree in data.get_trees():
         connectivity = determine_tree_connectivity(tree['data'])
         node_identifiers = create_nodes(field_module, tree['data'])
-        field_info = {'rgb': tree['rgb']}
+        field_info = {'rgb': tree['rgb'], 'annotation': tree['type']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
     for contour in data.get_contours():
         connectivity = determine_contour_connectivity(contour['data'], contour['closed'])
         node_identifiers = create_nodes(field_module, contour['data'])
-        field_info = {'rgb': contour['rgb']}
+        field_info = {'rgb': contour['rgb'], 'annotation': contour['name']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
     for marker in data.get_markers():
