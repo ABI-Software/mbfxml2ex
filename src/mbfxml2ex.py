@@ -536,7 +536,7 @@ def read_xml(file_name):
             else:
                 print('Unhandled tag: ', raw_tag)
 
-        # data.process_scaling_and_offset()
+        data.process_scaling_and_offset()
 
         return data
 
@@ -756,7 +756,10 @@ def load(region, data):
     for tree in data.get_trees():
         connectivity = determine_tree_connectivity(tree['data'])
         node_identifiers = create_nodes(field_module, tree['data'])
-        field_info = {'rgb': tree['rgb'], 'annotation': tree['type']}
+        if 'type' in tree:
+            field_info = {'rgb': tree['rgb'], 'annotation': tree['type']}
+        else:
+            field_info = {'rgb': tree['rgb']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
     for contour in data.get_contours():
