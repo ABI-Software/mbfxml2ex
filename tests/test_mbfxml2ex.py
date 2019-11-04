@@ -169,6 +169,20 @@ class DetermineContourConnectivityTestCase(unittest.TestCase):
                              determine_contour_connectivity(contour['data'], contour['closed']))
 
 
+class ExWritingTreeWithAnnotationTestCase(unittest.TestCase):
+
+    def test_write_ex_with_annotation(self):
+        ex_file = os.path.join(here, "resources", "tree_with_annotation.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = os.path.join(here, "resources", "tree_with_anatomical_terms.xml")
+        data = read_xml(xml_file)
+
+        write_ex(ex_file, data)
+        self.assertTrue(os.path.exists(ex_file))
+
+
 class ExWritingTreeTestCase(unittest.TestCase):
 
     def test_write_ex_basic(self):
