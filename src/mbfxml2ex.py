@@ -293,15 +293,30 @@ def parse_tree_structure(tree_root):
                                  float(child.attrib['d'])))
         elif raw_tag == "branch":
             tree.append(parse_tree_structure(child))
+        elif raw_tag == "property":
+            pass
         else:
             raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
 
     return tree
 
 
+def parse_tree_with_anatomical_terms(tree_root):
+    for property_set in tree_root.iter():
+        if property_set.get("name") == "Set":
+            for child in property_set.iter():
+                if "}" in child.tag:
+                    tag = child.tag.split('}')
+                    if "s" in tag:
+                        anatomical_term = "".join(child.itertext())
+                        return anatomical_term
+    return None
+
+
 def parse_tree(tree_root):
     tree = {'colour': tree_root.attrib['color'], 'rgb': convert_hex_to_rgb(tree_root.attrib['color']),
-            'type': tree_root.attrib['type'], 'leaf': tree_root.attrib['leaf'], 'data': parse_tree_structure(tree_root)}
+            'type': tree_root.attrib['type'], 'leaf': tree_root.attrib['leaf'], 'data': parse_tree_structure(tree_root),
+            'anatomical term': parse_tree_with_anatomical_terms(tree_root)}
 
     return tree
 
@@ -534,7 +549,7 @@ def read_xml(file_name):
             else:
                 print('Unhandled tag: ', raw_tag)
 
-        data.process_scaling_and_offset()
+        # data.process_scaling_and_offset()
 
         return data
 
@@ -587,8 +602,10 @@ def merge_fields_with_nodes(field_module, node_identifiers, field_information, n
             field_cache.setNode(node)
             if isinstance(field_values, ("".__class__, u"".__class__)):
                 field.assignString(field_cache, field_values)
-            else:
+            elif isinstance(field_values, list):
                 field.assignReal(field_cache, field_values)
+            else:
+                pass
 
 
 def merge_additional_fields(field_module, element_field_template, additional_field_info, element_identifiers):
@@ -748,17 +765,28 @@ def load(region, data):
     create_finite_element_field(region, field_name='radius', dimension=1, type_coordinate=False)
     create_finite_element_field(region, field_name='rgb', type_coordinate=False)
     field_module = region.getFieldmodule()
+    annotation_stored_string_field = field_module.createFieldStoredString()
+    annotation_stored_string_field.setName('annotation')
+    anatomical_term_stored_string_field = field_module.createFieldStoredString()
+    anatomical_term_stored_string_field.setName('anatomical_term')
     reset_node_id()
     for tree in data.get_trees():
         connectivity = determine_tree_connectivity(tree['data'])
         node_identifiers = create_nodes(field_module, tree['data'])
-        field_info = {'rgb': tree['rgb']}
+        if 'type' in tree and 'anatomical term' not in tree:
+            field_info = {'rgb': tree['rgb'], 'annotation': tree['type']}
+        elif 'anatomical term' in tree and 'type' not in tree:
+            field_info = {'rgb': tree['rgb'], 'anatomical_term': tree['anatomical term']}
+        elif 'type' in tree and 'anatomical term' in tree:
+            field_info = {'rgb': tree['rgb'], 'annotation': tree['type'], 'anatomical_term': tree['anatomical term']}
+        else:
+            field_info = {'rgb': tree['rgb']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
     for contour in data.get_contours():
         connectivity = determine_contour_connectivity(contour['data'], contour['closed'])
         node_identifiers = create_nodes(field_module, contour['data'])
-        field_info = {'rgb': contour['rgb']}
+        field_info = {'rgb': contour['rgb'], 'annotation': contour['name']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
     for marker in data.get_markers():
