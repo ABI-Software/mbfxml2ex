@@ -211,6 +211,17 @@ class ExWritingTreeTestCase(unittest.TestCase):
         write_ex(ex_file, data)
         self.assertTrue(os.path.exists(ex_file))
 
+    def test_write_tree_with_markers(self):
+        xml_file = os.path.join(here, "resources", "tree_with_markers.xml")
+        neurolucida_data = read_xml(xml_file)
+
+        ex_file = os.path.join(here, "resources", "tree_with_markers.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        write_ex(ex_file, neurolucida_data)
+        self.assertTrue(os.path.exists(ex_file))
+
 
 class ExWritingContoursTestCase(unittest.TestCase):
 
