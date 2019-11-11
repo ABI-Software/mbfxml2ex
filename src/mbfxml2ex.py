@@ -549,7 +549,7 @@ def read_xml(file_name):
             else:
                 print('Unhandled tag: ', raw_tag)
 
-        # data.process_scaling_and_offset()
+        data.process_scaling_and_offset()
 
         return data
 
