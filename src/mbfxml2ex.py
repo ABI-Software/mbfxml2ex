@@ -9,6 +9,8 @@ from xml.etree.ElementTree import ParseError
 from opencmiss.zinc.context import Context
 from opencmiss.zinc.element import Element
 from opencmiss.zinc.element import Elementbasis
+from opencmiss.zinc.field import FieldGroup
+
 from opencmiss.utils.zinc import create_finite_element_field
 from opencmiss.utils.zinc import create_node as create_zinc_node
 from opencmiss.utils.zinc import AbstractNodeDataObject
@@ -19,7 +21,10 @@ MBF_INTERNAL_DATA_SET_TAGS = ["filefacts", "thumbnail", "description", "property
 
 
 class ProgramArguments(object):
-    pass
+    def __init__(self):
+        self.external_annotation = None
+        self.input_xml = None
+        self.output_ex = None
 
 
 class MBFXMLException(Exception):
@@ -233,13 +238,14 @@ class MBFData(object):
         for image_info in self._images:
             if common_image_info is None:
                 common_image_info = image_info
-            elif common_image_info['scale'] != image_info['scale'] and common_image_info['offset'] != image_info['offset']:
+            elif common_image_info['scale'] != image_info['scale'] and \
+                    common_image_info['offset'] != image_info['offset']:
                 raise MBFImagesException("Multiple images do not have the same scale and offset.")
 
         if common_image_info and common_image_info['scale'] != [1.0, 1.0]:
-            self._scale_and_offset_contours(image_info['scale'], image_info['offset'])
-            self._scale_and_offset_markers(image_info['scale'], image_info['offset'])
-            self._scale_and_offset_trees(image_info['scale'], image_info['offset'])
+            self._scale_and_offset_contours(common_image_info['scale'], common_image_info['offset'])
+            self._scale_and_offset_markers(common_image_info['scale'], common_image_info['offset'])
+            self._scale_and_offset_trees(common_image_info['scale'], common_image_info['offset'])
 
         # if len(self._images) > 0:
         #     if len(self._images) == 1:
@@ -610,7 +616,7 @@ def merge_fields_with_nodes(field_module, node_identifiers, field_information, n
 
 def merge_additional_fields(field_module, element_field_template, additional_field_info, element_identifiers):
     mesh = field_module.findMeshByDimension(1)
-    constant_basis = field_module.createElementbasis(1, Elementbasis.FUNCTION_TYPE_CONSTANT)
+    # constant_basis = field_module.createElementbasis(1, Elementbasis.FUNCTION_TYPE_CONSTANT)
     element_template = mesh.createElementtemplate()
     additional_fields = []
     for field_info in additional_field_info:
@@ -623,7 +629,7 @@ def merge_additional_fields(field_module, element_field_template, additional_fie
 
     for element_identifier in element_identifiers:
         element = mesh.findElementByIdentifier(element_identifier)
-        print(element.merge(element_template))
+        element.merge(element_template)
 
 
 def reset_node_id():
@@ -752,6 +758,27 @@ def create_elements(field_module, connectivity, field_names=None):
     return create_line_elements(field_module, connectivity, field_names)
 
 
+def create_group(field_module, group_name, element_ids):
+    group = field_module.findFieldByName(group_name)
+    if group.isValid():
+        group = group.castGroup()
+    else:
+        group = field_module.createFieldGroup()
+        group.setName(group_name)
+        group.setManaged(True)
+        group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
+
+    mesh = field_module.findMeshByDimension(1)
+    element_group = group.getFieldElementGroup(mesh)
+    if not element_group.isValid():
+        element_group = group.createFieldElementGroup(mesh)
+
+    mesh_group = element_group.getMeshGroup()
+    for element_id in element_ids:
+        element = mesh.findElementByIdentifier(element_id)
+        mesh_group.addElement(element)
+
+
 def get_element_field_template(field_module, element_identifier):
     coordinate_field = field_module.findFieldByName('coordinates')
     mesh = field_module.findMeshByDimension(1)
@@ -760,35 +787,59 @@ def get_element_field_template(field_module, element_identifier):
     return element_field_template
 
 
-def load(region, data):
+def is_option(option, options):
+    return isinstance(options, dict) and option in options
+
+
+def load(region, data, options):
     create_finite_element_field(region)
     create_finite_element_field(region, field_name='radius', dimension=1, type_coordinate=False)
     create_finite_element_field(region, field_name='rgb', type_coordinate=False)
     field_module = region.getFieldmodule()
     annotation_stored_string_field = field_module.createFieldStoredString()
     annotation_stored_string_field.setName('annotation')
-    anatomical_term_stored_string_field = field_module.createFieldStoredString()
-    anatomical_term_stored_string_field.setName('anatomical_term')
     reset_node_id()
     for tree in data.get_trees():
         connectivity = determine_tree_connectivity(tree['data'])
         node_identifiers = create_nodes(field_module, tree['data'])
+        group_name = None
+        anatomical_name = None
         if 'type' in tree and 'anatomical term' not in tree:
-            field_info = {'rgb': tree['rgb'], 'annotation': tree['type']}
+            group_name = tree['type']
+            field_info = {'rgb': tree['rgb'], 'annotation': group_name}
         elif 'anatomical term' in tree and 'type' not in tree:
-            field_info = {'rgb': tree['rgb'], 'anatomical_term': tree['anatomical term']}
+            anatomical_name = tree['anatomical term']
+            field_info = {'rgb': tree['rgb'], 'anatomical_term': group_name}
         elif 'type' in tree and 'anatomical term' in tree:
-            field_info = {'rgb': tree['rgb'], 'annotation': tree['type'], 'anatomical_term': tree['anatomical term']}
+            group_name = tree['type']
+            anatomical_name = tree['anatomical term']
+            if is_option('external_annotation', options) and options['external_annotation']:
+                anatomical_term_stored_string_field = field_module.createFieldStoredString()
+                anatomical_term_stored_string_field.setName('anatomical_term')
+                field_info = {'rgb': tree['rgb'], 'annotation': group_name,
+                              'anatomical_term': tree['anatomical term']}
+            else:
+                field_info = {'rgb': tree['rgb']}
         else:
             field_info = {'rgb': tree['rgb']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
-        create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
+        element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
+        if group_name is not None:
+            create_group(field_module, group_name, element_ids)
+        if anatomical_name is not None:
+            create_group(field_module, anatomical_name, element_ids)
+        if element_ids and is_option('external_annotation', options):
+            if options['external_annotation'] and 'anatomical term' in tree:
+                print('create external annotation for tree', tree['anatomical term'])
     for contour in data.get_contours():
         connectivity = determine_contour_connectivity(contour['data'], contour['closed'])
         node_identifiers = create_nodes(field_module, contour['data'])
         field_info = {'rgb': contour['rgb'], 'annotation': contour['name']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
-        create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
+        element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
+        if element_ids and is_option('external_annotation', options):
+            if options['external_annotation'] and 'anatomical term' in tree:
+                print('create external annotation for contour')
     for marker in data.get_markers():
         node_identifiers = create_nodes(field_module, marker['data'], node_set_name='datapoints')
         field_info = {'rgb': marker['rgb']}
@@ -804,19 +855,23 @@ def load(region, data):
         node_identifiers = create_nodes(field_module, node_locations)
         field_info = {'rgb': vessel['rgb']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
-        create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
+        element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
+        if element_ids and is_option('external_annotation', options):
+            if options['external_annotation'] and 'anatomical term' in tree:
+                print('create external annotation for vessel')
 
 
-def write_ex(file_name, data):
+def write_ex(file_name, data, options=None):
     context = Context("Neurolucida")
     region = context.getDefaultRegion()
 
-    load(region, data)
+    load(region, data, options)
 
     region.writeFile(file_name)
 
 
 def main():
+    options = {}
     args = parse_args()
     if os.path.exists(args.input_xml):
         if args.output_ex is None:
@@ -824,11 +879,13 @@ def main():
         else:
             output_ex = args.output_ex
 
+        options["external_annotation"] = args.external_annotation
+
         contents = read_xml(args.input_xml)
         if contents is None:
             sys.exit(-2)
         else:
-            write_ex(output_ex, contents)
+            write_ex(output_ex, contents, options)
     else:
         sys.exit(-1)
 
@@ -836,8 +893,10 @@ def main():
 def parse_args():
     parser = argparse.ArgumentParser(description="Transform Neurolucida Xml data file to ex format.")
     parser.add_argument("input_xml", help="Location of the input xml file.")
-    parser.add_argument("--output_ex", help="Location of the output ex file. "
+    parser.add_argument("--output-ex", help="Location of the output ex file. "
                                             "[defaults to the location of the input file if not set.]")
+    parser.add_argument("--external-annotation", help="Output any annotations as a separate file at "
+                                                      "the same location as the output ex file.")
 
     program_arguments = ProgramArguments()
     parser.parse_args(namespace=program_arguments)

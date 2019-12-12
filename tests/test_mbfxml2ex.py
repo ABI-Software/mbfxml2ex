@@ -7,6 +7,7 @@ from mbfxml2ex import MBFData
 from mbfxml2ex import write_ex
 from mbfxml2ex import determine_tree_connectivity
 from mbfxml2ex import reset_node_id
+from mbfxml2ex import is_option
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -14,17 +15,17 @@ here = os.path.abspath(os.path.dirname(__file__))
 class NeurolucidaXmlReadTreesTestCase(unittest.TestCase):
 
     def test_not_existing_xml_file(self):
-        xml_file = os.path.join(here, "resources", "missing.xml")
+        xml_file = _resource_path("missing.xml")
         contents = read_xml(xml_file)
         self.assertIsNone(contents)
 
     def test_read_multi_tree_xml(self):
-        xml_file = os.path.join(here, "resources", "multi_tree.xml")
+        xml_file = _resource_path("multi_tree.xml")
         contents = read_xml(xml_file)
         self.assertEqual(3, len(contents))
 
     def test_read_not_xml(self):
-        not_xml_file = os.path.join(here, "resources", "random_file.txt")
+        not_xml_file = _resource_path("random_file.txt")
         contents = read_xml(not_xml_file)
         self.assertIsNone(contents)
 
@@ -32,7 +33,7 @@ class NeurolucidaXmlReadTreesTestCase(unittest.TestCase):
 class NeurolucidaXmlReadTreesWithAnatomicalTermsTestCase(unittest.TestCase):
 
     def test_read_tree_with_anatomical_terms(self):
-        xml_file = os.path.join(here, "resources", "tree_with_anatomical_terms.xml")
+        xml_file = _resource_path("tree_with_anatomical_terms.xml")
         neurolucida_data = read_xml(xml_file)
         self.assertEqual(2, neurolucida_data.trees_count())
 
@@ -50,7 +51,7 @@ class NeurolucidaXmlReadTreesWithAnatomicalTermsTestCase(unittest.TestCase):
 class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
 
     def test_read_tree_with_markers(self):
-        xml_file = os.path.join(here, "resources", "tree_with_markers.xml")
+        xml_file = _resource_path("tree_with_markers.xml")
         neurolucida_data = read_xml(xml_file)
         self.assertEqual(0, neurolucida_data.contours_count())
         self.assertEqual(2, neurolucida_data.markers_count())
@@ -80,7 +81,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
 class NeurolucidaReadScaleInformation(unittest.TestCase):
 
     def test_read_scale(self):
-        xml_file = os.path.join(here, "resources", "scale_example.xml")
+        xml_file = _resource_path("scale_example.xml")
         neurolucida_data = read_xml(xml_file)
         self.assertEqual(1, neurolucida_data.contours_count())
         contour = neurolucida_data.get_contour(0)
@@ -89,7 +90,7 @@ class NeurolucidaReadScaleInformation(unittest.TestCase):
         self.assertAlmostEqual(5276.676, pt1.coordinates()[0])
 
     def test_read_multi_images(self):
-        xml_file = os.path.join(here, "resources", "scale_example_2.xml")
+        xml_file = _resource_path("scale_example_2.xml")
         neurolucida_data = read_xml(xml_file)
         self.assertEqual(1, neurolucida_data.contours_count())
         contour = neurolucida_data.get_contour(0)
@@ -101,7 +102,7 @@ class NeurolucidaReadScaleInformation(unittest.TestCase):
 class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
 
     def test_read_basic_contour_xml(self):
-        xml_file = os.path.join(here, "resources", "basic_heart_contours.xml")
+        xml_file = _resource_path("basic_heart_contours.xml")
         contents = read_xml(xml_file)
         self.assertEqual(1, len(contents))
 
@@ -109,7 +110,7 @@ class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
 class VessellucidaXmlReadTestCase(unittest.TestCase):
 
     def test_read_vessel_xml(self):
-        xml_file = os.path.join(here, "resources", "tracing_vessels_and_markers.xml")
+        xml_file = _resource_path("tracing_vessels_and_markers.xml")
         contents = read_xml(xml_file)
         self.assertEqual(7, len(contents))
 
@@ -172,11 +173,11 @@ class DetermineContourConnectivityTestCase(unittest.TestCase):
 class ExWritingTreeWithAnnotationTestCase(unittest.TestCase):
 
     def test_write_ex_with_annotation(self):
-        ex_file = os.path.join(here, "resources", "tree_with_annotation.ex")
+        ex_file = _resource_path("tree_with_annotation.ex")
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
-        xml_file = os.path.join(here, "resources", "tree_with_anatomical_terms.xml")
+        xml_file = _resource_path("tree_with_anatomical_terms.xml")
         data = read_xml(xml_file)
 
         write_ex(ex_file, data)
@@ -186,7 +187,7 @@ class ExWritingTreeWithAnnotationTestCase(unittest.TestCase):
 class ExWritingTreeTestCase(unittest.TestCase):
 
     def test_write_ex_basic(self):
-        ex_file = os.path.join(here, "resources", "basic_tree.ex")
+        ex_file = _resource_path("basic_tree.ex")
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
@@ -199,7 +200,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(ex_file))
 
     def test_write_ex_branch(self):
-        ex_file = os.path.join(here, "resources", "multi_tree.ex")
+        ex_file = _resource_path("multi_tree.ex")
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
@@ -212,10 +213,10 @@ class ExWritingTreeTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(ex_file))
 
     def test_write_tree_with_markers(self):
-        xml_file = os.path.join(here, "resources", "tree_with_markers.xml")
+        xml_file = _resource_path("tree_with_markers.xml")
         neurolucida_data = read_xml(xml_file)
 
-        ex_file = os.path.join(here, "resources", "tree_with_markers.ex")
+        ex_file = _resource_path("tree_with_markers.ex")
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
@@ -226,7 +227,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
 class ExWritingContoursTestCase(unittest.TestCase):
 
     def test_write_ex_basic(self):
-        ex_file = os.path.join(here, "resources", "basic_contour.ex")
+        ex_file = _resource_path("basic_contour.ex")
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
@@ -283,15 +284,40 @@ class VesselConnectionTestCase(unittest.TestCase):
 class ExWritingVesselTestCase(unittest.TestCase):
 
     def test_write_ex_basic(self):
-        ex_file = os.path.join(here, "resources", "basic_vessel.ex")
+        ex_file = _resource_path("basic_vessel.ex")
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
-        xml_file = os.path.join(here, "resources", "tracing_vessels_and_markers.xml")
+        xml_file = _resource_path("tracing_vessels_and_markers.xml")
         data = read_xml(xml_file)
 
         write_ex(ex_file, data)
         self.assertTrue(os.path.exists(ex_file))
+
+
+class ExWritingGroupsTestCase(unittest.TestCase):
+
+    def test_write_ex_basic_group(self):
+        ex_file = _resource_path("basic_groups.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("tree_with_anatomical_terms.xml")
+        data = read_xml(xml_file)
+
+        write_ex(ex_file, data, {'external_annotation': True})
+        self.assertTrue(_is_line_in_file(ex_file, " Group name: Thorasic Sympathetic Trunk"))
+
+
+class IsOptionTestCase(unittest.TestCase):
+
+    def test_is_option(self):
+        o = {'external_annotation': False}
+        self.assertTrue(is_option('external_annotation', o))
+
+    def test_is_not_option(self):
+        o = {'external_annotation': False}
+        self.assertFalse(is_option('use_latest', o))
 
 
 if __name__ == "__main__":
@@ -377,3 +403,22 @@ def _create_basic_vessel():
               'edgelists': [{'id': '0', 'edge': '0', 'sourcenode': '-1', 'targetnode': '-1'}]}
 
     return vessel
+
+
+def _generate_lines_that_equal(string, fp):
+    for line in fp:
+        line = line.rstrip()
+        if line == string:
+            yield line
+
+
+def _is_line_in_file(file_name, text):
+    with open(file_name, "r") as fp:
+        for _ in _generate_lines_that_equal(text, fp):
+            return True
+
+    return False
+
+
+def _resource_path(resource_name):
+    return os.path.join(here, "resources", resource_name)
