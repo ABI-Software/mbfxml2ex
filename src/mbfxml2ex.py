@@ -11,9 +11,9 @@ from opencmiss.zinc.element import Element
 from opencmiss.zinc.element import Elementbasis
 from opencmiss.zinc.field import FieldGroup
 
-from opencmiss.utils.zinc import create_finite_element_field
-from opencmiss.utils.zinc import create_node as create_zinc_node
-from opencmiss.utils.zinc import AbstractNodeDataObject
+from opencmiss.utils.zinc.field import create_field_finite_element, create_field_coordinates
+from opencmiss.utils.zinc.general import create_node as create_zinc_node
+from opencmiss.utils.zinc.general import AbstractNodeDataObject
 
 node_id = 0
 
@@ -792,10 +792,10 @@ def is_option(option, options):
 
 
 def load(region, data, options):
-    create_finite_element_field(region)
-    create_finite_element_field(region, field_name='radius', dimension=1, type_coordinate=False)
-    create_finite_element_field(region, field_name='rgb', type_coordinate=False)
     field_module = region.getFieldmodule()
+    create_field_coordinates(field_module)
+    create_field_finite_element(field_module, 'radius', 1, type_coordinate=False)
+    create_field_finite_element(field_module, 'rgb', 3, type_coordinate=False)
     annotation_stored_string_field = field_module.createFieldStoredString()
     annotation_stored_string_field.setName('annotation')
     reset_node_id()
