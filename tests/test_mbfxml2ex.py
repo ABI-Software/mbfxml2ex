@@ -221,6 +221,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
             os.remove(ex_file)
 
         write_ex(ex_file, neurolucida_data)
+        self.assertTrue(os.path.exists(ex_file))
         self.assertTrue(_is_line_in_file(ex_file, " Group name: marker"))
 
 
