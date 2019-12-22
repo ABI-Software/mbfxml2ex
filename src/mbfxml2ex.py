@@ -846,7 +846,7 @@ def load(region, data, options):
     for contour in data.get_contours():
         connectivity = determine_contour_connectivity(contour['data'], contour['closed'])
         node_identifiers = create_nodes(field_module, contour['data'])
-        field_info = {'rgb': contour['rgb']}  # , 'annotation': contour['name']}
+        field_info = {'rgb': contour['rgb']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
         create_group_elements(field_module, contour['name'], element_ids)
