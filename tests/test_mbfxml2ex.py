@@ -222,6 +222,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
 
         write_ex(ex_file, neurolucida_data)
         self.assertTrue(os.path.exists(ex_file))
+        self.assertTrue(_is_line_in_file(ex_file, " Group name: marker"))
 
 
 class ExWritingContoursTestCase(unittest.TestCase):
@@ -318,10 +319,6 @@ class IsOptionTestCase(unittest.TestCase):
     def test_is_not_option(self):
         o = {'external_annotation': False}
         self.assertFalse(is_option('use_latest', o))
-
-
-if __name__ == "__main__":
-    unittest.main()
 
 
 def _create_advanced_vessel():
@@ -422,3 +419,7 @@ def _is_line_in_file(file_name, text):
 
 def _resource_path(resource_name):
     return os.path.join(here, "resources", resource_name)
+
+
+if __name__ == "__main__":
+    unittest.main()
