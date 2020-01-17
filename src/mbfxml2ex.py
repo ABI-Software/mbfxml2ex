@@ -11,9 +11,10 @@ from opencmiss.zinc.element import Element
 from opencmiss.zinc.element import Elementbasis
 from opencmiss.zinc.field import FieldGroup
 
-from opencmiss.utils.zinc.field import create_field_finite_element, create_field_coordinates
+from opencmiss.utils.zinc.field import create_field_finite_element, create_field_coordinates, find_or_create_field_group
 from opencmiss.utils.zinc.general import create_node as create_zinc_node
 from opencmiss.utils.zinc.general import AbstractNodeDataObject
+from opencmiss.utils.zinc.general import ChangeManager
 
 node_id = 0
 
@@ -758,25 +759,36 @@ def create_elements(field_module, connectivity, field_names=None):
     return create_line_elements(field_module, connectivity, field_names)
 
 
-def create_group(field_module, group_name, element_ids):
-    group = field_module.findFieldByName(group_name)
-    if group.isValid():
-        group = group.castGroup()
-    else:
-        group = field_module.createFieldGroup()
-        group.setName(group_name)
-        group.setManaged(True)
+def create_group_elements(field_module, group_name, element_ids):
+    with ChangeManager(field_module):
+        group = find_or_create_field_group(field_module, name=group_name)
         group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
 
-    mesh = field_module.findMeshByDimension(1)
-    element_group = group.getFieldElementGroup(mesh)
-    if not element_group.isValid():
-        element_group = group.createFieldElementGroup(mesh)
+        mesh = field_module.findMeshByDimension(1)
+        element_group = group.getFieldElementGroup(mesh)
+        if not element_group.isValid():
+            element_group = group.createFieldElementGroup(mesh)
 
-    mesh_group = element_group.getMeshGroup()
-    for element_id in element_ids:
-        element = mesh.findElementByIdentifier(element_id)
-        mesh_group.addElement(element)
+        mesh_group = element_group.getMeshGroup()
+        for element_id in element_ids:
+            element = mesh.findElementByIdentifier(element_id)
+            mesh_group.addElement(element)
+
+
+def create_group_nodes(field_module, group_name, node_ids, node_set_name='nodes'):
+    with ChangeManager(field_module):
+        group = find_or_create_field_group(field_module, name=group_name)
+        group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
+
+        nodeset = field_module.findNodesetByName(node_set_name);
+        node_group = group.getFieldNodeGroup(nodeset)
+        if not node_group.isValid():
+            node_group = group.createFieldNodeGroup(nodeset)
+
+        nodeset_group = node_group.getNodesetGroup()
+        for node_id in node_ids:
+            node = nodeset.findNodeByIdentifier(node_id)
+            nodeset_group.addNode(node)
 
 
 def get_element_field_template(field_module, element_identifier):
@@ -825,20 +837,21 @@ def load(region, data, options):
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
         if group_name is not None:
-            create_group(field_module, group_name, element_ids)
+            create_group_elements(field_module, group_name, element_ids)
         if anatomical_name is not None:
-            create_group(field_module, anatomical_name, element_ids)
+            create_group_elements(field_module, anatomical_name, element_ids)
         if element_ids and is_option('external_annotation', options):
             if options['external_annotation'] and 'anatomical term' in tree:
                 print('create external annotation for tree', tree['anatomical term'])
     for contour in data.get_contours():
         connectivity = determine_contour_connectivity(contour['data'], contour['closed'])
         node_identifiers = create_nodes(field_module, contour['data'])
-        field_info = {'rgb': contour['rgb'], 'annotation': contour['name']}
+        field_info = {'rgb': contour['rgb']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
+        create_group_elements(field_module, contour['name'], element_ids)
         if element_ids and is_option('external_annotation', options):
-            if options['external_annotation'] and 'anatomical term' in tree:
+            if options['external_annotation'] and 'anatomical term' in contour:
                 print('create external annotation for contour')
     for marker in data.get_markers():
         node_identifiers = create_nodes(field_module, marker['data'], node_set_name='datapoints')
@@ -849,6 +862,7 @@ def load(region, data, options):
             stored_string_field.setName('marker_name')
             field_info['marker_name'] = marker['name']
         merge_fields_with_nodes(field_module, node_identifiers, field_info, node_set_name='datapoints')
+        create_group_nodes(field_module, 'marker', node_identifiers, node_set_name='datapoints')
     for vessel in data.get_vessels():
         connectivity = determine_vessel_connectivity(vessel)
         node_locations = extract_vessel_node_locations(vessel)
@@ -857,7 +871,7 @@ def load(region, data, options):
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
         if element_ids and is_option('external_annotation', options):
-            if options['external_annotation'] and 'anatomical term' in tree:
+            if options['external_annotation'] and 'anatomical term' in vessel:
                 print('create external annotation for vessel')
 
 
