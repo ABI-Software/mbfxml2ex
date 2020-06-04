@@ -87,7 +87,8 @@ class NeurolucidaReadScaleInformation(unittest.TestCase):
         contour = neurolucida_data.get_contour(0)
         raw_data = contour['data']
         pt1 = raw_data[0]
-        self.assertAlmostEqual(5276.676, pt1.coordinates()[0])
+        # The scale shouldn't be applied to the data so no scaling should take place
+        self.assertAlmostEqual(8794.46, pt1.coordinates()[0])
 
     def test_read_multi_images(self):
         xml_file = _resource_path("scale_example_2.xml")
@@ -96,7 +97,8 @@ class NeurolucidaReadScaleInformation(unittest.TestCase):
         contour = neurolucida_data.get_contour(0)
         raw_data = contour['data']
         pt1 = raw_data[0]
-        self.assertAlmostEqual(14603.48225272, pt1.coordinates()[0])
+        # The scale shouldn't be applied to the data so no scaling should take place
+        self.assertAlmostEqual(8794.46, pt1.coordinates()[0])
 
 
 class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):

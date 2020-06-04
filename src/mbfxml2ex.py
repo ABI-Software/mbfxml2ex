@@ -555,7 +555,9 @@ def read_xml(file_name):
             else:
                 print('Unhandled tag: ', raw_tag)
 
-        data.process_scaling_and_offset()
+        # Apparently this is not to be done.  These scaling factors are for model units
+        # and not to be applied to contours, trees, etc.
+        #data.process_scaling_and_offset()
 
         return data
 
@@ -564,7 +566,7 @@ def read_xml(file_name):
 
 def create_line_elements(field_module, element_node_set, field_names):
     mesh = field_module.findMeshByDimension(1)
-    nodeset = field_module.findNodesetByName('nodes')
+    node_set = field_module.findNodesetByName('nodes')
     element_template = mesh.createElementtemplate()
     element_template.setElementShapeType(Element.SHAPE_TYPE_LINE)
     element_template.setNumberOfNodes(2)
@@ -576,7 +578,7 @@ def create_line_elements(field_module, element_node_set, field_names):
     element_identifiers = []
     for element_nodes in element_node_set:
         for i, node_identifier in enumerate(element_nodes):
-            node = nodeset.findNodeByIdentifier(node_identifier)
+            node = node_set.findNodeByIdentifier(node_identifier)
             element_template.setNode(i + 1, node)
 
         mesh.defineElement(-1, element_template)
