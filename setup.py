@@ -1,6 +1,6 @@
 import os
 import re
-from setuptools import setup
+from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 
@@ -33,7 +33,7 @@ setup(
     description="Python client for generating Ex format model descriptions from MBF XML.",
     long_description=long_description,
     long_description_content_type='text/x-rst',
-    py_modules=["mbfxml2ex"],
+    packages=find_packages("src"),
     package_dir={"": "src"},
     zip_safe=False,
     install_requires=dependencies,
