@@ -163,9 +163,7 @@ class MBFPunctaTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(ex_file))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(296, len(lines))
-
-        self.assertTrue(False)
+            self.assertEqual(290, len(lines))
 
     def test_write_puncta(self):
         ex_file = _resource_path("puncta.ex")
@@ -178,7 +176,7 @@ class MBFPunctaTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(ex_file))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(3258, len(lines))
+            self.assertEqual(3370, len(lines))
 
 
 class MBFPropertyVolumeRLETestCase(unittest.TestCase):
