@@ -232,7 +232,6 @@ def _process_punctum_data(region, punctum_data):
             1, "punctum", xi_counts[0], xi_counts[1], xi_counts[2])
         field_values = "  " + " ".join(str(v) for v in data["values"]) + "\n"
         field_details = field_data_template.format(element_id, field_values)
-        # print(data["corners"])
         create_cube_element(mesh, finite_element_field, data["corners"])
         field_data += field_header + field_details
 
