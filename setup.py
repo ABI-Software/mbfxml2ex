@@ -11,7 +11,7 @@ def read(file_name):
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, 'src', 'mbfxml2ex.py')) as fd:
+with open(os.path.join(here, 'src', 'mbfxml2ex', '__init__.py')) as fd:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
                         fd.read(), re.MULTILINE).group(1)
 
@@ -32,13 +32,14 @@ setup(
     author_email="h.sorby@auckland.ac.nz",
     description="Python client for generating Ex format model descriptions from MBF XML.",
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     py_modules=["mbfxml2ex"],
     package_dir={"": "src"},
     zip_safe=False,
     install_requires=dependencies,
     entry_points={
         'console_scripts': [
-            'mbfxml2exconverter=mbfxml2ex:main',
+            'mbfxml2exconverter=mbfxml2ex.app:main',
         ]
     },
     license="Apache Software License",

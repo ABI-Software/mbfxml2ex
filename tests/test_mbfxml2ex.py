@@ -1,13 +1,11 @@
 import os
 import unittest
-from mbfxml2ex import read_xml, determine_contour_connectivity, determine_vessel_connectivity, \
-    extract_vessel_node_locations
-from mbfxml2ex import MBFPoint
-from mbfxml2ex import MBFData
-from mbfxml2ex import write_ex
-from mbfxml2ex import determine_tree_connectivity
-from mbfxml2ex import reset_node_id
-from mbfxml2ex import is_option
+
+from mbfxml2ex.app import read_xml
+from mbfxml2ex.classes import MBFPoint, MBFData, MBFPropertyVolumeRLE
+from mbfxml2ex.utilities import extract_vessel_node_locations, is_option
+from mbfxml2ex.zinc import write_ex, reset_node_id, determine_tree_connectivity, determine_contour_connectivity, \
+    determine_vessel_connectivity
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -115,6 +113,91 @@ class VessellucidaXmlReadTestCase(unittest.TestCase):
         xml_file = _resource_path("tracing_vessels_and_markers.xml")
         contents = read_xml(xml_file)
         self.assertEqual(7, len(contents))
+
+
+class MBFPunctaTestCase(unittest.TestCase):
+
+    def test_read_puncta(self):
+        xml_file = _resource_path("puncta.xml")
+        contents = read_xml(xml_file)
+        self.assertEqual(4, contents.markers_count())
+        marker = contents.get_marker(0)
+        self.assertEqual(3, len(marker['properties']))
+
+        channel = marker['properties'][0]
+        self.assertEqual(2, channel.version())
+        punctum = marker['properties'][1]
+        self.assertEqual(4, punctum.version())
+        volume_rle = marker['properties'][2]
+        scale = volume_rle.scaling()
+        self.assertEqual(1.38378, scale[0])
+        self.assertEqual(1.38378, scale[1])
+        self.assertEqual(1, scale[2])
+        self.assertEqual(7175, volume_rle.foreground_voxels_total())
+        counts = volume_rle.voxel_counts()
+        self.assertEqual(28, counts[0])
+        self.assertEqual(26, counts[1])
+        self.assertEqual(33, counts[2])
+        origin = volume_rle.origin()
+        self.assertEqual(732.02, origin[0])
+        self.assertEqual(-451.112, origin[1])
+        self.assertEqual(-134, origin[2])
+
+        voxel_run = volume_rle.voxel_run()
+        self.assertEqual(1410, len(voxel_run))
+        self.assertEqual(122, voxel_run[0])
+        self.assertEqual(2, voxel_run[-1])
+        self.assertEqual(16287, sum(voxel_run[::2]))
+        self.assertEqual(7175, sum(voxel_run[1::2]))
+        # I think this should be 24024 but that is not the case currently double checking this answer.
+        self.assertEqual(23462, sum(voxel_run))
+
+    def test_write_puncta_small(self):
+        ex_file = _resource_path("puncta_small.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("puncta_small.xml")
+        contents = read_xml(xml_file)
+        write_ex(ex_file, contents)
+        self.assertTrue(os.path.exists(ex_file))
+        with open(ex_file) as f:
+            lines = f.readlines()
+            self.assertEqual(296, len(lines))
+
+        self.assertTrue(False)
+
+    def test_write_puncta(self):
+        ex_file = _resource_path("puncta.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("puncta.xml")
+        contents = read_xml(xml_file)
+        write_ex(ex_file, contents)
+        self.assertTrue(os.path.exists(ex_file))
+        with open(ex_file) as f:
+            lines = f.readlines()
+            self.assertEqual(3258, len(lines))
+
+
+class MBFPropertyVolumeRLETestCase(unittest.TestCase):
+
+    def test_volume_rle(self):
+        vol_rle = MBFPropertyVolumeRLE(
+            ["1", "1", "1", "2", "2", "2", "2", "0", "0", "0", "1", "1", "5", "1"])
+        self.assertTrue(vol_rle.corner_coordinates())
+        self.assertListEqual([0, 0, 0], vol_rle.origin())
+
+        corners = vol_rle.corner_coordinates()
+        self.assertListEqual([-0.5, -0.5, -0.5], corners[0])
+        self.assertListEqual([0.5, -0.5, -0.5], corners[1])
+        self.assertListEqual([-0.5, 0.5, -0.5], corners[2])
+        self.assertListEqual([0.5, 0.5, -0.5], corners[3])
+        self.assertListEqual([-0.5, -0.5, 0.5], corners[4])
+        self.assertListEqual([0.5, -0.5, 0.5], corners[5])
+        self.assertListEqual([-0.5, 0.5, 0.5], corners[6])
+        self.assertListEqual([0.5, 0.5, 0.5], corners[7])
 
 
 class MBFPointTestCase(unittest.TestCase):

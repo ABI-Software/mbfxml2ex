@@ -1,1 +1,2 @@
-opencmiss.utils>=0.1.6
+nose
+coverage
