@@ -22,3 +22,16 @@ Usage
 For more information use the help::
 
   mbfxml2exconverter --help
+
+Developing
+----------
+
+When developing install the required packages with::
+
+  pip install -r requirements.txt
+
+Then run the tests with::
+
+  nosetests
+
+from the repository root directory.

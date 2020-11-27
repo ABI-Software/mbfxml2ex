@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" appname="Neurolucida 360" appversion="2020.3.1" apprrid="SCR_016788" insrrid="SCR_004314">
+<sparcdata>
+    <subject species="http://purl.obolibrary.org/obo/NCBITaxon_9823" subjectid="" sex="Blinded to condition" age="Blinded to condition"/>
+    <atlas organ="Colon" label="Species Independent" rootid="http://purl.org/sig/ont/fma/fma14543"/>
+</sparcdata>
+<property name="TimePointManager"><n>2</n><s>-1</s><s>-1</s><n>0</n></property>
+<marker type="OpenCircle" color="#FF0000" name="Punctum" varicosity="false">
+  <property name="Channel"><n>2</n><n>1</n><n>2</n><c>#FF0000</c><n>0</n></property>
+  <property name="Punctum"><n>4</n><n>23.9837</n><n>75.0711</n><n>3959.64</n><n>7175</n><n>0</n><n>13739</n><n>0</n><n>2</n><n>0</n>
+<n>0</n></property>
+  <property name="VolumeRLE"><s>1.38378 1.38378 1 2 2 2 2 0 0 0 1 1 5 1</s>
+</property>
+  <point x="753.16" y="-436.36" z="-116.66" d="3.28"/>
+</marker>
+<marker type="OpenCircle" color="#FF0000" name="Punctum" varicosity="false">
+  <property name="Channel"><n>2</n><n>1</n><n>2</n><c>#FF0000</c><n>0</n></property>
+  <property name="Punctum"><n>4</n><n>17.9246</n><n>98.4891</n><n>1142.44</n><n>1282</n><n>0</n><n>2454.83</n><n>0</n><n>2</n><n>0</n>
+<n>0</n></property>
+  <property name="VolumeRLE"><s>1.38378 1.38378 1 4 2 3 2 10 10 10 4 2 1 1 2 1</s>
+</property>
+  <point x="1051.40" y="-437.55" z="-93.15" d="0.73"/>
+</marker>
+</mbf>

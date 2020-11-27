@@ -2,7 +2,7 @@ import unittest
 import coverage
 
 
-cov = coverage.Coverage(include='*/mbfxml2ex.py')
+cov = coverage.Coverage(include='src/mbfxml2ex/*')
 cov.erase()
 cov.start()
 
