@@ -127,7 +127,7 @@ def load(region, data, options):
             field_info = {'rgb': tree['rgb'], 'annotation': group_name}
         elif 'anatomical term' in tree and 'type' not in tree:
             anatomical_name = tree['anatomical term']
-            field_info = {'rgb': tree['rgb'], 'anatomical_term': group_name}
+            field_info = {'rgb': tree['rgb'], 'anatomical_term': anatomical_name}
         elif 'type' in tree and 'anatomical term' in tree:
             group_name = tree['type']
             anatomical_name = tree['anatomical term']
