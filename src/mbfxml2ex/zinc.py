@@ -8,7 +8,7 @@ from opencmiss.utils.zinc.field import create_field_finite_element, create_field
 from opencmiss.utils.zinc.general import create_node as create_zinc_node
 from opencmiss.utils.zinc.general import ChangeManager
 
-from mbfxml2ex.classes import MBFPropertyVolumeRLE, MBFPropertyPunctum
+from mbfxml2ex.classes import MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet
 from mbfxml2ex.exceptions import MissingImplementationException, MBFDataException
 from mbfxml2ex.utilities import extract_vessel_node_locations, is_option
 from mbfxml2ex.templates import field_header_3d_template, grid_field_3d_template, field_data_template
@@ -163,11 +163,14 @@ def load(region, data, options):
         if marker['name'] == "Punctum":
             volume_rle = None
             punctum = None
+            set_name = None
             for property_ in marker['properties']:
                 if type(property_) is MBFPropertyVolumeRLE:
                     volume_rle = property_
                 elif type(property_) is MBFPropertyPunctum:
                     punctum = property_
+                elif type(property_) is MBFPropertySet:
+                    set_name = property_
 
             if punctum and volume_rle:
                 voxel_counts = volume_rle.voxel_counts()
@@ -185,12 +188,16 @@ def load(region, data, options):
                                                " '{1}' the total voxel count".format(len(field_values), total_voxels))
                     elif missing_values > 0:
                         field_values.extend([0.0] * missing_values)
-                    punctum_data.append(
-                        {"dimension": 3, "voxel_counts": voxel_counts, "total_voxels": total_voxels,
-                         "origin": volume_rle.origin(), "values": field_values,
-                         "corners": volume_rle.corner_coordinates()})
+
+                    punctum_datum = {"dimension": 3, "voxel_counts": voxel_counts, "total_voxels": total_voxels,
+                                     "origin": volume_rle.origin(), "values": field_values,
+                                     "corners": volume_rle.corner_coordinates()}
+                    if set_name is not None:
+                        punctum_datum["set_name"] = set_name.label()
+
+                    punctum_data.append(punctum_datum)
             else:
-                raise MBFDataException("Missing some data required for outputting punctum.")
+                raise MBFDataException("Missing at least some of the required data for outputting punctum.")
         else:
             node_identifiers = create_nodes(field_module, marker['data'], node_set_name='datapoints')
             field_info = {'rgb': marker['rgb']}
@@ -217,8 +224,6 @@ def load(region, data, options):
 
 
 def _process_punctum_data(region, punctum_data):
-    field_headers = ""
-    field_values = ""
     r = region.createChild("punctum")
     field_module = r.getFieldmodule()
     mesh = field_module.findMeshByDimension(3)
@@ -234,6 +239,9 @@ def _process_punctum_data(region, punctum_data):
         field_details = field_data_template.format(element_id, field_values)
         create_cube_element(mesh, finite_element_field, data["corners"])
         field_data += field_header + field_details
+
+        if "set_name" in data:
+            create_group_elements(field_module, data["set_name"], [element_id])
 
     ex_data = grid_field_3d_template.format(field_data)
     sir = r.createStreaminformationRegion()
@@ -315,6 +323,7 @@ def reset_node_id():
     global node_id
     node_id = 0
 
+
 def create_nodes(field_module, embedded_lists, node_set_name='nodes'):
     node_identifiers = []
     for pt in embedded_lists:
@@ -372,5 +381,3 @@ def get_element_field_template(field_module, element_identifier):
     element = mesh.findElementByIdentifier(element_identifier)
     element_field_template = element.getElementfieldtemplate(coordinate_field, -1)
     return element_field_template
-
-

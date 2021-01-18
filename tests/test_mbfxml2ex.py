@@ -178,6 +178,23 @@ class MBFPunctaTestCase(unittest.TestCase):
             lines = f.readlines()
             self.assertEqual(3370, len(lines))
 
+    def test_read_puncta_with_set_property(self):
+        ex_file = _resource_path("puncta_with_set_prop.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("puncta_with_set_prop.xml")
+        contents = read_xml(xml_file)
+        print("=========================")
+        print(dir(contents))
+        print(contents.get_marker(0)['properties'][0])
+        write_ex(ex_file, contents)
+        self.assertTrue(os.path.exists(ex_file))
+        with open(ex_file) as f:
+            lines = f.readlines()
+            self.assertIn(' Group name: inner submucosal nerve plexus\n', lines)
+            self.assertEqual(1021, len(lines))
+
 
 class MBFPropertyVolumeRLETestCase(unittest.TestCase):
 

@@ -1,5 +1,5 @@
 from mbfxml2ex.classes import MBFPropertyChannel, MBFProperty, NeurolucidaChannel, NeurolucidaChannels, \
-    NeurolucidaZSpacing, MBFPoint, MBFPropertyPunctum, MBFPropertyVolumeRLE
+    NeurolucidaZSpacing, MBFPoint, MBFPropertyPunctum, MBFPropertyVolumeRLE, MBFPropertySet
 from mbfxml2ex.exceptions import MBFXMLException
 from mbfxml2ex.utilities import get_raw_tag, convert_hex_to_rgb
 
@@ -127,6 +127,17 @@ def parse_volume_rle_property(property_root):
     return MBFPropertyVolumeRLE(volume_description)
 
 
+def parse_set_property(property_root):
+    children = list(property_root)
+    if len(children) > 0:
+        set_element = children[0]
+        set_description = "".join(set_element.itertext())
+    else:
+        raise MBFXMLException("XML format violation set property has no children.")
+
+    return MBFPropertySet(set_description)
+
+
 def parse_property(property_root) -> MBFProperty:
     name = property_root.attrib['name']
     if name == "Channel":
@@ -135,6 +146,8 @@ def parse_property(property_root) -> MBFProperty:
         return parse_punctum_property(property_root)
     elif name == "VolumeRLE":
         return parse_volume_rle_property(property_root)
+    elif name == "Set":
+        return parse_set_property(property_root)
     else:
         raise MBFXMLException("Unhandled property '{0}'".format(name))
 
