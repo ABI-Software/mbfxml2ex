@@ -2,6 +2,9 @@ import itertools
 
 from opencmiss.utils.zinc.general import AbstractNodeDataObject
 
+from mbfxml2ex.conversions import hex_to_rgb
+from mbfxml2ex.exceptions import MBFImagesException
+
 
 class MBFPoint(AbstractNodeDataObject):
 
@@ -62,6 +65,16 @@ class MBFPropertyChannel(MBFProperty):
     def __repr__(self):
         version_str = super(MBFPropertyChannel, self).__repr__()
         return 'Channel {0} number="{1}" colour="{2}"'.format(version_str, self._number, self._colour)
+
+
+class MBFPropertyFillDensity(MBFProperty):
+
+    def __init__(self, number):
+        super(MBFPropertyFillDensity, self).__init__(-1.0)
+        self._number = number
+
+    def number(self):
+        return self._number
 
 
 class MBFPropertyPunctum(MBFProperty):
@@ -184,6 +197,15 @@ class MBFPropertyTraceAssociation(MBFPropertyText):
         return 'Trace association "{0}"'.format(self._label)
 
 
+class MBFPropertyGUID(MBFPropertyText):
+
+    def __init__(self, label):
+        super(MBFPropertyGUID, self).__init__(label)
+
+    def __repr__(self):
+        return 'GUID "{0}"'.format(self._label)
+
+
 class NeurolucidaZSpacing(object):
 
     def __init__(self, z=1.0, slices=0):
@@ -258,6 +280,68 @@ class BinaryTreeNode(object):
             return False if self._right is None else data in self._right
 
         return True
+
+
+class MBFTree(object):
+
+    def __init__(self, colour, type_, leaf, structure, properties):
+        self._colour = colour
+        self._rgb = hex_to_rgb(colour)
+        self._type = type_
+        self._leaf = leaf
+        self._properties = properties
+        self._structure = structure
+
+    def colour(self):
+        return self._colour
+
+    def rgb(self):
+        return self._rgb
+
+    def properties(self):
+        return self._properties
+
+    def type_description(self):
+        return self._type
+
+    def leaf(self):
+        return self._leaf
+
+    def points(self):
+        return _retrieve_points(self._structure)
+
+    def point_properties(self):
+        return _determine_point_properties(self._structure)
+
+
+def _determine_point_properties(structure, parent_properties=None):
+
+    properties = []
+    current_properties = [] if parent_properties is None else parent_properties[:]
+    if 'properties' in structure:
+        current_properties.extend(get_text_properties(structure['properties']))
+
+    # Make the list of current properties unique.
+    current_properties = list(set(current_properties))
+
+    for item in structure['points']:
+        if type(item) is dict:
+            properties.extend(_determine_point_properties(item, current_properties))
+        else:
+            properties.append(current_properties)
+
+    return properties
+
+
+def _retrieve_points(structure):
+    points = []
+    for item in structure['points']:
+        if type(item) is dict:
+            points.append(_retrieve_points(item))
+        else:
+            points.append(item)
+
+    return points
 
 
 class MBFData(object):
@@ -384,3 +468,12 @@ class MBFData(object):
         len_vessels = len(self._vessels)
 
         return len_trees + len_markers + len_contours + len_images + len_vessels
+
+
+def get_text_properties(properties):
+    text_properties = []
+    for property_ in properties:
+        if isinstance(property_, MBFPropertyText) and property_.label():
+            text_properties.append(property_.label())
+
+    return text_properties

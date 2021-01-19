@@ -1,19 +1,20 @@
 from mbfxml2ex.classes import MBFPropertyChannel, MBFProperty, NeurolucidaChannel, NeurolucidaChannels, \
-    NeurolucidaZSpacing, MBFPoint, MBFPropertyPunctum, MBFPropertyVolumeRLE, MBFPropertySet
+    NeurolucidaZSpacing, MBFPoint, MBFPropertyPunctum, MBFPropertyVolumeRLE, MBFPropertySet, MBFPropertyTraceAssociation, MBFTree, MBFPropertyGUID, MBFPropertyFillDensity
+from mbfxml2ex.conversions import hex_to_rgb
 from mbfxml2ex.exceptions import MBFXMLException
-from mbfxml2ex.utilities import get_raw_tag, convert_hex_to_rgb
+from mbfxml2ex.utilities import get_raw_tag
 
 
-def parse_tree_structure(tree_root):
-    tree = []
+def _parse_tree_structure(tree_root):
+    tree = {'points': [], 'properties': []}
     for child in tree_root:
         raw_tag = get_raw_tag(child)
         if raw_tag == "point":
-            tree.append(_create_mbf_point(child))
+            tree['points'].append(_create_mbf_point(child))
         elif raw_tag == "branch":
-            tree.append(parse_tree_structure(child))
+            tree['points'].append(_parse_tree_structure(child))
         elif raw_tag == "property":
-            pass
+            tree['properties'].append(parse_property(child))
         else:
             raise MBFXMLException("XML format violation unknown tag '{0}'.".format(raw_tag))
 
@@ -21,30 +22,32 @@ def parse_tree_structure(tree_root):
 
 
 def parse_tree(tree_root):
-    tree = {'colour': tree_root.attrib['color'], 'rgb': convert_hex_to_rgb(tree_root.attrib['color']),
-            'type': tree_root.attrib['type'], 'leaf': tree_root.attrib['leaf'], 'data': parse_tree_structure(tree_root),
-            'properties': []}
-
+    colour = tree_root.attrib['color']
+    type_ = tree_root.attrib['type']
+    leaf = tree_root.attrib['leaf']
+    structure = _parse_tree_structure(tree_root)
+    properties = []
     for child in tree_root:
         raw_tag = get_raw_tag(child)
         if raw_tag == "property":
-            tree['properties'].append(parse_property(child))
+            properties.append(parse_property(child))
 
-    return tree
+    return MBFTree(colour, type_, leaf, structure, properties)
 
 
 def parse_contour(contour_root):
     contour = {'colour': contour_root.attrib['color'],
-               'rgb': convert_hex_to_rgb(contour_root.attrib['color']),
+               'rgb': hex_to_rgb(contour_root.attrib['color']),
                'closed': contour_root.attrib['closed'] == 'true',
-               'name': contour_root.attrib['name']}
+               'name': contour_root.attrib['name'],
+               'properties': []}
     data = []
     for child in contour_root:
         raw_tag = get_raw_tag(child)
         if raw_tag == "point":
             data.append(_create_mbf_point(child))
         elif raw_tag == "property":
-            pass
+            contour['properties'].append(parse_property(child))
         elif raw_tag == "resolution":
             pass
         else:
@@ -57,7 +60,7 @@ def parse_contour(contour_root):
 
 def parse_channel_property_version_2(children):
     channel = float("".join(children[1].itertext()))
-    colour = convert_hex_to_rgb("".join(children[3].itertext()))
+    colour = hex_to_rgb("".join(children[3].itertext()))
     return channel, colour
 
 
@@ -120,15 +123,39 @@ def parse_volume_rle_property(property_root):
     return MBFPropertyVolumeRLE(volume_description)
 
 
-def parse_set_property(property_root):
+def parse_fill_density_property(property_root):
     children = list(property_root)
     if len(children) > 0:
-        set_element = children[0]
-        set_text = "".join(set_element.itertext())
+        fill_density_element = children[0]
+        fill_density_string = "".join(fill_density_element.itertext())
+        fill_density = float(fill_density_string)
     else:
-        raise MBFXMLException("XML format violation set property has no children.")
+        raise MBFXMLException("XML format violation fill density property has no children.")
 
-    return MBFPropertySet(set_text)
+    return MBFPropertyFillDensity(fill_density)
+
+
+def _property_text(property_root):
+    children = list(property_root)
+    if len(children) > 0:
+        element = children[0]
+        text = "".join(element.itertext())
+    else:
+        raise MBFXMLException("XML format violation text property has no children.")
+
+    return text
+
+
+def parse_set_property(property_root):
+    return MBFPropertySet(_property_text(property_root))
+
+
+def parse_trace_association_property(property_root):
+    return MBFPropertyTraceAssociation(_property_text(property_root))
+
+
+def parse_guid_property(property_root):
+    return MBFPropertyGUID(_property_text(property_root))
 
 
 def parse_property(property_root) -> MBFProperty:
@@ -141,13 +168,19 @@ def parse_property(property_root) -> MBFProperty:
         return parse_volume_rle_property(property_root)
     elif name == "Set":
         return parse_set_property(property_root)
+    elif name == "TraceAssociation":
+        return parse_trace_association_property(property_root)
+    elif name == "GUID":
+        return parse_guid_property(property_root)
+    elif name == "FillDensity":
+        return parse_fill_density_property(property_root)
     else:
         raise MBFXMLException("Unhandled property '{0}'".format(name))
 
 
 def parse_marker(marker_root):
     marker = {'colour': marker_root.attrib['color'],
-              'rgb': convert_hex_to_rgb(marker_root.attrib['color']),
+              'rgb': hex_to_rgb(marker_root.attrib['color']),
               'name': marker_root.attrib['name'],
               'type': marker_root.attrib['type'],
               'varicosity': marker_root.attrib['varicosity'] == "true",
@@ -292,7 +325,7 @@ def parse_edgelists(edgelists_root):
 def parse_vessel(vessel_root):
     vessel = {'version': vessel_root.attrib['version'],
               'colour': vessel_root.attrib['color'],
-              'rgb': convert_hex_to_rgb(vessel_root.attrib['color']),
+              'rgb': hex_to_rgb(vessel_root.attrib['color']),
               'type': vessel_root.attrib['type'],
               'name': vessel_root.attrib['name'], }
 
