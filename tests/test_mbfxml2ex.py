@@ -2,7 +2,7 @@ import os
 import unittest
 
 from mbfxml2ex.app import read_xml
-from mbfxml2ex.classes import MBFPoint, MBFData, MBFPropertyVolumeRLE
+from mbfxml2ex.classes import MBFPoint, MBFData, MBFPropertyVolumeRLE, MBFTree
 from mbfxml2ex.exceptions import MBFXMLFile, MBFXMLFormat
 from mbfxml2ex.utilities import extract_vessel_node_locations, is_option
 from mbfxml2ex.zinc import write_ex, reset_node_id, determine_tree_connectivity, determine_contour_connectivity, \
@@ -36,14 +36,13 @@ class NeurolucidaXmlReadTreesWithAnatomicalTermsTestCase(unittest.TestCase):
 
         tree = neurolucida_data.get_tree(0)
 
-        self.assertTrue('colour' in tree)
-        self.assertTrue('rgb' in tree)
-        self.assertTrue('type' in tree)
-        self.assertTrue('leaf' in tree)
-        self.assertTrue('data' in tree)
-        self.assertTrue('properties' in tree)
-        self.assertEqual('Thorasic Sympathetic Trunk', tree['properties'][0].label())
-        self.assertEqual([0.0, 1.0, 1.0], tree['rgb'])
+        self.assertEqual('#00FFFF', tree.colour())
+        self.assertListEqual([0, 1, 1], tree.rgb())
+        self.assertEqual('Dendrite', tree.type_description())
+        self.assertEqual('Generated', tree.leaf())
+        self.assertEqual(1, len(tree.properties()))
+        self.assertEqual('Thorasic Sympathetic Trunk', tree.properties()[0].label())
+        self.assertListEqual([0.0, 1.0, 1.0], tree.rgb())
 
 
 class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
@@ -58,13 +57,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         tree = neurolucida_data.get_tree(0)
         marker = neurolucida_data.get_marker(1)
 
-        self.assertTrue('colour' in tree)
-        self.assertTrue('rgb' in tree)
-        self.assertTrue('type' in tree)
-        self.assertTrue('leaf' in tree)
-        self.assertTrue('data' in tree)
-
-        self.assertEqual([1.0, 0.0, 1.0], tree['rgb'])
+        self.assertListEqual([1.0, 0.0, 1.0], tree.rgb())
 
         self.assertTrue('colour' in marker)
         self.assertTrue('rgb' in marker)
@@ -92,7 +85,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         neurolucida_data = read_xml(xml_file)
 
         self.assertEqual(0, neurolucida_data.contours_count())
-        self.assertEqual(1, neurolucida_data.markers_count())
+        self.assertEqual(0, neurolucida_data.markers_count())
         self.assertEqual(1, neurolucida_data.trees_count())
 
         write_ex(ex_file, neurolucida_data)
@@ -101,7 +94,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_is_line_in_file(ex_file, " Group name: http://purl.org/sig/ont/fma/fma15005"))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(290, len(lines))
+            self.assertEqual(182, len(lines))
 
 
 class NeurolucidaReadScaleInformation(unittest.TestCase):
@@ -133,6 +126,21 @@ class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
         xml_file = _resource_path("basic_heart_contours.xml")
         contents = read_xml(xml_file)
         self.assertEqual(1, len(contents))
+
+    def test_contour_multiple_properties(self):
+        ex_file = _resource_path("contour_with_multiple_set_properties.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("contour_with_multiple_set_properties.xml")
+        contents = read_xml(xml_file)
+        self.assertEqual(1, len(contents))
+
+        write_ex(ex_file, contents)
+        self.assertTrue(os.path.exists(ex_file))
+
+        self.assertTrue(_is_line_in_file(ex_file, " Group name: inner submucosal nerve plexus"))
+        self.assertTrue(_is_line_in_file(ex_file, " Group name: Nerve fiber connecting inner submucosal nerve plexus and outer submucosal nerve plexus"))
 
 
 class VessellucidaXmlReadTestCase(unittest.TestCase):
@@ -317,8 +325,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
-        tree = {'rgb': [0, 0, 0],
-                'data': [MBFPoint(3, 3, 4, 2), MBFPoint(2, 1, 5, 7), MBFPoint(3, 1, 4.2, 7.1)]}
+        tree = MBFTree('#000000', '', '', {'points': [MBFPoint(3, 3, 4, 2), MBFPoint(2, 1, 5, 7), MBFPoint(3, 1, 4.2, 7.1)]}, [])
         data = MBFData()
         data.add_tree(tree)
 
@@ -330,8 +337,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
-        tree = {'rgb': [0, 0, 0],
-                'data': [MBFPoint(3, 3, 4, 2), [MBFPoint(2, 1, 5, 7)], [MBFPoint(2, 4, 8, 5.7)]]}
+        tree = MBFTree('#000000', '', '', {'points': [MBFPoint(3, 3, 4, 2), [MBFPoint(2, 1, 5, 7)], [MBFPoint(2, 4, 8, 5.7)]]}, [])
         data = MBFData()
         data.add_tree(tree)
 
@@ -361,7 +367,8 @@ class ExWritingContoursTestCase(unittest.TestCase):
         data = MBFData()
         contour = {'colour': '#00ff00', 'rgb': [0, 1, 0], 'closed': True, 'name': 'Heart',
                    'data': [MBFPoint(3, 3, 4, 1), MBFPoint(2, 1, 5, 1),
-                            MBFPoint(3, 1, 4.2, 1)]}
+                            MBFPoint(3, 1, 4.2, 1)],
+                   'properties': []}
         data.add_contour(contour)
 
         write_ex(ex_file, data)

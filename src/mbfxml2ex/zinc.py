@@ -8,9 +8,9 @@ from opencmiss.utils.zinc.field import create_field_finite_element, create_field
 from opencmiss.utils.zinc.general import create_node as create_zinc_node
 from opencmiss.utils.zinc.general import ChangeManager
 
-from mbfxml2ex.classes import MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet
+from mbfxml2ex.classes import MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet, get_text_properties
 from mbfxml2ex.exceptions import MissingImplementationException, MBFDataException
-from mbfxml2ex.utilities import extract_vessel_node_locations, is_option
+from mbfxml2ex.utilities import extract_vessel_node_locations
 from mbfxml2ex.templates import field_header_3d_template, grid_field_3d_template, field_data_template
 
 node_id = 0
@@ -118,26 +118,36 @@ def load(region, data, options):
     annotation_stored_string_field.setName('annotation')
     reset_node_id()
     for tree in data.get_trees():
-        connectivity = determine_tree_connectivity(tree['data'])
-        node_identifiers = create_nodes(field_module, tree['data'])
-        group_name = tree['type'] if 'type' in tree else None
-        supplemental_groups = []
-        if 'properties' in tree:
-            for property_ in tree['properties']:
-                if type(property_) is MBFPropertySet:
-                    supplemental_groups.append(property_.label())
+        tree_data = tree.points()
+        point_properties = tree.point_properties()
+        connectivity = determine_tree_connectivity(tree_data)
+        node_identifiers = create_nodes(field_module, tree_data)
 
-        if group_name is None and len(supplemental_groups):
-            group_name = supplemental_groups[0]
+        group_name = tree.type_description()
+        if group_name is None and len(point_properties) and len(point_properties[0]):
+            group_name = point_properties[0][0]
 
-        field_info = {'rgb': tree['rgb']}
+        field_info = {'rgb': tree.rgb()}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
         if group_name is not None:
             create_group_elements(field_module, group_name, element_ids)
 
-        for supplemental_group in supplemental_groups:
-            create_group_elements(field_module, supplemental_group, element_ids)
+        sub_groups = {}
+        for index, connection in enumerate(connectivity):
+            first_node = connection[0]
+            first_node_index = node_identifiers.index(first_node)
+            element_properties = point_properties[first_node_index]
+            for element_property in element_properties:
+                # index + 1 should be equal to element_id created above in create_elements.
+                element_id = index + 1
+                if element_property in sub_groups:
+                    sub_groups[element_property].append(element_id)
+                else:
+                    sub_groups[element_property] = [element_id]
+
+        for sub_group in sub_groups:
+            create_group_elements(field_module, sub_group, sub_groups[sub_group])
 
     for contour in data.get_contours():
         connectivity = determine_contour_connectivity(contour['data'], contour['closed'])
@@ -146,9 +156,11 @@ def load(region, data, options):
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
         create_group_elements(field_module, contour['name'], element_ids)
-        if element_ids and is_option('external_annotation', options):
-            if options['external_annotation'] and 'anatomical term' in contour:
-                raise MissingImplementationException('Create external annotation for contour.')
+
+        text_properties = get_text_properties(contour['properties'])
+        for text_property in text_properties:
+            create_group_elements(field_module, text_property, element_ids)
+
     for marker in data.get_markers():
         if marker['name'] == "Punctum":
             volume_rle = None
@@ -204,10 +216,7 @@ def load(region, data, options):
         node_identifiers = create_nodes(field_module, node_locations)
         field_info = {'rgb': vessel['rgb']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
-        element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
-        if element_ids and is_option('external_annotation', options):
-            if options['external_annotation'] and 'anatomical term' in vessel:
-                raise MissingImplementationException('Create external annotation for vessel.')
+        create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
 
     if punctum_data:
         _process_punctum_data(region, punctum_data)
