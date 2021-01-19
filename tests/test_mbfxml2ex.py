@@ -76,6 +76,14 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
 
         self.assertEqual('Dot', marker['type'])
 
+    def test_tree_with_markers_in_tree_structure(self):
+        xml_file = _resource_path("tree_with_marker_in_tree_structure.xml")
+        neurolucida_data = read_xml(xml_file)
+
+        self.assertEqual(0, neurolucida_data.contours_count())
+        self.assertEqual(1, neurolucida_data.markers_count())
+        self.assertEqual(1, neurolucida_data.trees_count())
+
 
 class NeurolucidaReadScaleInformation(unittest.TestCase):
 

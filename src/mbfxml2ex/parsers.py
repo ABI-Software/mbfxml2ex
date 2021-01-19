@@ -24,6 +24,7 @@ def parse_tree(tree_root):
     tree = {'colour': tree_root.attrib['color'], 'rgb': convert_hex_to_rgb(tree_root.attrib['color']),
             'type': tree_root.attrib['type'], 'leaf': tree_root.attrib['leaf'], 'data': parse_tree_structure(tree_root),
             'properties': []}
+
     for child in tree_root:
         raw_tag = get_raw_tag(child)
         if raw_tag == "property":
