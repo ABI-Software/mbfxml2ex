@@ -29,9 +29,23 @@ def read_xml(file_name):
             return None
 
         root = tree.getroot()
+
+        # Need to move marker elements that appear in the tree structure.
+        misplaced_marker_elements = []
         for child in root:
             raw_tag = get_raw_tag(child)
             if raw_tag == "tree":
+                misplaced_marker_elements = child.findall('.//{http://www.mbfbioscience.com/2007/neurolucida}marker')
+                for misplaced_marker_element in misplaced_marker_elements:
+                    child.remove(misplaced_marker_element)
+
+        for misplaced_marker_element in misplaced_marker_elements:
+            root.append(misplaced_marker_element)
+
+        for child in root:
+            raw_tag = get_raw_tag(child)
+            if raw_tag == "tree":
+
                 tree_data = parse_tree(child)
                 data.add_tree(tree_data)
             elif raw_tag == "contour":

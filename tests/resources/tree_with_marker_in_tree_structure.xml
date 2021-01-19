@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" xmlns="http://www.mbfbioscience.com/2007/neurolucida" xmlns:nl="http://www.mbfbioscience.com/2007/neurolucida" appname="Neurolucida 360" appversion="2019.1.1 (64-bit)">
+<description><![CDATA[]]></description>
+<filefacts>
+  <sectionmanager currentsection="" sectioninterval="0" startingsection="0"/>
+</filefacts>
+<property name="TimePointManager"><n>1</n><s>-1</s><s>-1</s><n>0</n></property>
+<tree color="#FF8040" type="Axon" leaf="Normal">
+  <point x="-35561.38" y="-4860.23" z="-71.52" d="0.77"/>
+  <point x="-35561.86" y="-4860.13" z="-71.52" d="0.77"/>
+  <point x="-35562.43" y="-4859.94" z="-71.52" d="0.77"/>
+  <point x="-35562.72" y="-4859.75" z="-71.52" d="0.77"/>
+  <point x="-35563.01" y="-4859.65" z="-71.52" d="0.77"/>
+  <point x="-35563.11" y="-4859.56" z="-71.52" d="0.77"/>
+  <point x="-35565.33" y="-4858.05" z="-71.57" d="0.77"/>
+  <marker type="OpenStar" color="#FF8040" name="Ending Point" varicosity="false">
+    <point x="-34287.09" y="-5454.59" z="-23.37" d="0.77"/>
+  </marker>
+  <branch>
+    <point x="-35567.60" y="-4857.66" z="-71.74" d="0.77"/>
+    <point x="-35567.79" y="-4857.56" z="-71.74" d="0.77"/>
+  </branch>
+</tree>
+</mbf>
