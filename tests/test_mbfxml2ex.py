@@ -3,6 +3,7 @@ import unittest
 
 from mbfxml2ex.app import read_xml
 from mbfxml2ex.classes import MBFPoint, MBFData, MBFPropertyVolumeRLE
+from mbfxml2ex.exceptions import MBFXMLFile, MBFXMLFormat
 from mbfxml2ex.utilities import extract_vessel_node_locations, is_option
 from mbfxml2ex.zinc import write_ex, reset_node_id, determine_tree_connectivity, determine_contour_connectivity, \
     determine_vessel_connectivity
@@ -14,8 +15,7 @@ class NeurolucidaXmlReadTreesTestCase(unittest.TestCase):
 
     def test_not_existing_xml_file(self):
         xml_file = _resource_path("missing.xml")
-        contents = read_xml(xml_file)
-        self.assertIsNone(contents)
+        self.assertRaises(MBFXMLFile, read_xml, xml_file)
 
     def test_read_multi_tree_xml(self):
         xml_file = _resource_path("multi_tree.xml")
@@ -24,8 +24,7 @@ class NeurolucidaXmlReadTreesTestCase(unittest.TestCase):
 
     def test_read_not_xml(self):
         not_xml_file = _resource_path("random_file.txt")
-        contents = read_xml(not_xml_file)
-        self.assertIsNone(contents)
+        self.assertRaises(MBFXMLFormat, read_xml, not_xml_file)
 
 
 class NeurolucidaXmlReadTreesWithAnatomicalTermsTestCase(unittest.TestCase):
@@ -83,6 +82,26 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertEqual(0, neurolucida_data.contours_count())
         self.assertEqual(1, neurolucida_data.markers_count())
         self.assertEqual(1, neurolucida_data.trees_count())
+
+    def test_tree_with_trace_association(self):
+        ex_file = _resource_path("tree_with_trace_association.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("tree_with_trace_association.xml")
+        neurolucida_data = read_xml(xml_file)
+
+        self.assertEqual(0, neurolucida_data.contours_count())
+        self.assertEqual(1, neurolucida_data.markers_count())
+        self.assertEqual(1, neurolucida_data.trees_count())
+
+        write_ex(ex_file, neurolucida_data)
+        self.assertTrue(os.path.exists(ex_file))
+
+        self.assertTrue(_is_line_in_file(ex_file, " Group name: http://purl.org/sig/ont/fma/fma15005"))
+        with open(ex_file) as f:
+            lines = f.readlines()
+            self.assertEqual(290, len(lines))
 
 
 class NeurolucidaReadScaleInformation(unittest.TestCase):

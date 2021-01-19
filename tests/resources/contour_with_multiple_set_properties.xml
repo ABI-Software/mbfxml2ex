@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" appname="Neurolucida 360" appversion="2020.3.3" apprrid="SCR_016788" insrrid="SCR_004314">
+<description><![CDATA[]]></description>
+<filefacts>
+  <sectionmanager currentsection="" sectioninterval="0" startingsection="0"/>
+</filefacts>
+<sparcdata>
+    <subject species="http://purl.obolibrary.org/obo/NCBITaxon_9823" subjectid="20171122P_pC_1.3" sex="Female" age="Blinded to condition"/>
+    <atlas organ="Colon" label="Species Independent" rootid="http://purl.org/sig/ont/fma/fma14543"/>
+</sparcdata>
+<tree color="#FF0000" type="Dendrite" leaf="Normal" rootclass="Mucosa of colon">
+  <point x="395.07" y="-245.16" z="-47.50" d="4.40"/>
+  <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma14984</s></property>
+  <point x="395.07" y="-245.16" z="-47.50" d="4.40"/>
+  <branch class="Mucosa of colon">
+    <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma14984</s></property>
+    <point x="396.53" y="-244.89" z="-47.66" d="4.40"/>
+    <branch leaf="Normal" class="Mucosa of ascending colon">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma15005</s></property>
+      <point x="399.64" y="-242.43" z="-48.10" d="4.40"/>
+      <point x="405.21" y="-237.20" z="-50.22" d="4.40"/>
+      <point x="408.17" y="-232.81" z="-51.21" d="4.40"/>
+  </branch>
+</tree>
+</mbf>

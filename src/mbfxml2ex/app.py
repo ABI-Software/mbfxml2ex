@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ElTree
 from xml.etree.ElementTree import ParseError
 
 from mbfxml2ex.classes import MBFData
+from mbfxml2ex.exceptions import MBFXMLFormat, MBFXMLFile
 from mbfxml2ex.parsers import parse_contour, parse_tree, parse_marker, parse_images, parse_vessel
 from mbfxml2ex.utilities import get_raw_tag
 from mbfxml2ex.zinc import write_ex
@@ -25,8 +26,7 @@ def read_xml(file_name):
         try:
             tree = ElTree.parse(file_name)
         except ParseError as e:
-            print(e)
-            return None
+            raise MBFXMLFormat(e.msg) from None
 
         root = tree.getroot()
 
@@ -75,7 +75,7 @@ def read_xml(file_name):
 
         return data
 
-    return None
+    raise MBFXMLFile('File does not exist: "{0}"'.format(file_name))
 
 
 def main():
