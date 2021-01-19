@@ -20,18 +20,6 @@ def parse_tree_structure(tree_root):
     return tree
 
 
-def parse_tree_with_anatomical_terms(tree_root):
-    for property_set in tree_root.iter():
-        if property_set.get("name") == "Set":
-            for child in property_set.iter():
-                if "}" in child.tag:
-                    tag = child.tag.split('}')
-                    if "s" in tag:
-                        anatomical_term = "".join(child.itertext())
-                        return anatomical_term
-    return None
-
-
 def parse_tree(tree_root):
     tree = {'colour': tree_root.attrib['color'], 'rgb': convert_hex_to_rgb(tree_root.attrib['color']),
             'type': tree_root.attrib['type'], 'leaf': tree_root.attrib['leaf'], 'data': parse_tree_structure(tree_root),
