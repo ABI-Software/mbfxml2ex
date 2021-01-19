@@ -156,17 +156,32 @@ class MBFPropertyVolumeRLE(MBFProperty):
         return 'Volume RLE {0}'.format(self._volume_description)
 
 
-class MBFPropertySet(MBFProperty):
+class MBFPropertyText(MBFProperty):
 
-    def __init__(self, label):
-        super(MBFPropertySet, self).__init__(-1.0)
+    def __init__(self, label, version=-1.0):
+        super(MBFPropertyText, self).__init__(version)
         self._label = label
 
     def label(self):
         return self._label
 
+
+class MBFPropertySet(MBFPropertyText):
+
+    def __init__(self, label):
+        super(MBFPropertySet, self).__init__(label)
+
     def __repr__(self):
         return 'Set "{0}"'.format(self._label)
+
+
+class MBFPropertyTraceAssociation(MBFPropertyText):
+
+    def __init__(self, label):
+        super(MBFPropertyTraceAssociation, self).__init__(label)
+
+    def __repr__(self):
+        return 'Trace association "{0}"'.format(self._label)
 
 
 class NeurolucidaZSpacing(object):
