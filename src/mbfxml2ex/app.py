@@ -34,13 +34,17 @@ def read_xml(file_name):
         misplaced_marker_elements = []
         for child in root:
             raw_tag = get_raw_tag(child)
-            if raw_tag == "tree":
-                misplaced_marker_elements = child.findall('.//{http://www.mbfbioscience.com/2007/neurolucida}marker')
-                for misplaced_marker_element in misplaced_marker_elements:
-                    child.remove(misplaced_marker_element)
+            if raw_tag == "tree" and child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker'):
+                misplaced_marker_elements.append(child)
 
-        for misplaced_marker_element in misplaced_marker_elements:
-            root.append(misplaced_marker_element)
+        for tree_child in misplaced_marker_elements:
+            marker_element = tree_child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker')
+            marker_element_parent = tree_child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker/..')
+            while marker_element:
+                marker_element_parent.remove(marker_element)
+                root.append(marker_element)
+                marker_element = tree_child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker')
+                marker_element_parent = tree_child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker/..')
 
         for child in root:
             raw_tag = get_raw_tag(child)
