@@ -42,7 +42,8 @@ class NeurolucidaXmlReadTreesWithAnatomicalTermsTestCase(unittest.TestCase):
         self.assertTrue('type' in tree)
         self.assertTrue('leaf' in tree)
         self.assertTrue('data' in tree)
-        self.assertTrue('anatomical term' in tree)
+        self.assertTrue('properties' in tree)
+        self.assertEqual('Thorasic Sympathetic Trunk', tree['properties'][0].label())
         self.assertEqual([0.0, 1.0, 1.0], tree['rgb'])
 
 
@@ -185,14 +186,12 @@ class MBFPunctaTestCase(unittest.TestCase):
 
         xml_file = _resource_path("puncta_with_set_prop.xml")
         contents = read_xml(xml_file)
-        print("=========================")
-        print(dir(contents))
-        print(contents.get_marker(0)['properties'][0])
         write_ex(ex_file, contents)
         self.assertTrue(os.path.exists(ex_file))
+
+        self.assertTrue(_is_line_in_file(ex_file, " Group name: inner submucosal nerve plexus"))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertIn(' Group name: inner submucosal nerve plexus\n', lines)
             self.assertEqual(1021, len(lines))
 
 

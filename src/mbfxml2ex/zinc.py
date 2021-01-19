@@ -120,35 +120,25 @@ def load(region, data, options):
     for tree in data.get_trees():
         connectivity = determine_tree_connectivity(tree['data'])
         node_identifiers = create_nodes(field_module, tree['data'])
-        group_name = None
-        anatomical_name = None
-        if 'type' in tree and 'anatomical term' not in tree:
-            group_name = tree['type']
-            field_info = {'rgb': tree['rgb'], 'annotation': group_name}
-        elif 'anatomical term' in tree and 'type' not in tree:
-            anatomical_name = tree['anatomical term']
-            field_info = {'rgb': tree['rgb'], 'anatomical_term': anatomical_name}
-        elif 'type' in tree and 'anatomical term' in tree:
-            group_name = tree['type']
-            anatomical_name = tree['anatomical term']
-            if is_option('external_annotation', options) and options['external_annotation']:
-                anatomical_term_stored_string_field = field_module.createFieldStoredString()
-                anatomical_term_stored_string_field.setName('anatomical_term')
-                field_info = {'rgb': tree['rgb'], 'annotation': group_name,
-                              'anatomical_term': tree['anatomical term']}
-            else:
-                field_info = {'rgb': tree['rgb']}
-        else:
-            field_info = {'rgb': tree['rgb']}
+        group_name = tree['type'] if 'type' in tree else None
+        supplemental_groups = []
+        if 'properties' in tree:
+            for property_ in tree['properties']:
+                if type(property_) is MBFPropertySet:
+                    supplemental_groups.append(property_.label())
+
+        if group_name is None and len(supplemental_groups):
+            group_name = supplemental_groups[0]
+
+        field_info = {'rgb': tree['rgb']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
         if group_name is not None:
             create_group_elements(field_module, group_name, element_ids)
-        if anatomical_name is not None:
-            create_group_elements(field_module, anatomical_name, element_ids)
-        if element_ids and is_option('external_annotation', options):
-            if options['external_annotation'] and 'anatomical term' in tree:
-                print('create external annotation for tree', tree['anatomical term'])
+
+        for supplemental_group in supplemental_groups:
+            create_group_elements(field_module, supplemental_group, element_ids)
+
     for contour in data.get_contours():
         connectivity = determine_contour_connectivity(contour['data'], contour['closed'])
         node_identifiers = create_nodes(field_module, contour['data'])

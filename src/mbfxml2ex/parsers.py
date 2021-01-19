@@ -35,7 +35,11 @@ def parse_tree_with_anatomical_terms(tree_root):
 def parse_tree(tree_root):
     tree = {'colour': tree_root.attrib['color'], 'rgb': convert_hex_to_rgb(tree_root.attrib['color']),
             'type': tree_root.attrib['type'], 'leaf': tree_root.attrib['leaf'], 'data': parse_tree_structure(tree_root),
-            'anatomical term': parse_tree_with_anatomical_terms(tree_root)}
+            'properties': []}
+    for child in tree_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == "property":
+            tree['properties'].append(parse_property(child))
 
     return tree
 
@@ -131,11 +135,11 @@ def parse_set_property(property_root):
     children = list(property_root)
     if len(children) > 0:
         set_element = children[0]
-        set_description = "".join(set_element.itertext())
+        set_text = "".join(set_element.itertext())
     else:
         raise MBFXMLException("XML format violation set property has no children.")
 
-    return MBFPropertySet(set_description)
+    return MBFPropertySet(set_text)
 
 
 def parse_property(property_root) -> MBFProperty:
