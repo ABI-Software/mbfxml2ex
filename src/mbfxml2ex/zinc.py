@@ -240,7 +240,7 @@ def _process_punctum_data(region, punctum_data):
         field_data += field_header + field_details
 
         if "set_name" in data:
-            create_group_elements(field_module, data["set_name"], [element_id])
+            create_group_elements(field_module, data["set_name"], [element_id], dimension=3)
 
     ex_data = grid_field_3d_template.format(field_data)
     sir = r.createStreaminformationRegion()
@@ -342,12 +342,12 @@ def create_elements(field_module, connectivity, field_names=None):
     return create_line_elements(field_module, connectivity, field_names)
 
 
-def create_group_elements(field_module, group_name, element_ids):
+def create_group_elements(field_module, group_name, element_ids, dimension=1):
     with ChangeManager(field_module):
         group = find_or_create_field_group(field_module, name=group_name)
         group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
 
-        mesh = field_module.findMeshByDimension(1)
+        mesh = field_module.findMeshByDimension(dimension)
         element_group = group.getFieldElementGroup(mesh)
         if not element_group.isValid():
             element_group = group.createFieldElementGroup(mesh)
