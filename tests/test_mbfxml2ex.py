@@ -227,7 +227,7 @@ class MBFPunctaTestCase(unittest.TestCase):
         self.assertTrue(_is_line_in_file(ex_file, " Group name: inner submucosal nerve plexus"))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(1021, len(lines))
+            self.assertEqual(1055, len(lines))
 
 
 class MBFPropertyVolumeRLETestCase(unittest.TestCase):
