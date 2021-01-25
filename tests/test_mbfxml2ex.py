@@ -94,7 +94,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_is_line_in_file(ex_file, " Group name: http://purl.org/sig/ont/fma/fma15005"))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(182, len(lines))
+            self.assertEqual(184, len(lines))
 
 
 class NeurolucidaReadScaleInformation(unittest.TestCase):
@@ -312,6 +312,17 @@ class ExWritingTreeWithAnnotationTestCase(unittest.TestCase):
             os.remove(ex_file)
 
         xml_file = _resource_path("tree_with_anatomical_terms.xml")
+        data = read_xml(xml_file)
+
+        write_ex(ex_file, data)
+        self.assertTrue(os.path.exists(ex_file))
+
+    def test_write_ex_with_multi_tree_and_annotation(self):
+        ex_file = _resource_path("multi_tree_with_annotations.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("multi_tree_with_annotations.xml")
         data = read_xml(xml_file)
 
         write_ex(ex_file, data)

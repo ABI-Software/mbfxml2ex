@@ -136,11 +136,15 @@ def load(region, data, options):
         sub_groups = {}
         for index, connection in enumerate(connectivity):
             first_node = connection[0]
+            second_node = connection[1]
             first_node_index = node_identifiers.index(first_node)
-            element_properties = point_properties[first_node_index]
+            second_node_index = node_identifiers.index(second_node)
+            first_node_properties = point_properties[first_node_index]
+            second_node_properties = point_properties[second_node_index]
+            element_properties = list(set(first_node_properties + second_node_properties))
+
             for element_property in element_properties:
-                # index + 1 should be equal to element_id created above in create_elements.
-                element_id = index + 1
+                element_id = element_ids[index]
                 if element_property in sub_groups:
                     sub_groups[element_property].append(element_id)
                 else:

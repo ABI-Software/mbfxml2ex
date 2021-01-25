@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" appname="Neurolucida 360" appversion="2020.3.3" apprrid="SCR_016788" insrrid="SCR_004314">
+<contour name="Bounding Box" color="#FFFFFF" closed="true" shape="Contour">
+  <property name="GUID"><s></s></property>
+  <property name="FillDensity"><n>0</n></property>
+  <resolution>0.726643</resolution>
+  <point x="-6.54" y="-4.36" z="0.00" d="17.44"/>
+  <point x="1299.23" y="-6.54" z="0.00" d="17.44"/>
+  <point x="1294.87" y="-1285.43" z="0.00" d="17.44"/>
+  <point x="-7.27" y="-1288.34" z="0.00" d="17.44"/>
+</contour>
+<contour name="Bounding Box" color="#FFFFFF" closed="true" shape="Box">
+  <property name="GUID"><s></s></property>
+  <property name="FillDensity"><n>0</n></property>
+  <resolution>0.726643</resolution>
+  <point x="-5.82" y="-4.36" z="-294.00" d="15.99"/>
+  <point x="1299.23" y="-1287.61" z="-294.00" d="15.99"/>
+</contour>
+<tree color="#FF0000" type="Dendrite" leaf="Normal" rootclass="Mucosa of ascending colon">
+  <point x="668.78" y="-415.46" z="-75.50" d="4.09"/>
+  <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma15005</s></property>
+  <point x="670.40" y="-420.32" z="-74.58" d="4.09"/>
+  <point x="671.38" y="-424.90" z="-73.19" d="4.09"/>
+  <point x="671.37" y="-428.62" z="-72.84" d="4.09"/>
+  <point x="671.50" y="-431.11" z="-72.99" d="4.09"/>
+  <point x="671.35" y="-436.02" z="-73.84" d="4.09"/>
+  <point x="671.02" y="-438.36" z="-74.50" d="4.09"/>
+</tree>
+<tree color="#FF0000" type="Dendrite" leaf="Normal" rootclass="Longitudinal muscle layer of ascending colon">
+  <point x="645.60" y="-1056.82" z="-88.50" d="4.09"/>
+  <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma15008</s></property>
+  <point x="641.01" y="-1056.14" z="-88.65" d="4.09"/>
+  <point x="636.11" y="-1056.05" z="-89.45" d="4.09"/>
+  <point x="631.29" y="-1054.93" z="-89.59" d="4.09"/>
+  <point x="627.64" y="-1054.81" z="-90.33" d="4.09"/>
+  <point x="624.13" y="-1054.36" z="-91.32" d="4.09"/>
+  <point x="621.72" y="-1053.85" z="-91.51" d="4.09"/>
+  <point x="619.22" y="-1053.63" z="-91.46" d="4.09"/>
+  <point x="616.76" y="-1053.62" z="-91.77" d="4.09"/>
+  <point x="611.14" y="-1053.62" z="-93.97" d="4.09"/>
+  <point x="608.75" y="-1053.62" z="-94.55" d="4.09"/>
+  <point x="603.74" y="-1053.64" z="-94.66" d="4.09"/>
+  <point x="598.86" y="-1054.09" z="-95.35" d="4.09"/>
+</tree>
+<tree color="#FF0000" type="Dendrite" leaf="Normal" rootclass="Circular muscle layer of ascending colon">
+  <point x="1101.16" y="-973.74" z="-80.50" d="4.09"/>
+  <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma15009</s></property>
+  <point x="1097.99" y="-976.29" z="-82.02" d="4.09"/>
+  <point x="1095.48" y="-977.58" z="-83.88" d="4.09"/>
+  <point x="1092.86" y="-979.47" z="-85.35" d="4.09"/>
+  <point x="1089.84" y="-981.34" z="-86.27" d="4.09"/>
+  <point x="1086.38" y="-982.69" z="-86.60" d="4.09"/>
+  <point x="1085.20" y="-982.94" z="-86.78" d="4.09"/>
+  <point x="1082.81" y="-983.07" z="-87.35" d="4.09"/>
+  <point x="1077.82" y="-982.74" z="-87.47" d="4.09"/>
+  <point x="1074.39" y="-981.33" z="-87.06" d="4.09"/>
+  <branch class="Circular muscle layer of ascending colon">
+    <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma15009</s></property>
+    <point x="1068.70" y="-979.08" z="-86.12" d="4.09"/>
+    <point x="1065.56" y="-978.07" z="-84.77" d="4.09"/>
+    <point x="1063.63" y="-977.96" z="-83.53" d="4.09"/>
+    <point x="1060.16" y="-977.80" z="-82.52" d="4.09"/>
+    <point x="1057.93" y="-977.09" z="-81.82" d="4.09"/>
+    <point x="1056.23" y="-975.88" z="-80.81" d="4.09"/>
+    <point x="1054.25" y="-974.36" z="-78.70" d="4.09"/>
+    <point x="1052.35" y="-973.16" z="-78.11" d="4.09"/>
+  </branch>
+</tree>
+<tree color="#FF0000" type="Dendrite" leaf="Normal" rootclass="Circular muscle layer of ascending colon">
+  <point x="1200.86" y="-972.36" z="-153.50" d="4.09"/>
+  <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma15009</s></property>
+  <point x="1204.65" y="-972.95" z="-153.34" d="4.09"/>
+  <point x="1208.39" y="-973.14" z="-153.60" d="4.09"/>
+  <point x="1212.00" y="-973.89" z="-154.20" d="4.09"/>
+  <point x="1215.73" y="-974.25" z="-154.28" d="4.09"/>
+  <point x="1218.13" y="-974.56" z="-153.81" d="4.09"/>
+  <point x="1222.69" y="-976.42" z="-153.18" d="4.09"/>
+  <point x="1228.40" y="-977.42" z="-151.33" d="4.09"/>
+  <point x="1230.80" y="-977.81" z="-150.93" d="4.09"/>
+  <point x="1234.47" y="-977.53" z="-150.51" d="4.09"/>
+  <point x="1238.02" y="-977.96" z="-149.62" d="4.09"/>
+  <point x="1241.73" y="-978.00" z="-149.08" d="4.09"/>
+  <point x="1245.35" y="-978.00" z="-148.25" d="4.09"/>
+  <point x="1248.88" y="-978.00" z="-147.17" d="4.09"/>
+  <point x="1252.50" y="-978.05" z="-146.32" d="4.09"/>
+  <point x="1254.96" y="-978.29" z="-146.05" d="4.09"/>
+  <point x="1257.35" y="-978.95" z="-145.99" d="4.09"/>
+  <point x="1258.54" y="-979.18" z="-145.79" d="4.09"/>
+  <point x="1260.90" y="-979.26" z="-145.14" d="4.09"/>
+  <point x="1265.14" y="-979.29" z="-143.01" d="4.09"/>
+  <point x="1267.40" y="-979.35" z="-142.17" d="4.09"/>
+  <point x="1268.61" y="-979.46" z="-141.94" d="4.09"/>
+  <point x="1272.22" y="-980.35" z="-141.55" d="4.09"/>
+  <point x="1274.67" y="-980.50" z="-141.21" d="4.09"/>
+  <point x="1278.21" y="-980.26" z="-140.20" d="4.09"/>
+  <point x="1281.45" y="-979.35" z="-138.95" d="4.09"/>
+  <point x="1282.56" y="-979.28" z="-138.50" d="4.09"/>
+</tree>
+</mbf>
