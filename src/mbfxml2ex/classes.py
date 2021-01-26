@@ -319,7 +319,7 @@ def _determine_point_properties(structure, parent_properties=None):
     properties = []
     current_properties = [] if parent_properties is None else parent_properties[:]
     if 'properties' in structure:
-        current_properties.extend(get_text_properties(structure['properties']))
+        current_properties = get_text_properties(structure['properties'])
 
     # Make the list of current properties unique.
     current_properties = list(set(current_properties))
