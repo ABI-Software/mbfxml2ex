@@ -94,7 +94,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_is_line_in_file(ex_file, " Group name: http://purl.org/sig/ont/fma/fma15005"))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(184, len(lines))
+            self.assertEqual(180, len(lines))
 
 
 class NeurolucidaReadScaleInformation(unittest.TestCase):
