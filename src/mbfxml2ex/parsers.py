@@ -174,6 +174,8 @@ def parse_property(property_root) -> MBFProperty:
         return parse_guid_property(property_root)
     elif name == "FillDensity":
         return parse_fill_density_property(property_root)
+    elif name == "zSmear":
+        pass
     else:
         raise MBFXMLException("Unhandled property '{0}'".format(name))
 
