@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" appname="Neurolucida 360" appversion="2020.3.2" apprrid="SCR_016788" insrrid="SCR_004314">
+<tree color="#00FF00" type="Dendrite" leaf="Normal" create_cube_element="inner submucosal nerve plexus">
+  <point x="315.30" y="-598.82" z="-41.28" d="3.00"/>
+  <property name="Set"><s>FIL: Filaments 1</s></property>
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777077</s></property>
+  <point x="315.30" y="-598.82" z="-41.28" d="3.00"/>
+  <branch class="inner submucosal nerve plexus">
+    <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777078</s></property>
+    <point x="316.80" y="-597.99" z="-41.10" d="3.00"/>
+    <branch class="inner submucosal nerve plexus">
+      <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777079</s></property>
+      <point x="318.13" y="-596.94" z="-40.89" d="3.00"/>
+      <branch class="inner submucosal nerve plexus">
+        <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777080</s></property>
+        <point x="323.03" y="-588.11" z="-40.73" d="3.00"/>
+        <point x="325.34" y="-580.51" z="-39.33" d="3.00"/>
+        <point x="326.31" y="-576.48" z="-40.12" d="3.00"/>
+        <point x="331.84" y="-565.62" z="-39.49" d="3.00"/>
+        <branch class="inner submucosal nerve plexus">
+          <property name="Set"><s>Dave</s></property>
+          <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777081</s></property>
+          <point x="336.13" y="-555.08" z="-34.50" d="3.00"/>
+          <branch class="inner submucosal nerve plexus">
+            <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777082</s></property>
+            <point x="347.47" y="-542.42" z="-31.37" d="3.00"/>
+          </branch>
+          <branch leaf="Normal" class="inner submucosal nerve plexus">
+            <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777083</s></property>
+            <point x="338.93" y="-551.86" z="-30.97" d="3.00"/>
+            <point x="346.18" y="-543.36" z="-28.57" d="3.00"/>
+          </branch>
+        </branch>
+        <branch class="inner submucosal nerve plexus">
+          <property name="Set"><s>Bob</s></property>
+          <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777084</s></property>
+          <point x="328.03" y="-550.31" z="-37.88" d="3.00"/>
+          <branch class="inner submucosal nerve plexus">
+            <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777085</s></property>
+            <point x="325.47" y="-539.41" z="-37.85" d="3.00"/>
+            <point x="328.80" y="-528.82" z="-37.27" d="3.00"/>
+            <point x="329.38" y="-523.36" z="-37.08" d="3.00"/>
+            <branch class="inner submucosal nerve plexus">
+              <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777086</s></property>
+              <point x="327.19" y="-509.83" z="-34.93" d="3.00"/>
+              <branch class="inner submucosal nerve plexus">
+                <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777087</s></property>
+                <point x="333.75" y="-497.45" z="-34.32" d="3.00"/>
+              </branch>
+            </branch>
+          </branch>
+        </branch>
+      </branch>
+    </branch>
+  </branch>
+</tree>
+</mbf>

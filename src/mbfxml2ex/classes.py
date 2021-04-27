@@ -314,19 +314,22 @@ class MBFTree(object):
         return _determine_point_properties(self._structure)
 
 
-def _determine_point_properties(structure, parent_properties=None):
+def _determine_point_properties(structure, inherited_properties=None):
 
     properties = []
-    current_properties = [] if parent_properties is None else parent_properties[:]
+    current_properties = []
+    current_inherited_properties = [] if inherited_properties is None else inherited_properties[:]
     if 'properties' in structure:
+        current_inherited_properties.extend(_get_inherited_properties(structure['properties']))
         current_properties = get_text_properties(structure['properties'])
 
+    current_properties.extend(current_inherited_properties)
     # Make the list of current properties unique.
     current_properties = list(set(current_properties))
 
     for item in structure['points']:
         if type(item) is dict:
-            properties.extend(_determine_point_properties(item, current_properties))
+            properties.extend(_determine_point_properties(item, current_inherited_properties))
         else:
             properties.append(current_properties)
 
@@ -477,3 +480,11 @@ def get_text_properties(properties):
             text_properties.append(property_.label())
 
     return text_properties
+
+def _get_inherited_properties(properties):
+    inherited_properties = []
+    for property_ in properties:
+        if isinstance(property_, MBFPropertySet) and property_.label():
+            inherited_properties.append(property_.label())
+
+    return inherited_properties

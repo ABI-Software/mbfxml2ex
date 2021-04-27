@@ -96,6 +96,27 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
             lines = f.readlines()
             self.assertEqual(180, len(lines))
 
+    def test_tree_with_set_property(self):
+        ex_file = _resource_path("tree_with_set_property.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("tree_with_set_property.xml")
+        neurolucida_data = read_xml(xml_file)
+
+        self.assertEqual(0, neurolucida_data.contours_count())
+        self.assertEqual(0, neurolucida_data.markers_count())
+        self.assertEqual(1, neurolucida_data.trees_count())
+
+        write_ex(ex_file, neurolucida_data)
+        self.assertTrue(os.path.exists(ex_file))
+
+        self.assertTrue(_is_line_in_file(ex_file, " Group name: Bob"))
+        self.assertTrue(_is_line_in_file(ex_file, " Group name: Dave"))
+        with open(ex_file) as f:
+            lines = f.readlines()
+            self.assertEqual(552, len(lines))
+
 
 class NeurolucidaReadScaleInformation(unittest.TestCase):
 
