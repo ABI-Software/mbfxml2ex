@@ -22,7 +22,7 @@ if not version:
 with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
-dependencies = ['opencmiss.zinc', 'opencmiss.utils >= 0.2.0']
+dependencies = ['opencmiss.zinc >= 3.5.1', 'opencmiss.utils >= 0.4.0']
 
 
 setup(
