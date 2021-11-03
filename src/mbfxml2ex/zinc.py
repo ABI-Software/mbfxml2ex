@@ -111,9 +111,9 @@ def determine_vessel_connectivity(vessel):
 def load(region, data, options):
     punctum_data = []
     field_module = region.getFieldmodule()
-    create_field_coordinates(field_module)
-    create_field_finite_element(field_module, 'radius', 1, type_coordinate=False)
-    create_field_finite_element(field_module, 'rgb', 3, type_coordinate=False)
+    _coordinate_field = create_field_coordinates(field_module)
+    _radius_field = create_field_finite_element(field_module, 'radius', 1, type_coordinate=False)
+    _rgb_field = create_field_finite_element(field_module, 'rgb', 3, type_coordinate=False)
     annotation_stored_string_field = field_module.createFieldStoredString()
     annotation_stored_string_field.setName('annotation')
     reset_node_id()
