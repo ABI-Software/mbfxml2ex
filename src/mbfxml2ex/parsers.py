@@ -91,7 +91,7 @@ def parse_punctum_property_version_4(children):
     colocalized_fraction = float("".join(children[9].itertext()))
     proximal_fraction = float("".join(children[10].itertext()))
     return spread, mean_luminance, surface_area, voxel_count, flag_2d, \
-        volume, location, colocalized_fraction, proximal_fraction
+           volume, location, colocalized_fraction, proximal_fraction
 
 
 def parse_punctum_property(property_root):
@@ -107,8 +107,8 @@ def parse_punctum_property(property_root):
     else:
         raise MBFXMLException("XML format violation punctum property has no children.")
 
-    return MBFPropertyPunctum(version, spread, mean_luminance, surface_area, voxel_count, flag_2d, \
-        volume, location, colocalized_fraction, proximal_fraction)
+    return MBFPropertyPunctum(version, spread, mean_luminance, surface_area, voxel_count, flag_2d,
+                              volume, location, colocalized_fraction, proximal_fraction)
 
 
 def parse_volume_rle_property(property_root):
@@ -118,7 +118,7 @@ def parse_volume_rle_property(property_root):
         volume_string = "".join(volume_element.itertext())
         volume_description = volume_string.split(" ")
     else:
-        raise MBFXMLException("XML format violation volume rle property has no children.")
+        raise MBFXMLException("XML format violation volume RLE property has no children.")
 
     return MBFPropertyVolumeRLE(volume_description)
 
@@ -175,6 +175,8 @@ def parse_property(property_root) -> MBFProperty:
     elif name == "FillDensity":
         return parse_fill_density_property(property_root)
     elif name == "zSmear":
+        pass
+    elif name == "Densitometry":
         pass
     else:
         raise MBFXMLException("Unhandled property '{0}'".format(name))
