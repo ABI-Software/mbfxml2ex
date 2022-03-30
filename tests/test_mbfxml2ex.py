@@ -164,6 +164,14 @@ class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
         self.assertTrue(_is_line_in_file(ex_file, " Group name: Nerve fiber connecting inner submucosal nerve plexus and outer submucosal nerve plexus"))
 
 
+class NeurolucidaXmlReadDensitometryTestCase(unittest.TestCase):
+
+    def test_read_basic_densitometry_xml(self):
+        xml_file = _resource_path("densitometry_example.xml")
+        contents = read_xml(xml_file)
+        self.assertEqual(1, len(contents))
+
+
 class VessellucidaXmlReadTestCase(unittest.TestCase):
 
     def test_read_vessel_xml(self):
