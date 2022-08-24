@@ -51,7 +51,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         xml_file = _resource_path("tree_with_markers.xml")
         neurolucida_data = read_xml(xml_file)
         self.assertEqual(0, neurolucida_data.contours_count())
-        self.assertEqual(2, neurolucida_data.markers_count())
+        self.assertEqual(3, neurolucida_data.markers_count())
         self.assertEqual(1, neurolucida_data.trees_count())
 
         tree = neurolucida_data.get_tree(0)
@@ -162,6 +162,33 @@ class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
 
         self.assertTrue(_is_line_in_file(ex_file, " Group name: inner submucosal nerve plexus"))
         self.assertTrue(_is_line_in_file(ex_file, " Group name: Nerve fiber connecting inner submucosal nerve plexus and outer submucosal nerve plexus"))
+
+
+class NeurolucidaXmlReadTreesAndContoursWithMarkersTestCase(unittest.TestCase):
+
+    def test_read_tree_and_contours_with_markers(self):
+        xml_file = _resource_path("tree_contour_with_markers_no_ns.xml")
+        neurolucida_data = read_xml(xml_file)
+        self.assertEqual(1, neurolucida_data.contours_count())
+        self.assertEqual(5, neurolucida_data.markers_count())
+        self.assertEqual(1, neurolucida_data.trees_count())
+
+        tree = neurolucida_data.get_tree(0)
+        marker = neurolucida_data.get_marker(1)
+
+        r, g, b = tree.rgb()
+        self.assertAlmostEqual(1.0, r)
+        self.assertAlmostEqual(0.5019607843137, g)
+        self.assertAlmostEqual(0.2509803921568, b)
+
+        self.assertTrue('colour' in marker)
+        self.assertTrue('rgb' in marker)
+        self.assertTrue('name' in marker)
+        self.assertTrue('type' in marker)
+        self.assertTrue('varicosity' in marker)
+        self.assertTrue('data' in marker)
+
+        self.assertEqual('FilledDownTriangle', marker['type'])
 
 
 class NeurolucidaXmlReadDensitometryTestCase(unittest.TestCase):

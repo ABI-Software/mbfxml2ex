@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" appname="Neurolucida 360" appversion="2021.1.3" apprrid="SCR_016788" insrrid="SCR_004314">
+<contour name="1" color="#FFFF00" closed="true" shape="Contour">
+  <property name="GUID"><s>5D56E410EFFD49F38E82C0E11CBFFBCD</s></property>
+  <property name="FillDensity"><n>0</n></property>
+  <resolution>2.340384</resolution>
+  <point x="-18.71" y="4.68" z="-0.08" d="21.05"/>
+  <point x="-21.05" y="7.02" z="-0.08" d="21.05"/>
+  <point x="-23.39" y="9.36" z="-0.08" d="21.05"/>
+  <point x="-9509.09" y="1756.29" z="-0.30" d="21.05"/>
+  <point x="-9544.17" y="1742.25" z="-0.30" d="21.05"/>
+  <point x="-9562.88" y="1723.53" z="-0.30" d="21.05"/>
+  <point x="-9572.23" y="1711.83" z="-0.30" d="21.05"/>
+  <point x="-9576.91" y="1704.80" z="-0.30" d="21.05"/>
+  <point x="-9583.93" y="1693.10" z="-0.30" d="21.05"/>
+  <point x="-9586.27" y="1686.08" z="-0.30" d="21.05"/>
+  <point x="-9588.61" y="1681.40" z="-0.30" d="21.05"/>
+  <point x="-9590.95" y="1672.04" z="-0.30" d="21.05"/>
+  <point x="-9590.95" y="1665.02" z="-0.30" d="21.05"/>
+  <point x="-9595.62" y="1658.00" z="-0.30" d="21.05"/>
+  <point x="-9600.30" y="1650.98" z="-0.30" d="21.05"/>
+  <point x="-9604.98" y="1648.63" z="-0.30" d="21.05"/>
+  <point x="-9626.03" y="1648.63" z="-0.30" d="21.05"/>
+  <point x="-9635.38" y="1646.29" z="-0.30" d="21.05"/>
+  <point x="-9642.40" y="1643.95" z="-0.30" d="21.05"/>
+  <point x="-9654.09" y="1636.93" z="-0.30" d="21.05"/>
+  <point x="-9661.11" y="1639.27" z="-0.30" d="21.05"/>
+  <point x="-9684.50" y="1639.27" z="-0.30" d="21.05"/>
+  <point x="-9693.85" y="1634.59" z="-0.30" d="21.05"/>
+  <point x="-9700.87" y="1627.57" z="-0.30" d="21.05"/>
+  <point x="-9707.89" y="1625.23" z="-0.30" d="21.05"/>
+  <marker type="FilledStar" color="#FFFBF0" name="esophagogastric junction along the lesser curvature on circular-longitudinal muscle interface" varicosity="false">
+    <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0793101</s></property>
+    <point x="-15404.03" y="-1030.84" z="0.00" d="29.15"/>
+  </marker>
+</contour>
+<marker type="FilledUpTriangle" color="#808000" name="esophagogastric junction along the greater curvature on circular-longitudinal muscle interface" varicosity="false">
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0793098</s></property>
+  <point x="-23479.92" y="-1030.84" z="0.00" d="29.15"/>
+</marker>
+<marker type="FilledDownTriangle" color="#000080" name="limiting ridge at the greater curvature on the circular-longitudinal muscle interface" varicosity="false">
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0793113</s></property>
+  <point x="-35258.48" y="-27503.44" z="0.00" d="29.15"/>
+</marker>
+<tree color="#FF8040" type="Axon" leaf="Normal">
+  <point x="-34149.87" y="-5857.08" z="-32.46" d="0.77"/>
+  <point x="-34149.96" y="-5857.47" z="-32.46" d="0.77"/>
+  <point x="-34149.87" y="-5857.66" z="-32.46" d="0.77"/>
+  <point x="-34149.87" y="-5858.23" z="-32.12" d="0.77"/>
+  <point x="-35563.01" y="-4859.65" z="-71.52" d="0.77"/>
+  <point x="-35563.11" y="-4859.56" z="-71.52" d="0.77"/>
+  <point x="-35565.33" y="-4858.05" z="-71.57" d="0.77"/>
+  <marker type="OpenStar" color="#FF8040" name="Ending Point" varicosity="false">
+    <point x="-34287.09" y="-5454.59" z="-23.37" d="0.77"/>
+  </marker>
+  <branch>
+    <point x="-35567.60" y="-4857.66" z="-71.74" d="0.77"/>
+    <point x="-38800.31" y="-5655.68" z="-66.74" d="0.77"/>
+    <branch>
+      <point x="-38800.41" y="-5655.78" z="-66.74" d="0.77"/>
+        <branch>
+          <point x="-39351.56" y="-6601.34" z="-64.24" d="0.77"/>
+          <point x="-39752.30" y="-7140.55" z="-55.71" d="0.77"/>
+          <branch>
+            <point x="-39752.93" y="-7142.28" z="-54.46" d="0.77"/>
+                <point x="-41305.11" y="-9146.00" z="-53.44" d="0.77"/>
+                <point x="-41305.78" y="-9145.80" z="-53.44" d="0.77"/>
+                <branch leaf="Normal">
+                  <point x="-41304.14" y="-9145.11" z="-54.52" d="0.77"/>
+                  <point x="-41296.59" y="-9142.14" z="-54.52" d="0.77"/>
+                </branch>
+                <branch leaf="Normal">
+                  <point x="-41307.21" y="-9145.30" z="-53.44" d="0.77"/>
+                  <point x="-41580.76" y="-9059.42" z="-54.75" d="0.77"/>
+                  <branch leaf="Normal">
+                    <point x="-41583.29" y="-9057.46" z="-54.86" d="0.77"/>
+                    <point x="-42190.41" y="-8315.41" z="-53.21" d="0.77"/>
+                    <branch leaf="Normal">
+                      <point x="-42192.99" y="-8314.39" z="-53.15" d="0.77"/>
+                      <point x="-42195.19" y="-8314.39" z="-53.15" d="0.77"/>
+                      <point x="-42265.36" y="-8311.88" z="-53.21" d="0.77"/>
+                      <point x="-42265.93" y="-8311.88" z="-53.21" d="0.77"/>
+                      <branch>
+                        <point x="-42487.74" y="-8307.51" z="-52.76" d="0.77"/>
+                        <point x="-42488.03" y="-8307.51" z="-52.76" d="0.77"/>
+                        <branch>
+                          <point x="-42489.66" y="-8308.13" z="-52.76" d="0.77"/>
+                          <point x="-42490.81" y="-8308.80" z="-52.76" d="0.77"/>
+                          <point x="-42540.68" y="-8342.47" z="-53.61" d="0.77"/>
+                          <point x="-42541.16" y="-8343.24" z="-53.61" d="0.77"/>
+                          <branch leaf="Normal">
+                            <point x="-42542.38" y="-8344.27" z="-53.27" d="0.77"/>
+                            <point x="-42573.45" y="-8381.23" z="-53.27" d="0.77"/>
+                            <branch>
+                              <point x="-42573.83" y="-8381.71" z="-53.27" d="0.77"/>
+                              <point x="-42574.21" y="-8381.90" z="-53.27" d="0.77"/>
+                               <point x="-42654.57" y="-8415.26" z="-52.81" d="0.77"/>
+                              <branch leaf="Normal">
+                                <point x="-42651.80" y="-8430.10" z="-52.98" d="0.77"/>
+                                <point x="-42651.90" y="-8430.29" z="-52.98" d="0.77"/>
+                                <marker type="KnightsCross" color="#FF8040" name="Unknown" varicosity="false">
+                                  <point x="-42656.48" y="-8425.13" z="-52.93" d="0.77"/>
+                                </marker>
+                              </branch>
+                            </branch>
+                          </branch>
+                        </branch>
+                      </branch>
+                    </branch>
+                  </branch>
+                </branch>
+              </branch>
+            </branch>
+          </branch>
+        </branch>
+</tree>
+</mbf>
