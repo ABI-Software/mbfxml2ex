@@ -30,26 +30,27 @@ def read_xml(file_name):
 
         root = tree.getroot()
 
-        # Need to move marker elements that appear in the tree structure.
-        misplaced_marker_elements = []
+        # We can move marker elements that appear in the tree or contour structure.
+        relocate_marker_elements = []
         for child in root:
             raw_tag = get_raw_tag(child)
-            if raw_tag == "tree" and child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker'):
-                misplaced_marker_elements.append(child)
+            if raw_tag in ["tree", "contour"] and child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker'):
+                relocate_marker_elements.append({"owner": child, "ns": "http://www.mbfbioscience.com/2007/neurolucida"})
+            elif raw_tag in ["tree", "contour"] and child.find('.//{}marker'):
+                relocate_marker_elements.append({"owner": child, "ns": ""})
 
-        for tree_child in misplaced_marker_elements:
-            marker_element = tree_child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker')
-            marker_element_parent = tree_child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker/..')
+        for marker_root_element in relocate_marker_elements:
+            marker_element = marker_root_element["owner"].find(f'.//{{{marker_root_element["ns"]}}}marker')
+            marker_element_parent = marker_root_element["owner"].find(f'.//{{{marker_root_element["ns"]}}}marker/..')
             while marker_element:
                 marker_element_parent.remove(marker_element)
                 root.append(marker_element)
-                marker_element = tree_child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker')
-                marker_element_parent = tree_child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker/..')
+                marker_element = marker_root_element["owner"].find(f'.//{{{marker_root_element["ns"]}}}marker')
+                marker_element_parent = marker_root_element["owner"].find(f'.//{{{marker_root_element["ns"]}}}marker/..')
 
         for child in root:
             raw_tag = get_raw_tag(child)
             if raw_tag == "tree":
-
                 tree_data = parse_tree(child)
                 data.add_tree(tree_data)
             elif raw_tag == "contour":

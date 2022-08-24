@@ -17,6 +17,10 @@
         <point x="2370.18" y="-2574.86" z="-1443.42" d="5.99"/>
         <point x="2365.20" y="-2584.83" z="-1443.42" d="5.99"/>
         <point x="2361.88" y="-2583.17" z="-1436.13" d="8.30"/>
+        <marker type="FilledStar" color="#FFFBF0" name="esophagogastric junction along the lesser curvature on circular-longitudinal muscle interface" varicosity="false">
+          <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0793101</s></property>
+          <point x="2455.03" y="-1830.84" z="-1450.00" d="29.15"/>
+        </marker>
       </branch>
       <branch>
         <point x="2394.07" y="-2523.49" z="-1421.55" d="6.64"/>
