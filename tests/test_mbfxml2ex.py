@@ -132,9 +132,12 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         neurolucida_data = read_xml(xml_file)
 
         write_ex(ex_file, neurolucida_data)
+
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: Hu")))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: ChAT")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(552 if Version(opencmiss_version) < Version("3.9.0") else 258, len(lines))
+            self.assertEqual(552 if Version(opencmiss_version) < Version("3.9.0") else 252, len(lines))
 
 
 class NeurolucidaReadScaleInformation(unittest.TestCase):
