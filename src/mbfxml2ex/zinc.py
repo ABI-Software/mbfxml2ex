@@ -165,6 +165,7 @@ def load(region, data, options):
         for text_property in text_properties:
             create_group_elements(field_module, text_property, element_ids)
 
+    marker_groups = {}
     for marker in data.get_markers():
         if marker['name'] == "Punctum":
             volume_rle = None
@@ -212,8 +213,19 @@ def load(region, data, options):
                 stored_string_field.setManaged(True)
                 stored_string_field.setName('marker_name')
                 field_info['marker_name'] = marker['name']
+                if marker['name'] in marker_groups:
+                    marker_groups[marker['name']].extend(node_identifiers)
+                else:
+                    marker_groups[marker['name']] = node_identifiers
             merge_fields_with_nodes(field_module, node_identifiers, field_info, node_set_name='datapoints')
             create_group_nodes(field_module, 'marker', node_identifiers, node_set_name='datapoints')
+
+    # Create groups for markers that occur more than once.
+    for marker_group_name in marker_groups:
+        node_identifiers = marker_groups[marker_group_name]
+        if len(node_identifiers) > 1:
+            create_group_nodes(field_module, marker_group_name, node_identifiers, node_set_name='datapoints')
+
     for vessel in data.get_vessels():
         connectivity = determine_vessel_connectivity(vessel)
         node_locations = extract_vessel_node_locations(vessel)
