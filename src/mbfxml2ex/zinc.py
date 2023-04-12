@@ -1,12 +1,12 @@
-from opencmiss.utils.zinc.finiteelement import create_cube_element
-from opencmiss.zinc.context import Context
-from opencmiss.zinc.element import Element
-from opencmiss.zinc.element import Elementbasis
-from opencmiss.zinc.field import FieldGroup
+from cmlibs.utils.zinc.finiteelement import create_cube_element
+from cmlibs.zinc.context import Context
+from cmlibs.zinc.element import Element
+from cmlibs.zinc.element import Elementbasis
+from cmlibs.zinc.field import FieldGroup
 
-from opencmiss.utils.zinc.field import create_field_finite_element, create_field_coordinates, find_or_create_field_group
-from opencmiss.utils.zinc.general import create_node as create_zinc_node
-from opencmiss.utils.zinc.general import ChangeManager
+from cmlibs.utils.zinc.field import create_field_finite_element, create_field_coordinates, find_or_create_field_group
+from cmlibs.utils.zinc.general import create_node as create_zinc_node
+from cmlibs.utils.zinc.general import ChangeManager
 
 from mbfxml2ex.classes import MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet, get_text_properties
 from mbfxml2ex.exceptions import MissingImplementationException, MBFDataException

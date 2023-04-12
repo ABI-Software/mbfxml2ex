@@ -1,6 +1,6 @@
 import itertools
 
-from opencmiss.utils.zinc.general import AbstractNodeDataObject
+from cmlibs.utils.zinc.general import AbstractNodeDataObject
 
 from mbfxml2ex.conversions import hex_to_rgb
 from mbfxml2ex.exceptions import MBFImagesException
