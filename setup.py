@@ -52,7 +52,7 @@ setup(
         ]
     },
     license="Apache Software License",
-    keywords="MBF CMLibs-Zinc",
+    keywords="MBF CMLibs Zinc",
     url="https://github.com/ABI-Software/mbfxml2ex",
     download_url="",
     classifiers=[
