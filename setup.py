@@ -52,8 +52,8 @@ setup(
         ]
     },
     license="Apache Software License",
-    keywords="MBF OpenCMISS-Zinc",
-    url="https://github.com/hsorby/mbfxml2ex",
+    keywords="MBF CMLibs Zinc",
+    url="https://github.com/ABI-Software/mbfxml2ex",
     download_url="",
     classifiers=[
         "Development Status :: 3 - Alpha",

@@ -2,7 +2,7 @@
 MBF XML 2 Ex
 ============
 
-This program converts MBF XML to Ex format suitable for OpenCMISS-Zinc.
+This program converts MBF XML to Ex format suitable for CMLibs-Zinc.
 
 
 Install
