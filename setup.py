@@ -24,6 +24,14 @@ with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 dependencies = ['cmlibs.zinc >= 4.0.0', 'cmlibs.utils >= 0.4.0']
 
+test_deps = [
+    'coverage',
+    'nose',
+    'packaging',
+]
+extras = {
+    'test': test_deps,
+}
 
 setup(
     name="mbfxml2ex",
@@ -37,6 +45,7 @@ setup(
     package_dir={"": "src"},
     zip_safe=False,
     install_requires=dependencies,
+    extras_require=extras,
     entry_points={
         'console_scripts': [
             'mbfxml2exconverter=mbfxml2ex.app:main',

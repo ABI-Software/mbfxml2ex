@@ -1,5 +1,10 @@
 import os
+import re
 import unittest
+
+from packaging.version import Version
+
+from opencmiss.zinc import __version__ as opencmiss_version
 
 from mbfxml2ex.app import read_xml
 from mbfxml2ex.classes import MBFPoint, MBFData, MBFPropertyVolumeRLE, MBFTree
@@ -91,10 +96,11 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         write_ex(ex_file, neurolucida_data)
         self.assertTrue(os.path.exists(ex_file))
 
-        self.assertTrue(_is_line_in_file(ex_file, " Group name: http://purl.org/sig/ont/fma/fma15005"))
+        regex = re.compile(" *Group name: http://purl.org/sig/ont/fma/fma15005")
+        self.assertTrue(_match_line_in_file(ex_file, regex))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(180, len(lines))
+            self.assertEqual(180 if Version(opencmiss_version) < Version("3.9.0") else 153, len(lines))
 
     def test_tree_with_set_property(self):
         ex_file = _resource_path("tree_with_set_property.ex")
@@ -111,11 +117,27 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         write_ex(ex_file, neurolucida_data)
         self.assertTrue(os.path.exists(ex_file))
 
-        self.assertTrue(_is_line_in_file(ex_file, " Group name: Bob"))
-        self.assertTrue(_is_line_in_file(ex_file, " Group name: Dave"))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: Bob")))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: Dave")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(552, len(lines))
+            self.assertEqual(552 if Version(opencmiss_version) < Version("3.9.0") else 369, len(lines))
+
+    def test_contours_with_markers(self):
+        ex_file = _resource_path("contour_with_marker_names.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("contour_with_marker_names.xml")
+        neurolucida_data = read_xml(xml_file)
+
+        write_ex(ex_file, neurolucida_data)
+
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: Hu")))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: ChAT")))
+        with open(ex_file) as f:
+            lines = f.readlines()
+            self.assertEqual(552 if Version(opencmiss_version) < Version("3.9.0") else 252, len(lines))
 
 
 class NeurolucidaReadScaleInformation(unittest.TestCase):
@@ -160,8 +182,8 @@ class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
         write_ex(ex_file, contents)
         self.assertTrue(os.path.exists(ex_file))
 
-        self.assertTrue(_is_line_in_file(ex_file, " Group name: inner submucosal nerve plexus"))
-        self.assertTrue(_is_line_in_file(ex_file, " Group name: Nerve fiber connecting inner submucosal nerve plexus and outer submucosal nerve plexus"))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: inner submucosal nerve plexus")))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: Nerve fiber connecting inner submucosal nerve plexus and outer submucosal nerve plexus")))
 
 
 class NeurolucidaXmlReadTreesAndContoursWithMarkersTestCase(unittest.TestCase):
@@ -255,7 +277,7 @@ class MBFPunctaTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(ex_file))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(290, len(lines))
+            self.assertEqual(290 if Version(opencmiss_version) < Version("3.9.0") else 301, len(lines))
 
     def test_write_puncta(self):
         ex_file = _resource_path("puncta.ex")
@@ -268,7 +290,7 @@ class MBFPunctaTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(ex_file))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(3370, len(lines))
+            self.assertEqual(3370 if Version(opencmiss_version) < Version("3.9.0") else 3387, len(lines))
 
     def test_read_puncta_with_set_property(self):
         ex_file = _resource_path("puncta_with_set_prop.ex")
@@ -280,10 +302,10 @@ class MBFPunctaTestCase(unittest.TestCase):
         write_ex(ex_file, contents)
         self.assertTrue(os.path.exists(ex_file))
 
-        self.assertTrue(_is_line_in_file(ex_file, " Group name: inner submucosal nerve plexus"))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: inner submucosal nerve plexus")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(1055, len(lines))
+            self.assertEqual(1055 if Version(opencmiss_version) < Version("3.9.0") else 1030, len(lines))
 
 
 class MBFPropertyVolumeRLETestCase(unittest.TestCase):
@@ -421,7 +443,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
 
         write_ex(ex_file, neurolucida_data)
         self.assertTrue(os.path.exists(ex_file))
-        self.assertTrue(_is_line_in_file(ex_file, " Group name: marker"))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: marker")))
 
 
 class ExWritingContoursTestCase(unittest.TestCase):
@@ -507,7 +529,7 @@ class ExWritingGroupsTestCase(unittest.TestCase):
         data = read_xml(xml_file)
 
         write_ex(ex_file, data, {'external_annotation': True})
-        self.assertTrue(_is_line_in_file(ex_file, " Group name: Thorasic Sympathetic Trunk"))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: Thorasic Sympathetic Trunk")))
 
 
 class IsOptionTestCase(unittest.TestCase):
@@ -612,6 +634,21 @@ def _generate_lines_that_equal(string, fp):
 def _is_line_in_file(file_name, text):
     with open(file_name, "r") as fp:
         for _ in _generate_lines_that_equal(text, fp):
+            return True
+
+    return False
+
+
+def _generate_lines_that_match(regex, fp):
+    for line in fp:
+        line = line.rstrip()
+        if regex.match(line):
+            yield line
+
+
+def _match_line_in_file(file_name, regex):
+    with open(file_name, "r") as fp:
+        for _ in _generate_lines_that_match(regex, fp):
             return True
 
     return False
