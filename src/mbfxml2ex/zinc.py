@@ -265,24 +265,26 @@ def _process_punctum_data(region, punctum_data):
 
 
 def create_line_elements(field_module, element_node_set, field_names):
-    mesh = field_module.findMeshByDimension(1)
-    node_set = field_module.findNodesetByName('nodes')
-    element_template = mesh.createElementtemplate()
-    element_template.setElementShapeType(Element.SHAPE_TYPE_LINE)
-    element_template.setNumberOfNodes(2)
-    linear_basis = field_module.createElementbasis(1, Elementbasis.FUNCTION_TYPE_LINEAR_LAGRANGE)
-    for field_name in field_names:
-        field = field_module.findFieldByName(field_name)
-        element_template.defineFieldSimpleNodal(field, -1, linear_basis, [1, 2])
+    with ChangeManager(field_module):
+        mesh = field_module.findMeshByDimension(1)
+        node_set = field_module.findNodesetByName('nodes')
+        element_template = mesh.createElementtemplate()
+        element_template.setElementShapeType(Element.SHAPE_TYPE_LINE)
+        linear_basis = field_module.createElementbasis(1, Elementbasis.FUNCTION_TYPE_LINEAR_LAGRANGE)
+        linear_eft = mesh.createElementfieldtemplate(linear_basis)
+        for field_name in field_names:
+            field = field_module.findFieldByName(field_name)
+            element_template.defineField(field, -1, linear_eft)
+    
+        element_identifiers = []
+        for element_nodes in element_node_set:
+            element = mesh.createElement(-1, element_template)
 
-    element_identifiers = []
-    for element_nodes in element_node_set:
-        for i, node_identifier in enumerate(element_nodes):
-            node = node_set.findNodeByIdentifier(node_identifier)
-            element_template.setNode(i + 1, node)
+            for i, node_identifier in enumerate(element_nodes):
+                node = node_set.findNodeByIdentifier(node_identifier)
+                element.setNode(linear_eft, i + 1, node)
 
-        mesh.defineElement(-1, element_template)
-        element_identifiers.append(mesh.getSize())
+            element_identifiers.append(mesh.getSize())
 
     return element_identifiers
 
@@ -364,11 +366,7 @@ def create_group_elements(field_module, group_name, element_ids, dimension=1):
         group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
 
         mesh = field_module.findMeshByDimension(dimension)
-        element_group = group.getFieldElementGroup(mesh)
-        if not element_group.isValid():
-            element_group = group.createFieldElementGroup(mesh)
-
-        mesh_group = element_group.getMeshGroup()
+        mesh_group = group.getOrCreateMeshGroup(mesh)
         for element_id in element_ids:
             element = mesh.findElementByIdentifier(element_id)
             mesh_group.addElement(element)
@@ -380,11 +378,7 @@ def create_group_nodes(field_module, group_name, node_ids, node_set_name='nodes'
         group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
 
         nodeset = field_module.findNodesetByName(node_set_name)
-        node_group = group.getFieldNodeGroup(nodeset)
-        if not node_group.isValid():
-            node_group = group.createFieldNodeGroup(nodeset)
-
-        nodeset_group = node_group.getNodesetGroup()
+        nodeset_group = group.getOrCreateNodesetGroup(nodeset)
         for group_node_id in node_ids:
             node = nodeset.findNodeByIdentifier(group_node_id)
             nodeset_group.addNode(node)
