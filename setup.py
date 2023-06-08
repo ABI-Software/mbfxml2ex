@@ -22,7 +22,10 @@ if not version:
 with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
-dependencies = ['cmlibs.zinc >= 4.0.0', 'cmlibs.utils >= 0.4.0']
+dependencies = [
+    'cmlibs.zinc >= 4.0.0',
+    'cmlibs.utils >= 0.6.0'
+]
 
 test_deps = [
     'coverage',
