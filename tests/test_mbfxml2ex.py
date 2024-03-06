@@ -228,6 +228,20 @@ class VessellucidaXmlReadTestCase(unittest.TestCase):
         contents = read_xml(xml_file)
         self.assertEqual(7, len(contents))
 
+    def test_read_vessel_version_4_xml(self):
+        ex_file = _resource_path("basic_vessel_version_4.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("basic_vessel_version_4.xml")
+        contents = read_xml(xml_file)
+        write_ex(ex_file, contents)
+
+        self.assertEqual(1, len(contents))
+        self.assertTrue(os.path.exists(ex_file))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: Serosa of fundus of stomach")))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: http://purl.org/sig/ont/fma/fma17073")))
+
 
 class MBFPunctaTestCase(unittest.TestCase):
 
@@ -470,7 +484,7 @@ class VesselConnectionTestCase(unittest.TestCase):
         reset_node_id()
 
         vessel = _create_basic_vessel()
-        connectivity = determine_vessel_connectivity(vessel)
+        connectivity, _, _ = determine_vessel_connectivity(vessel)
         self.assertListEqual([1, 2], connectivity[0])
         self.assertListEqual([2, 3], connectivity[1])
         self.assertListEqual([6, 7], connectivity[5])
@@ -481,7 +495,7 @@ class VesselConnectionTestCase(unittest.TestCase):
         reset_node_id()
 
         vessel = _create_repeated_vessel()
-        connectivity = determine_vessel_connectivity(vessel)
+        connectivity, _, _ = determine_vessel_connectivity(vessel)
         self.assertListEqual([1, 2], connectivity[0])
         self.assertEqual(1, len(connectivity))
 
@@ -489,7 +503,7 @@ class VesselConnectionTestCase(unittest.TestCase):
         reset_node_id()
 
         vessel = _create_advanced_vessel()
-        connectivity = determine_vessel_connectivity(vessel)
+        connectivity, _, _ = determine_vessel_connectivity(vessel)
         self.assertListEqual([1, 2], connectivity[0])
         self.assertListEqual([2, 8], connectivity[6])
 

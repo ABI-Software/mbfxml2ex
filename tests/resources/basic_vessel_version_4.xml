@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" xmlns="https://www.mbfbioscience.com/filespecification"
+ xmlns:nl="https://www.mbfbioscience.com/filespecification"
+ appname="Neurolucida 360" appversion="2023.1.1" apprrid="SCR_016788" insrrid="SCR_004314">
+<vessel version="4" color="#00FF00" type="directed" class="vessel">
+  <nodes>
+    <node id="0">
+      <point x="27657.47" y="-27199.96" z="-27145.78" d="555.80"/>
+    </node>
+    <node id="1">
+      <point x="28421.61" y="-26845.71" z="-29071.76" d="299.27"/>
+    </node>
+    <node id="2">
+      <point x="26726.20" y="-26540.33" z="-25761.07" d="457.41"/>
+    </node>
+    <node id="3">
+      <point x="29179.31" y="-26884.33" z="-27619.16" d="439.79"/>
+    </node>
+    <node id="4">
+      <point x="26353.25" y="-24475.06" z="-30347.10" d="347.03"/>
+    </node>
+    <node id="5">
+      <point x="26206.77" y="-26392.81" z="-25417.74" d="613.02"/>
+    </node>
+    <node id="6">
+      <point x="27059.25" y="-25782.59" z="-26439.51" d="337.26"/>
+    </node>
+    <node id="7">
+      <point x="26556.83" y="-24408.13" z="-26529.33" d="367.66"/>
+    </node>
+    <node id="8">
+      <point x="28643.57" y="-24552.72" z="-29674.90" d="580.22"/>
+    </node>
+    <node id="9">
+      <point x="28630.05" y="-25494.16" z="-29565.88" d="487.02"/>
+    </node>
+    <node id="10">
+      <point x="30418.68" y="-25146.88" z="-29203.39" d="502.24"/>
+    </node>
+  </nodes>
+  <edges>
+    <edge id="0" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="27657.47" y="-27199.96" z="-27145.78" d="555.80"/>
+      <point x="27851.80" y="-27260.76" z="-27665.94" d="560.85"/>
+      <point x="28155.49" y="-27251.29" z="-28146.06" d="560.85"/>
+      <point x="28260.00" y="-27270.00" z="-28620.00" d="336.79"/>
+      <point x="28421.61" y="-26845.71" z="-29071.76" d="299.27"/>
+    </edge>
+    <edge id="1" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="26726.20" y="-26540.33" z="-25761.07" d="457.41"/>
+      <point x="26910.00" y="-26730.00" z="-26190.00" d="512.33"/>
+      <point x="27158.45" y="-26863.58" z="-26610.94" d="492.64"/>
+      <point x="27393.11" y="-27117.26" z="-27145.78" d="555.80"/>
+      <point x="27657.47" y="-27199.96" z="-27145.78" d="555.80"/>
+    </edge>
+    <edge id="2" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="29610.00" y="-26640.00" z="-27540.00" d="-90.00"/>
+      <point x="29573.51" y="-26571.86" z="-27524.56" d="464.52"/>
+      <point x="29179.31" y="-26884.33" z="-27619.16" d="439.79"/>
+    </edge>
+    <edge id="3" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="29179.31" y="-26884.33" z="-27619.16" d="439.79"/>
+      <point x="28761.80" y="-27106.06" z="-27252.98" d="364.12"/>
+      <point x="28558.24" y="-27184.88" z="-26863.79" d="364.12"/>
+      <point x="28084.40" y="-27101.75" z="-26657.57" d="477.23"/>
+      <point x="26726.20" y="-26540.33" z="-25761.07" d="457.41"/>
+    </edge>
+    <edge id="4" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="31264.84" y="-26035.01" z="-26444.40" d="383.52"/>
+      <point x="30871.22" y="-25814.78" z="-27007.70" d="400.26"/>
+      <point x="30397.67" y="-25692.36" z="-27254.19" d="450.90"/>
+      <point x="29971.27" y="-25809.58" z="-27553.69" d="450.90"/>
+      <point x="29970.00" y="-26370.00" z="-27810.00" d="328.53"/>
+      <point x="29179.31" y="-26884.33" z="-27619.16" d="439.79"/>
+    </edge>
+    <edge id="5" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="26500.84" y="-23608.84" z="-30723.81" d="297.45"/>
+      <point x="26244.64" y="-24083.82" z="-30398.47" d="339.67"/>
+      <point x="26353.25" y="-24475.06" z="-30347.10" d="347.03"/>
+    </edge>
+    <edge id="6" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="26353.25" y="-24475.06" z="-30347.10" d="347.03"/>
+      <point x="26634.78" y="-25060.59" z="-30076.95" d="453.93"/>
+      <point x="26927.63" y="-25458.63" z="-29739.37" d="433.48"/>
+      <point x="27320.44" y="-25877.50" z="-29388.37" d="459.36"/>
+      <point x="27675.83" y="-26145.10" z="-29130.92" d="433.48"/>
+      <point x="28421.61" y="-26845.71" z="-29071.76" d="299.27"/>
+    </edge>
+    <edge id="7" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17777</s></property>
+      <point x="25560.00" y="-24120.00" z="-29430.00" d="90.00"/>
+      <point x="25571.23" y="-23991.57" z="-29339.01" d="384.88"/>
+      <point x="25830.00" y="-23580.00" z="-30060.00" d="180.00"/>
+      <point x="25817.83" y="-23680.52" z="-30057.49" d="315.49"/>
+      <point x="26353.25" y="-24475.06" z="-30347.10" d="347.03"/>
+    </edge>
+    <edge id="8" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17444</s></property>
+      <point x="25171.73" y="-26110.65" z="-24977.71" d="674.82"/>
+      <point x="25660.45" y="-26289.00" z="-25113.54" d="638.88"/>
+      <point x="26206.77" y="-26392.81" z="-25417.74" d="613.02"/>
+    </edge>
+    <edge id="9" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17444</s></property>
+      <point x="26206.77" y="-26392.81" z="-25417.74" d="613.02"/>
+      <point x="26726.20" y="-26540.33" z="-25761.07" d="457.41"/>
+    </edge>
+    <edge id="10">
+      <point x="25348.55" y="-24098.68" z="-28596.58" d="327.43"/>
+      <point x="25729.89" y="-24146.46" z="-28146.17" d="292.68"/>
+      <point x="25949.02" y="-24383.74" z="-27685.13" d="290.10"/>
+      <point x="26138.01" y="-24703.99" z="-27327.43" d="290.10"/>
+      <point x="26421.80" y="-25262.33" z="-27281.78" d="298.73"/>
+      <point x="26719.12" y="-25563.87" z="-26876.88" d="337.26"/>
+      <point x="27059.25" y="-25782.59" z="-26439.51" d="337.26"/>
+    </edge>
+    <edge id="11" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="27059.25" y="-25782.59" z="-26439.51" d="337.26"/>
+      <point x="27562.99" y="-25859.08" z="-25979.08" d="494.08"/>
+      <point x="27709.51" y="-25923.55" z="-25554.58" d="524.79"/>
+      <point x="26206.77" y="-26392.81" z="-25417.74" d="613.02"/>
+    </edge>
+    <edge id="12" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="27059.25" y="-25782.59" z="-26439.51" d="337.26"/>
+      <point x="26571.74" y="-24976.96" z="-26553.66" d="356.60"/>
+      <point x="26556.83" y="-24408.13" z="-26529.33" d="367.66"/>
+    </edge>
+    <edge id="13" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="26556.83" y="-24408.13" z="-26529.33" d="367.66"/>
+      <point x="26465.62" y="-23931.31" z="-26745.82" d="386.94"/>
+    </edge>
+    <edge id="14" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="24940.04" y="-23843.34" z="-25586.88" d="369.55"/>
+      <point x="25472.62" y="-23748.63" z="-25514.14" d="339.33"/>
+      <point x="25830.00" y="-23490.00" z="-25560.00" d="399.76"/>
+      <point x="25749.39" y="-24171.78" z="-25398.97" d="354.92"/>
+      <point x="26345.79" y="-24023.40" z="-25485.11" d="354.92"/>
+      <point x="26556.83" y="-24408.13" z="-26529.33" d="367.66"/>
+    </edge>
+    <edge id="15" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="28643.57" y="-24552.72" z="-29674.90" d="580.22"/>
+      <point x="28552.65" y="-24141.80" z="-29845.41" d="483.12"/>
+      <point x="28620.00" y="-24120.00" z="-29970.00" d="410.85"/>
+      <point x="28461.59" y="-23650.41" z="-30220.41" d="424.61"/>
+      <point x="28632.14" y="-23221.05" z="-30411.04" d="453.06"/>
+      <point x="28676.36" y="-22768.69" z="-30544.01" d="497.82"/>
+      <point x="28738.94" y="-22445.72" z="-30554.67" d="497.82"/>
+      <point x="29111.92" y="-22203.62" z="-30310.01" d="410.40"/>
+      <point x="29460.04" y="-22168.81" z="-29854.56" d="410.40"/>
+      <point x="29406.27" y="-22231.44" z="-29417.71" d="509.12"/>
+      <point x="29340.00" y="-22140.00" z="-28980.00" d="522.34"/>
+    </edge>
+    <edge id="16" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="30150.00" y="-23310.00" z="-30150.00" d="180.00"/>
+      <point x="30135.25" y="-23423.47" z="-30085.10" d="339.98"/>
+      <point x="29719.48" y="-23702.06" z="-30268.59" d="370.71"/>
+      <point x="29280.87" y="-23997.89" z="-30247.88" d="370.71"/>
+      <point x="28643.57" y="-24552.72" z="-29674.90" d="580.22"/>
+    </edge>
+    <edge id="17" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="28421.61" y="-26845.71" z="-29071.76" d="299.27"/>
+      <point x="28536.01" y="-26370.50" z="-29539.94" d="342.20"/>
+      <point x="28577.80" y="-25872.65" z="-29631.82" d="394.02"/>
+      <point x="28630.05" y="-25494.16" z="-29565.88" d="487.02"/>
+    </edge>
+    <edge id="18" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="28630.05" y="-25494.16" z="-29565.88" d="487.02"/>
+      <point x="28674.36" y="-24986.13" z="-29635.13" d="501.06"/>
+      <point x="28643.57" y="-24552.72" z="-29674.90" d="580.22"/>
+    </edge>
+    <edge id="19" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="30240.00" y="-23940.00" z="-28710.00" d="180.00"/>
+      <point x="30269.83" y="-24022.48" z="-28689.24" d="311.15"/>
+      <point x="29768.77" y="-24013.27" z="-28641.08" d="325.09"/>
+      <point x="29408.56" y="-24326.19" z="-28900.72" d="352.21"/>
+      <point x="29132.21" y="-24847.14" z="-29237.94" d="452.50"/>
+      <point x="28630.05" y="-25494.16" z="-29565.88" d="487.02"/>
+    </edge>
+    <edge id="20" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="27657.47" y="-27199.96" z="-27145.78" d="555.80"/>
+      <point x="28434.02" y="-27247.90" z="-27633.27" d="402.87"/>
+      <point x="28935.29" y="-26983.66" z="-28106.45" d="384.27"/>
+      <point x="29126.57" y="-26875.41" z="-28396.20" d="351.06"/>
+      <point x="29510.14" y="-26702.98" z="-28889.16" d="351.06"/>
+      <point x="29805.55" y="-26283.10" z="-29270.21" d="446.30"/>
+      <point x="30008.18" y="-25887.62" z="-29293.42" d="469.44"/>
+      <point x="30336.40" y="-25490.35" z="-29203.39" d="502.24"/>
+      <point x="30418.68" y="-25146.88" z="-29203.39" d="502.24"/>
+    </edge>
+    <edge id="21" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="30418.68" y="-25146.88" z="-29203.39" d="502.24"/>
+      <point x="30600.00" y="-24390.00" z="-29250.00" d="352.23"/>
+    </edge>
+    <edge id="22" class="Serosa of fundus of stomach">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma17073</s></property>
+      <point x="30418.68" y="-25146.88" z="-29203.39" d="502.24"/>
+      <point x="30911.38" y="-24498.29" z="-29132.81" d="496.56"/>
+    </edge>
+  </edges>
+  <edgelists>
+    <edgelist id="0" edge="0" sourcenode="0" targetnode="1"/>
+    <edgelist id="1" edge="1" sourcenode="2" targetnode="0"/>
+    <edgelist id="2" edge="2" sourcenode="-1" targetnode="3"/>
+    <edgelist id="3" edge="3" sourcenode="3" targetnode="2"/>
+    <edgelist id="4" edge="4" sourcenode="-1" targetnode="3"/>
+    <edgelist id="5" edge="5" sourcenode="-1" targetnode="4"/>
+    <edgelist id="6" edge="6" sourcenode="4" targetnode="1"/>
+    <edgelist id="7" edge="7" sourcenode="-1" targetnode="4"/>
+    <edgelist id="8" edge="8" sourcenode="-1" targetnode="5"/>
+    <edgelist id="9" edge="9" sourcenode="5" targetnode="2"/>
+    <edgelist id="10" edge="10" sourcenode="-1" targetnode="6"/>
+    <edgelist id="11" edge="11" sourcenode="6" targetnode="5"/>
+    <edgelist id="12" edge="12" sourcenode="6" targetnode="7"/>
+    <edgelist id="13" edge="13" sourcenode="7" targetnode="-1"/>
+    <edgelist id="14" edge="14" sourcenode="-1" targetnode="7"/>
+    <edgelist id="15" edge="15" sourcenode="8" targetnode="-1"/>
+    <edgelist id="16" edge="16" sourcenode="-1" targetnode="8"/>
+    <edgelist id="17" edge="17" sourcenode="1" targetnode="9"/>
+    <edgelist id="18" edge="18" sourcenode="9" targetnode="8"/>
+    <edgelist id="19" edge="19" sourcenode="-1" targetnode="9"/>
+    <edgelist id="20" edge="20" sourcenode="0" targetnode="10"/>
+    <edgelist id="21" edge="21" sourcenode="10" targetnode="-1"/>
+    <edgelist id="22" edge="22" sourcenode="10" targetnode="-1"/>
+  </edgelists>
+</vessel>
+</mbf>

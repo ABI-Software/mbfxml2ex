@@ -8,7 +8,7 @@ from cmlibs.utils.zinc.field import create_field_finite_element, create_field_co
 from cmlibs.utils.zinc.general import create_node as create_zinc_node
 from cmlibs.utils.zinc.general import ChangeManager
 
-from mbfxml2ex.classes import MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet, get_text_properties
+from mbfxml2ex.classes import MBFPropertyTraceAssociation, MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet, get_text_properties
 from mbfxml2ex.exceptions import MissingImplementationException, MBFDataException
 from mbfxml2ex.utilities import extract_vessel_node_locations
 from mbfxml2ex.templates import field_header_3d_template, grid_field_3d_template, field_data_template
@@ -80,12 +80,24 @@ def determine_vessel_connectivity(vessel):
     global node_id
 
     connectivity = []
+    associated_groups = []
+    groups = []
     node_map = {}
     node_pair = [None, None]
     if 'edges' in vessel:
         edges = vessel['edges']
         for edge in edges:
             edge_map = {}
+
+            groups.append({})
+            if 'class' in edge:
+                groups[-1]['name'] = edge['class']
+
+            if 'properties' in edge:
+                for property_ in edge['properties']:
+                    if type(property_) is MBFPropertyTraceAssociation:
+                        groups[-1]['TraceAssociation'] = property_.label()
+
             if 'data' in edge:
                 for point in edge['data']:
                     str_point = str(point)
@@ -102,10 +114,11 @@ def determine_vessel_connectivity(vessel):
                         else:
                             node_pair[1] = next_node_id
                             connectivity.append(node_pair)
+                            associated_groups.append(len(groups) - 1)
                             node_pair = [node_id, None]
                 node_pair = [None, None]
 
-    return connectivity
+    return connectivity, associated_groups, groups
 
 
 def load(region, data, options):
@@ -227,12 +240,27 @@ def load(region, data, options):
             create_group_nodes(field_module, marker_group_name, node_identifiers, node_set_name='datapoints')
 
     for vessel in data.get_vessels():
-        connectivity = determine_vessel_connectivity(vessel)
+        connectivity, associated_groups, groups = determine_vessel_connectivity(vessel)
         node_locations = extract_vessel_node_locations(vessel)
         node_identifiers = create_nodes(field_module, node_locations)
         field_info = {'rgb': vessel['rgb']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
-        create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
+        element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
+
+        for index, associated_group in enumerate(associated_groups):
+            element_id = element_ids[index]
+            current_group = groups[associated_group]
+            if 'elements' in current_group:
+                current_group['elements'].append(element_id)
+            else:
+                current_group['elements'] = [element_id]
+
+        for group in groups:
+            if 'elements' in group:
+                group_element_ids = group['elements']
+                del group['elements']
+                for key in group:
+                    create_group_elements(field_module, group[key], group_element_ids)
 
     if punctum_data:
         _process_punctum_data(region, punctum_data)
@@ -284,7 +312,7 @@ def create_line_elements(field_module, element_node_set, field_names):
                 node = node_set.findNodeByIdentifier(node_identifier)
                 element.setNode(linear_eft, i + 1, node)
 
-            element_identifiers.append(mesh.getSize())
+            element_identifiers.append(element.getIdentifier())
 
     return element_identifiers
 
