@@ -112,3 +112,6 @@ tests/resources/*.ex
 
 # SPARC prefixed files
 SPARC_*
+
+.DS_Store
+

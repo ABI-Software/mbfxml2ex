@@ -277,13 +277,17 @@ def parse_nodes(nodes_root):
 
 
 def parse_edge(edge_root):
-    edge = {'id': edge_root.attrib['id']}
+    edge = {'id': edge_root.attrib['id'], 'properties': []}
+    if 'class' in edge_root.attrib:
+        edge['class'] = edge_root.attrib['class']
 
     data = []
     for child in edge_root:
         raw_tag = get_raw_tag(child)
         if raw_tag == "point":
             data.append(_create_mbf_point(child))
+        elif raw_tag == "property":
+            edge['properties'].append(parse_property(child))
         else:
             raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
 
@@ -327,11 +331,12 @@ def parse_edgelists(edgelists_root):
 
 
 def parse_vessel(vessel_root):
-    vessel = {'version': vessel_root.attrib['version'],
+    version = int(vessel_root.attrib['version'])
+    vessel = {'version': version,
               'colour': vessel_root.attrib['color'],
               'rgb': hex_to_rgb(vessel_root.attrib['color']),
               'type': vessel_root.attrib['type'],
-              'name': vessel_root.attrib['name'], }
+              'name': vessel_root.attrib['name'] if version < 4 else vessel_root.attrib['class'], }
 
     for child in vessel_root:
         raw_tag = get_raw_tag(child)
