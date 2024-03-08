@@ -486,8 +486,6 @@ class ExWritingContoursTestCase(unittest.TestCase):
         write_ex(ex_file, data)
         self.assertTrue(os.path.exists(ex_file))
 
-        self.assertTrue(False)
-
 
 class VesselConnectionTestCase(unittest.TestCase):
 
