@@ -477,6 +477,17 @@ class ExWritingContoursTestCase(unittest.TestCase):
         write_ex(ex_file, data)
         self.assertTrue(os.path.exists(ex_file))
 
+    def test_tree_order(self):
+        ex_file = _resource_path("large_tree_with_tree_order_prop.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        data = read_xml(_resource_path("large_tree_with_tree_order_prop.xml"))
+        write_ex(ex_file, data)
+        self.assertTrue(os.path.exists(ex_file))
+
+        self.assertTrue(False)
+
 
 class VesselConnectionTestCase(unittest.TestCase):
 

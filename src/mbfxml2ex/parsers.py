@@ -1,5 +1,6 @@
 from mbfxml2ex.classes import MBFPropertyChannel, MBFProperty, NeurolucidaChannel, NeurolucidaChannels, \
-    NeurolucidaZSpacing, MBFPoint, MBFPropertyPunctum, MBFPropertyVolumeRLE, MBFPropertySet, MBFPropertyTraceAssociation, MBFTree, MBFPropertyGUID, MBFPropertyFillDensity
+    NeurolucidaZSpacing, MBFPoint, MBFPropertyPunctum, MBFPropertyVolumeRLE, MBFPropertySet, MBFPropertyTraceAssociation, \
+    MBFTree, MBFPropertyGUID, MBFPropertyFillDensity, MBFPropertyTreeOrder
 from mbfxml2ex.conversions import hex_to_rgb
 from mbfxml2ex.exceptions import MBFXMLException
 from mbfxml2ex.utilities import get_raw_tag
@@ -27,10 +28,12 @@ def parse_tree(tree_root):
     leaf = tree_root.attrib['leaf']
     structure = _parse_tree_structure(tree_root)
     properties = []
+    print('parse tree.')
     for child in tree_root:
         raw_tag = get_raw_tag(child)
         if raw_tag == "property":
             properties.append(parse_property(child))
+            print(properties)
 
     return MBFTree(colour, type_, leaf, structure, properties)
 
@@ -158,6 +161,21 @@ def parse_guid_property(property_root):
     return MBFPropertyGUID(_property_text(property_root))
 
 
+def parse_tree_order_property(property_root):
+    children = list(property_root)
+    if len(children) == 2:
+        label_element = children[0]
+        number_element = children[1]
+        label_string = "".join(label_element.itertext())
+        if label_string != "Shaft":
+            raise MBFXMLException("XML format violation tree order property first child is not 'Shaft'.")
+        number_string = "".join(number_element.itertext())
+    else:
+        raise MBFXMLException("XML format violation tree order property has no children.")
+
+    return MBFPropertyTreeOrder(int(number_string))
+
+
 def parse_property(property_root) -> MBFProperty:
     name = property_root.attrib['name']
     if name == "Channel":
@@ -174,6 +192,8 @@ def parse_property(property_root) -> MBFProperty:
         return parse_guid_property(property_root)
     elif name == "FillDensity":
         return parse_fill_density_property(property_root)
+    elif name == "TreeOrder":
+        return parse_tree_order_property(property_root)
     elif name == "zSmear":
         pass
     elif name == "Densitometry":
