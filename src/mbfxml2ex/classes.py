@@ -77,6 +77,20 @@ class MBFPropertyFillDensity(MBFProperty):
         return self._number
 
 
+class MBFPropertyTreeOrder(MBFProperty):
+
+    def __init__(self, number):
+        super(MBFPropertyTreeOrder, self).__init__("1")
+        self._number = number
+
+    def number(self):
+        return self._number
+
+    def __repr__(self):
+        version_str = super(MBFPropertyTreeOrder, self).__repr__()
+        return f'Shaft={self._number} [{version_str}]'
+
+
 class MBFPropertyPunctum(MBFProperty):
 
     def __init__(self, version, spread, mean_luminance, surface_area, voxel_count, flag_2d,
@@ -316,6 +330,7 @@ class MBFTree(object):
 
 def _determine_point_properties(structure, inherited_properties=None):
 
+    print('determine point properties')
     properties = []
     current_properties = []
     current_inherited_properties = [] if inherited_properties is None else inherited_properties[:]
@@ -333,6 +348,7 @@ def _determine_point_properties(structure, inherited_properties=None):
         else:
             properties.append(current_properties)
 
+    print('end properties:', properties)
     return properties
 
 
@@ -480,6 +496,7 @@ def get_text_properties(properties):
             text_properties.append(property_.label())
 
     return text_properties
+
 
 def _get_inherited_properties(properties):
     inherited_properties = []
