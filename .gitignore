@@ -109,6 +109,7 @@ venvs/
 
 # Testing output files
 tests/resources/*.ex
+tests/resources/rat_stomach_neurons.swc
 
 # SPARC prefixed files
 SPARC_*
