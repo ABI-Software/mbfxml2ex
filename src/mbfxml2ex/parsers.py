@@ -28,12 +28,10 @@ def parse_tree(tree_root):
     leaf = tree_root.attrib['leaf']
     structure = _parse_tree_structure(tree_root)
     properties = []
-    print('parse tree.')
     for child in tree_root:
         raw_tag = get_raw_tag(child)
         if raw_tag == "property":
             properties.append(parse_property(child))
-            print(properties)
 
     return MBFTree(colour, type_, leaf, structure, properties)
 
@@ -150,7 +148,11 @@ def _property_text(property_root):
 
 
 def parse_set_property(property_root):
-    return MBFPropertySet(_property_text(property_root))
+    items = []
+    for child in property_root:
+        items.append(child.text)
+
+    return MBFPropertySet(items)
 
 
 def parse_trace_association_property(property_root):

@@ -213,7 +213,9 @@ def load(region, data, options):
                                      "origin": volume_rle.origin(), "values": field_values,
                                      "corners": volume_rle.corner_coordinates()}
                     if set_name is not None:
-                        punctum_datum["set_name"] = set_name.label()
+                        items = set_name.items()
+                        if len(items) == 1:
+                           punctum_datum["set_name"] = items[0]
 
                     punctum_data.append(punctum_datum)
             else:
