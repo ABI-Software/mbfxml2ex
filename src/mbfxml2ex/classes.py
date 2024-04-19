@@ -193,13 +193,17 @@ class MBFPropertyText(MBFProperty):
         return self._label
 
 
-class MBFPropertySet(MBFPropertyText):
+class MBFPropertySet(MBFProperty):
 
-    def __init__(self, label):
-        super(MBFPropertySet, self).__init__(label)
+    def __init__(self, items):
+        super(MBFPropertySet, self).__init__(-1.0)
+        self._items = items
+
+    def items(self):
+        return self._items
 
     def __repr__(self):
-        return 'Set "{0}"'.format(self._label)
+        return 'Set: "{0}"'.format(', '.join(self._items))
 
 
 class MBFPropertyTraceAssociation(MBFPropertyText):
@@ -330,7 +334,6 @@ class MBFTree(object):
 
 def _determine_point_properties(structure, inherited_properties=None):
 
-    print('determine point properties')
     properties = []
     current_properties = []
     current_inherited_properties = [] if inherited_properties is None else inherited_properties[:]
@@ -348,7 +351,6 @@ def _determine_point_properties(structure, inherited_properties=None):
         else:
             properties.append(current_properties)
 
-    print('end properties:', properties)
     return properties
 
 
@@ -494,6 +496,8 @@ def get_text_properties(properties):
     for property_ in properties:
         if isinstance(property_, MBFPropertyText) and property_.label():
             text_properties.append(property_.label())
+        elif isinstance(property_, MBFPropertySet) and len(property_.items()):
+            text_properties.extend(property_.items())
 
     return text_properties
 
@@ -501,7 +505,7 @@ def get_text_properties(properties):
 def _get_inherited_properties(properties):
     inherited_properties = []
     for property_ in properties:
-        if isinstance(property_, MBFPropertySet) and property_.label():
-            inherited_properties.append(property_.label())
+        if isinstance(property_, MBFPropertySet) and len(property_.items()):
+            inherited_properties.extend(property_.items())
 
     return inherited_properties

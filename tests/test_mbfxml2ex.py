@@ -46,7 +46,7 @@ class NeurolucidaXmlReadTreesWithAnatomicalTermsTestCase(unittest.TestCase):
         self.assertEqual('Dendrite', tree.type_description())
         self.assertEqual('Generated', tree.leaf())
         self.assertEqual(1, len(tree.properties()))
-        self.assertEqual('Thorasic Sympathetic Trunk', tree.properties()[0].label())
+        self.assertEqual('Thorasic Sympathetic Trunk', tree.properties()[0].items()[0])
         self.assertListEqual([0.0, 1.0, 1.0], tree.rgb())
 
 
