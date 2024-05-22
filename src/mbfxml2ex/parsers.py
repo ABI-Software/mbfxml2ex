@@ -92,7 +92,7 @@ def parse_punctum_property_version_4(children):
     colocalized_fraction = float("".join(children[9].itertext()))
     proximal_fraction = float("".join(children[10].itertext()))
     return spread, mean_luminance, surface_area, voxel_count, flag_2d, \
-           volume, location, colocalized_fraction, proximal_fraction
+        volume, location, colocalized_fraction, proximal_fraction
 
 
 def parse_punctum_property(property_root):
@@ -102,7 +102,7 @@ def parse_punctum_property(property_root):
         version = float("".join(version_element.itertext()))
         if version == 4:
             spread, mean_luminance, surface_area, voxel_count, flag_2d, \
-            volume, location, colocalized_fraction, proximal_fraction = parse_punctum_property_version_4(children)
+                volume, location, colocalized_fraction, proximal_fraction = parse_punctum_property_version_4(children)
         else:
             raise MBFXMLException("XML format violation punctum property has unknown version '{0}'.".format(version))
     else:
@@ -354,11 +354,14 @@ def parse_edgelists(edgelists_root):
 
 def parse_vessel(vessel_root):
     version = int(vessel_root.attrib['version'])
-    vessel = {'version': version,
-              'colour': vessel_root.attrib['color'],
-              'rgb': hex_to_rgb(vessel_root.attrib['color']),
-              'type': vessel_root.attrib['type'],
-              'name': vessel_root.attrib['name'] if version < 4 else vessel_root.attrib['class'], }
+    vessel = {
+        'version': version,
+        'colour': vessel_root.attrib['color'],
+        'rgb': hex_to_rgb(vessel_root.attrib['color']),
+        'type': vessel_root.attrib['type'],
+        'properties': [],
+        'name': vessel_root.attrib['name'] if version < 4 else vessel_root.attrib['class'],
+    }
 
     for child in vessel_root:
         raw_tag = get_raw_tag(child)
@@ -368,8 +371,10 @@ def parse_vessel(vessel_root):
             vessel['edges'] = parse_edges(child)
         elif raw_tag == "edgelists":
             vessel['edgelists'] = parse_edgelists(child)
+        elif raw_tag == "property":
+            vessel['properties'].append(parse_property(child))
         else:
-            print('Unhandled tag: ', raw_tag)
+            print(f"Unhandled tag in vessel: '{raw_tag}'")
 
     return vessel
 

@@ -249,6 +249,12 @@ def load(region, data, options):
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
 
+        groups.append({})
+        for property_ in vessel['properties']:
+            if type(property_) is MBFPropertyTraceAssociation:
+                groups[-1]['TraceAssociation'] = property_.label()
+                groups[-1]['elements'] = element_ids
+
         for index, associated_group in enumerate(associated_groups):
             element_id = element_ids[index]
             current_group = groups[associated_group]
