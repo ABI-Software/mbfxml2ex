@@ -241,6 +241,7 @@ class VessellucidaXmlReadTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(ex_file))
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: Serosa of fundus of stomach")))
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: http://purl.org/sig/ont/fma/fma17073")))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: http://uri.interlex.org/base/ilx_0738426")))
 
 
 class MBFPunctaTestCase(unittest.TestCase):

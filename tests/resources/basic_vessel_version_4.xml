@@ -3,6 +3,7 @@
  xmlns:nl="https://www.mbfbioscience.com/filespecification"
  appname="Neurolucida 360" appversion="2023.1.1" apprrid="SCR_016788" insrrid="SCR_004314">
 <vessel version="4" color="#00FF00" type="directed" class="vessel">
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0738426</s></property>
   <nodes>
     <node id="0">
       <point x="27657.47" y="-27199.96" z="-27145.78" d="555.80"/>
