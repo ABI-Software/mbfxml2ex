@@ -341,6 +341,9 @@ def _determine_point_properties(structure, inherited_properties=None):
         current_inherited_properties.extend(_get_inherited_properties(structure['properties']))
         current_properties = get_text_properties(structure['properties'])
 
+    if 'class' in structure:
+        current_properties.append(structure['class'])
+
     current_properties.extend(current_inherited_properties)
     # Make the list of current properties unique.
     current_properties = list(set(current_properties))
