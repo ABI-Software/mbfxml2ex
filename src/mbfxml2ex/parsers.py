@@ -8,6 +8,9 @@ from mbfxml2ex.utilities import get_raw_tag
 
 def _parse_tree_structure(tree_root):
     tree = {'points': [], 'properties': []}
+    if 'class' in tree_root.attrib:
+        tree['class'] = tree_root.attrib['class']
+
     for child in tree_root:
         raw_tag = get_raw_tag(child)
         if raw_tag == "point":
