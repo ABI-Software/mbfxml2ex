@@ -30,6 +30,7 @@ def determine_tree_connectivity(tree, parent_node_id=None):
     branching_node_id = None
 
     connectivity = []
+    branch_markers = []
     node_pair = [None, None]
     for pt in tree:
         if isinstance(pt, list):
@@ -37,19 +38,23 @@ def determine_tree_connectivity(tree, parent_node_id=None):
             br = pt[:]
             if branching_node_id is None:
                 branching_node_id = node_id
-            connectivity.extend(determine_tree_connectivity(br, branching_node_id))
+            child_connectivity, child_branch_markers = determine_tree_connectivity(br, branching_node_id)
+            connectivity.extend(child_connectivity)
+            branch_markers.extend(child_branch_markers)
         else:
             node_id += 1
             if node_pair[0] is None:
                 node_pair[0] = node_id
                 if parent_node_id is not None:
                     connectivity.append([parent_node_id, node_id])
+                    branch_markers.append(1)
             elif node_pair[1] is None:
                 node_pair[1] = node_id
                 connectivity.append(node_pair)
+                branch_markers.append(0)
                 node_pair = [node_id, None]
 
-    return connectivity
+    return connectivity, branch_markers
 
 
 def determine_contour_connectivity(contour, closed):
@@ -133,7 +138,7 @@ def load(region, data, options):
     for tree in data.get_trees():
         tree_data = tree.points()
         point_properties = tree.point_properties()
-        connectivity = determine_tree_connectivity(tree_data)
+        connectivity, branch_markers = determine_tree_connectivity(tree_data)
         node_identifiers = create_nodes(field_module, tree_data)
 
         group_name = tree.type_description()
@@ -153,6 +158,8 @@ def load(region, data, options):
             first_node_index = node_identifiers.index(first_node)
             second_node_index = node_identifiers.index(second_node)
             first_node_properties = point_properties[first_node_index]
+            if branch_markers[index]:
+                first_node_properties = []
             second_node_properties = point_properties[second_node_index]
             element_properties = list(set(first_node_properties + second_node_properties))
 
