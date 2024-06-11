@@ -100,7 +100,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, regex))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(180 if Version(zinc_version) < Version("3.9.0") else 153, len(lines))
+            self.assertEqual(180 if Version(zinc_version) < Version("3.9.0") else 167, len(lines))
 
     def test_tree_with_set_property(self):
         ex_file = _resource_path("tree_with_set_property.ex")
@@ -121,7 +121,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: Dave")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 369, len(lines))
+            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 376, len(lines))
 
     def test_contours_with_markers(self):
         ex_file = _resource_path("contour_with_marker_names.ex")
@@ -359,12 +359,12 @@ class DetermineTreeConnectivityTestCase(unittest.TestCase):
     def test_determine_connectivity_basic(self):
         reset_node_id()
         tree = [MBFPoint(3, 3, 4, 2), MBFPoint(2, 1, 5, 7), MBFPoint(3, 1, 4.2, 7.1)]
-        self.assertListEqual([[1, 2], [2, 3]], determine_tree_connectivity(tree))
+        self.assertListEqual([[1, 2], [2, 3]], determine_tree_connectivity(tree)[0])
 
     def test_determine_connectivity_branch(self):
         reset_node_id()
         tree = [MBFPoint(3, 3, 4, 2), [MBFPoint(2, 1, 5, 7)], [MBFPoint(2, 4, 8, 5.7)]]
-        self.assertListEqual([[1, 2], [1, 3]], determine_tree_connectivity(tree))
+        self.assertListEqual([[1, 2], [1, 3]], determine_tree_connectivity(tree)[0])
 
     def test_determine_connectivity_multiple_branch(self):
         reset_node_id()
@@ -376,7 +376,7 @@ class DetermineTreeConnectivityTestCase(unittest.TestCase):
                 [MBFPoint(2, 4, 8, 5.7), MBFPoint(2, 4, 8, 5.7)]]
         self.assertListEqual([[1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 9],
                               [9, 10], [6, 11], [11, 12], [12, 13], [3, 14], [14, 15]],
-                             determine_tree_connectivity(tree))
+                             determine_tree_connectivity(tree)[0])
 
 
 class DetermineContourConnectivityTestCase(unittest.TestCase):
@@ -565,6 +565,22 @@ class IsOptionTestCase(unittest.TestCase):
     def test_is_not_option(self):
         o = {'external_annotation': False}
         self.assertFalse(is_option('use_latest', o))
+
+
+class VagusTracingTestCase(unittest.TestCase):
+
+    def test_write_groups_annotations(self):
+        ex_file = _resource_path("vagus_tracing.exf")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("vagus_tracing.xml")
+        data = read_xml(xml_file)
+
+        write_ex(ex_file, data)
+
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: http://uri.interlex.org/base/ilx_0794774")))
+        self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: Spinal accessory nerve")))
 
 
 def _create_advanced_vessel():

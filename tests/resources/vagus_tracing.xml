@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" xmlns="https://www.mbfbioscience.com/filespecification"
+ xmlns:nl="https://www.mbfbioscience.com/filespecification"
+ appname="Neurolucida 360" appversion="2024.1.1" apprrid="SCR_016788" insrrid="SCR_004314">
+<sparcdata>
+    <subject species="http://purl.obolibrary.org/obo/NCBITaxon_9606" subjectid="SR005-CL1" sex="Blinded to condition" age="Blinded to condition"/>
+    <atlas organ="REVA Vagus Terms Root" label="Species Independent" rootid="http://uri.interlex.org/base/ilx_0793921"/>
+</sparcdata>
+<marker type="FilledUpTriangle" color="#808000" name="left level of superior border of jugular foramen on the vagus nerve" varicosity="false">
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0794619</s></property>
+  <point x="283.10" y="-259.72" z="-95.29" d="1.00"/>
+</marker>
+<marker type="FilledDownTriangle" color="#000080" name="left level of inferior border of jugular foramen on the vagus nerve" varicosity="false">
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0794622</s></property>
+  <point x="286.17" y="-176.63" z="-225.03" d="1.00"/>
+</marker>
+<marker type="FilledSquare" color="#008000" name="left level of inferior border of cranium on the vagus nerve" varicosity="false">
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0794625</s></property>
+  <point x="298.18" y="-263.38" z="-296.66" d="1.00"/>
+</marker>
+<marker type="FilledDiamond" color="#800080" name="left level of angle of the mandible on the vagus nerve" varicosity="false">
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0794637</s></property>
+  <point x="296.98" y="-251.88" z="-1100.95" d="1.00"/>
+</marker>
+<marker type="Flower" color="#808080" name="left level of carotid bifurcation on the vagus nerve" varicosity="false">
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0794640</s></property>
+  <point x="262.74" y="-233.07" z="-1613.62" d="1.00"/>
+</marker>
+<marker type="OpenStar" color="#00FFFF" name="left level of greater horn of hyoid on the vagus nerve" varicosity="false">
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0794631</s></property>
+  <point x="264.07" y="-233.07" z="-1715.36" d="1.00"/>
+</marker>
+<tree color="#FFFF00" type="Dendrite" leaf="Normal" rootclass="Left vagus nerve">
+  <point x="277.90" y="-235.69" z="-116.03" d="122.18"/>
+  <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma6220</s></property>
+  <point x="288.07" y="-216.00" z="-242.24" d="122.18"/>
+  <branch class="Left vagus nerve">
+    <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma6220</s></property>
+    <point x="312.41" y="-208.49" z="-389.25" d="114.25"/>
+    <point x="317.83" y="-205.92" z="-445.81" d="114.25"/>
+    <branch class="Left vagus nerve">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma6220</s></property>
+      <point x="327.16" y="-207.92" z="-608.92" d="82.51"/>
+      <point x="349.36" y="-211.08" z="-608.92" d="82.51"/>
+    </branch>
+    <branch class="Hypoglossal nerve">
+      <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma50871</s></property>
+      <point x="295.00" y="-185.00" z="-627.00" d="57.12"/>
+      <point x="296.72" y="-215.37" z="-793.72" d="57.12"/>
+      <point x="299.44" y="-216.84" z="-872.25" d="58.71"/>
+      <point x="297.58" y="-211.63" z="-923.36" d="52.36"/>
+      <point x="287.52" y="-210.00" z="-968.11" d="52.36"/>
+      <branch class="Hypoglossal nerve">
+        <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma50871</s></property>
+        <point x="311.23" y="-201.51" z="-1048.70" d="52.36"/>
+        <point x="333.89" y="-204.48" z="-1115.69" d="52.36"/>
+        <point x="349.15" y="-214.35" z="-1197.57" d="61.88"/>
+        <branch class="Hypoglossal nerve">
+          <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma50871</s></property>
+          <point x="360.93" y="-237.42" z="-1322.35" d="66.64"/>
+          <point x="369.83" y="-234.41" z="-1422.74" d="66.64"/>
+          <point x="396.86" y="-229.10" z="-1533.05" d="69.82"/>
+          <point x="428.71" y="-221.52" z="-1636.65" d="69.82"/>
+          <point x="452.51" y="-209.09" z="-1709.33" d="84.10"/>
+          <branch class="Hypoglossal nerve">
+            <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma50871</s></property>
+            <point x="495.88" y="-205.24" z="-1766.76" d="65.06"/>
+            <point x="513.78" y="-208.89" z="-1810.28" d="65.06"/>
+            <branch leaf="Normal" class="Hypoglossal nerve">
+              <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma50871</s></property>
+              <point x="545.51" y="-211.10" z="-1852.76" d="52.36"/>
+              <point x="565.00" y="-210.00" z="-1886.00" d="47.60"/>
+              <point x="589.00" y="-212.00" z="-1928.00" d="47.60"/>
+            </branch>
+            <branch leaf="Normal" class="Hypoglossal nerve">
+              <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma50871</s></property>
+              <point x="524.00" y="-236.00" z="-1897.00" d="17.45"/>
+              <point x="531.00" y="-237.00" z="-1928.00" d="17.45"/>
+              <point x="535.00" y="-229.00" z="-1941.00" d="17.45"/>
+            </branch>
+          </branch>
+          <branch leaf="Normal" class="Hypoglossal nerve">
+            <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma50871</s></property>
+            <point x="432.00" y="-211.00" z="-1795.00" d="49.19"/>
+            <point x="436.00" y="-231.00" z="-1867.00" d="49.19"/>
+            <point x="446.00" y="-238.00" z="-1926.00" d="53.95"/>
+            <point x="454.89" y="-234.66" z="-1949.17" d="53.95"/>
+          </branch>
+        </branch>
+        <branch leaf="Normal" class="left branch between vagus nerve and superior root of ansa cervicalis">
+          <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0793951</s></property>
+          <point x="317.00" y="-246.00" z="-1308.00" d="11.11"/>
+          <point x="316.00" y="-247.00" z="-1337.00" d="11.11"/>
+          <point x="314.00" y="-250.00" z="-1371.00" d="11.11"/>
+          <point x="312.00" y="-250.00" z="-1404.00" d="11.11"/>
+          <point x="313.28" y="-259.83" z="-1441.89" d="11.11"/>
+          <point x="317.00" y="-251.00" z="-1471.00" d="11.11"/>
+          <point x="317.00" y="-254.00" z="-1504.00" d="11.11"/>
+          <point x="320.40" y="-251.50" z="-1536.60" d="11.11"/>
+          <point x="320.00" y="-249.00" z="-1566.00" d="11.11"/>
+          <point x="320.82" y="-251.47" z="-1601.12" d="11.11"/>
+          <point x="328.34" y="-247.96" z="-1627.69" d="11.11"/>
+          <point x="336.72" y="-247.54" z="-1645.14" d="11.11"/>
+          <point x="342.78" y="-249.26" z="-1662.29" d="11.11"/>
+        </branch>
+      </branch>
+      <branch leaf="Normal" class="branch of hypoglossal nerve">
+        <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0794885</s></property>
+        <point x="260.00" y="-231.00" z="-1015.00" d="26.98"/>
+        <point x="240.00" y="-233.00" z="-1033.00" d="20.63"/>
+        <point x="215.00" y="-241.00" z="-1054.00" d="20.63"/>
+        <point x="184.00" y="-244.00" z="-1068.00" d="20.63"/>
+        <point x="180.00" y="-245.00" z="-1070.00" d="20.63"/>
+      </branch>
+      <branch leaf="Normal" class="branch of hypoglossal nerve">
+        <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0794885</s></property>
+        <point x="253.00" y="-258.00" z="-968.00" d="26.98"/>
+        <point x="226.00" y="-255.00" z="-981.00" d="26.98"/>
+        <point x="197.00" y="-243.00" z="-1003.00" d="26.98"/>
+        <point x="179.00" y="-244.00" z="-1024.00" d="22.21"/>
+        <point x="164.96" y="-242.86" z="-1047.72" d="22.21"/>
+      </branch>
+    </branch>
+    <branch>
+      <point x="370.39" y="-198.20" z="-498.74" d="114.25"/>
+      <branch class="glossopharyngeal nerve">
+        <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma50870</s></property>
+        <point x="396.54" y="-167.86" z="-584.14" d="49.19"/>
+        <point x="420.16" y="-173.16" z="-636.71" d="52.36"/>
+        <branch class="glossopharyngeal nerve">
+          <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma50870</s></property>
+          <point x="452.00" y="-179.00" z="-688.00" d="42.84"/>
+          <point x="465.00" y="-192.00" z="-722.00" d="42.84"/>
+          <point x="474.00" y="-197.00" z="-755.00" d="47.60"/>
+          <point x="487.00" y="-219.00" z="-808.00" d="47.60"/>
+          <point x="500.00" y="-215.00" z="-846.00" d="55.54"/>
+          <point x="515.00" y="-226.00" z="-887.00" d="55.54"/>
+          <point x="533.00" y="-229.00" z="-922.00" d="55.54"/>
+          <branch class="glossopharyngeal nerve">
+            <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma50870</s></property>
+            <point x="552.00" y="-229.00" z="-953.00" d="55.54"/>
+            <point x="571.79" y="-225.97" z="-984.72" d="55.54"/>
+          </branch>
+          <branch leaf="Normal" class="branch of glossopharyngeal nerve">
+            <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0794882</s></property>
+            <point x="510.00" y="-230.00" z="-948.00" d="20.63"/>
+            <point x="503.00" y="-230.00" z="-974.00" d="20.63"/>
+            <point x="499.00" y="-237.00" z="-994.00" d="20.63"/>
+            <point x="508.00" y="-235.00" z="-1017.00" d="20.63"/>
+            <point x="519.00" y="-232.00" z="-1033.00" d="20.63"/>
+            <point x="531.00" y="-231.00" z="-1053.00" d="20.63"/>
+            <point x="547.06" y="-237.96" z="-1080.87" d="20.63"/>
+            <point x="573.17" y="-237.31" z="-1110.80" d="20.63"/>
+            <point x="590.57" y="-237.42" z="-1138.64" d="20.63"/>
+            <point x="607.00" y="-238.00" z="-1180.00" d="20.63"/>
+            <point x="616.00" y="-239.00" z="-1213.00" d="20.63"/>
+            <point x="615.00" y="-232.00" z="-1240.00" d="20.63"/>
+          </branch>
+        </branch>
+      </branch>
+      <branch leaf="Normal" class="branch between vagus nerve and cervical sympathetic trunk">
+        <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0794774</s></property>
+        <point x="406.68" y="-225.35" z="-497.02" d="9.52"/>
+        <point x="423.47" y="-243.08" z="-512.47" d="9.52"/>
+        <point x="438.00" y="-257.00" z="-511.00" d="11.11"/>
+        <point x="468.00" y="-261.00" z="-513.00" d="11.11"/>
+        <point x="499.50" y="-258.61" z="-509.71" d="11.11"/>
+        <point x="518.00" y="-259.00" z="-518.00" d="11.11"/>
+        <point x="528.00" y="-261.00" z="-529.00" d="11.11"/>
+      </branch>
+    </branch>
+  </branch>
+  <branch leaf="Normal" class="Spinal accessory nerve">
+    <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma6720</s></property>
+    <point x="240.00" y="-252.00" z="-418.00" d="49.19"/>
+    <point x="255.00" y="-192.00" z="-544.00" d="46.02"/>
+    <point x="245.00" y="-222.00" z="-615.00" d="34.91"/>
+    <point x="232.00" y="-229.00" z="-686.00" d="34.91"/>
+    <point x="217.00" y="-249.00" z="-750.00" d="34.91"/>
+    <point x="200.00" y="-261.00" z="-818.00" d="34.91"/>
+    <point x="186.00" y="-247.00" z="-884.00" d="34.91"/>
+    <point x="171.00" y="-248.00" z="-947.00" d="30.15"/>
+    <point x="158.00" y="-255.00" z="-1011.00" d="30.15"/>
+    <point x="138.00" y="-256.00" z="-1068.00" d="30.15"/>
+    <point x="122.00" y="-255.00" z="-1130.00" d="33.32"/>
+    <point x="108.00" y="-245.00" z="-1197.00" d="36.50"/>
+    <point x="97.00" y="-241.00" z="-1263.00" d="31.74"/>
+    <point x="86.29" y="-247.28" z="-1327.12" d="28.56"/>
+    <point x="77.00" y="-248.00" z="-1387.00" d="28.56"/>
+    <point x="63.98" y="-268.41" z="-1441.30" d="22.21"/>
+    <point x="51.00" y="-289.00" z="-1501.00" d="22.21"/>
+    <point x="51.21" y="-295.86" z="-1551.02" d="22.21"/>
+    <point x="44.48" y="-310.02" z="-1610.31" d="22.21"/>
+    <point x="45.08" y="-314.97" z="-1671.59" d="22.21"/>
+    <point x="46.43" y="-316.28" z="-1735.34" d="22.21"/>
+    <point x="51.00" y="-297.00" z="-1794.00" d="22.21"/>
+  </branch>
+</tree>
+</mbf>
