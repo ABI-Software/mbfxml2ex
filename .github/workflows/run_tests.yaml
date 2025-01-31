@@ -21,7 +21,7 @@ jobs:
         shell: bash
         run: |
           #pip install https://github.com/cmlibs/zinc/releases/download/v4.2.0/cmlibs.zinc-4.2.0-cp311-cp311-linux_x86_64.whl
-          pip install .
+          pip install .[test]
       - name: Run tests
         shell: bash
         run: |
@@ -29,6 +29,5 @@ jobs:
       - name: Report coverage
         shell: bash
         run: |
-          pip install .[test]
           coverage run --source=mbfxml2ex -m unittest discover -s tests
           coverage report
