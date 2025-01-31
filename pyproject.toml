@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools-git-versioning]
+enabled = true
+
+[project]
+name = "mbfxml2ex"
+dynamic = ["version"]
+keywords = ["Medical", "Physiology", "Anatomical", "Mesh", "Finite Element", "Fitting", "SPARC"]
+readme = "README.rst"
+license = {file = "LICENSE"}
+authors = [
+    { name="Hugh Sorby", email="h.sorby@auckland.ac.nz" },
+]
+dependencies = [
+    "cmlibs.utils >= 0.6",
+    "cmlibs.zinc >= 4.1"
+]
+description = "Python library for generating Ex format model descriptions from MBF XML formatted data."
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+
+[project.optional-dependencies]
+test = ["coverage", "nose", "packaging"]
+
+[project.scripts]
+mbfxml2exconverter = "mbfxml2ex.app:main"
+
+[tool.setuptools_scm]
