@@ -2,6 +2,8 @@ name: Test library
 
 on:
   push:
+    branches:
+      - 'main'
 
 jobs:
   build-and-test:
