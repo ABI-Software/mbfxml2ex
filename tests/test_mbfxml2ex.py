@@ -185,6 +185,19 @@ class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: inner submucosal nerve plexus")))
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: Nerve fiber connecting inner submucosal nerve plexus and outer submucosal nerve plexus")))
 
+    def test_contour_with_one_point(self):
+        ex_file = _resource_path("contour_with_only_one_point.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("contour_with_only_one_point.xml")
+        neurolucida_data = read_xml(xml_file)
+        self.assertEqual(3, neurolucida_data.contours_count())
+        for i in range(3):
+            contour = neurolucida_data.get_contour(i)
+            self.assertEqual(1 if i != 2 else 2, len(contour['data']))
+        write_ex(ex_file, neurolucida_data)
+
 
 class NeurolucidaXmlReadTreesAndContoursWithMarkersTestCase(unittest.TestCase):
 

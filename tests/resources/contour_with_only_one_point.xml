@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<mbf version="4.0" xmlns="https://www.mbfbioscience.com/filespecification"
+ xmlns:nl="https://www.mbfbioscience.com/filespecification"
+ appname="Vesselucida" appversion="2022.1.1" apprrid="SCR_016788" insrrid="SCR_004314">
+<contour name="orientation anterior" color="#A349A4" closed="false" shape="Contour">
+  <property name="GUID"><s>00002042</s></property>
+  <property name="FillDensity"><n>128</n></property>
+  <resolution>9.0</resolution>
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0737829</s></property>
+  <property name="Set"><s>T6L</s></property>
+  <point x="6803.63" y="-11815.62" z="-66570.49" d="10.00"/>
+</contour>
+<contour name="orientation anterior" color="#A349A4" closed="false" shape="Contour">
+  <property name="GUID"><s>00002043</s></property>
+  <property name="FillDensity"><n>128</n></property>
+  <resolution>9.0</resolution>
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0737829</s></property>
+  <property name="Set"><s>T6L</s></property>
+  <point x="5969.44" y="-16499.25" z="-68805.63" d="10.00"/>
+</contour>
+<contour name="orientation anterior" color="#A349A4" closed="false" shape="Contour">
+  <property name="GUID"><s>00002044</s></property>
+  <property name="FillDensity"><n>128</n></property>
+  <resolution>9.0</resolution>
+  <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0737829</s></property>
+  <property name="Set"><s>T6L</s></property>
+  <point x="2601.44" y="-17048.99" z="-14266.61" d="10.00"/>
+  <point x="2601.44" y="-17048.99" z="-14266.61" d="10.00"/>
+</contour>
+</mbf>

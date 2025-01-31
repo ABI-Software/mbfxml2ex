@@ -28,7 +28,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["coverage", "nose", "packaging"]
+test = ["coverage", "packaging"]
 
 [project.scripts]
 mbfxml2exconverter = "mbfxml2ex.app:main"

@@ -32,17 +32,17 @@ When developing install the required packages for running the tests with::
 
 Then run the tests with::
 
-  nosetests
+  python -m unittest discover -s tests
 
 from the repository root directory.
 
 To see the coverage statistics for the package run::
 
-  nosetests --with-coverage --cover-package=mbfxml2ex
+  coverage run --source=mbfxml2ex -m unittest discover -s tests
 
 For a nice HTML rendering of the coverage statistics run::
 
-  nosetests --with-coverage --cover-package=mbfxml2ex --cover-html
+  coverage html -d cover
 
 To view the HTML coverage output::
 

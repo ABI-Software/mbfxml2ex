@@ -180,10 +180,12 @@ def load(region, data, options):
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
         create_group_elements(field_module, contour['name'], element_ids)
+        create_group_nodes(field_module, contour['name'], node_identifiers)
 
         text_properties = get_text_properties(contour['properties'])
         for text_property in text_properties:
             create_group_elements(field_module, text_property, element_ids)
+            create_group_nodes(field_module, text_property, node_identifiers)
 
     marker_groups = {}
     for marker in data.get_markers():

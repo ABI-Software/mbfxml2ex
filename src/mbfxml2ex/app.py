@@ -34,15 +34,15 @@ def read_xml(file_name):
         relocate_marker_elements = []
         for child in root:
             raw_tag = get_raw_tag(child)
-            if raw_tag in ["tree", "contour"] and child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker'):
+            if raw_tag in ["tree", "contour"] and child.find('.//{http://www.mbfbioscience.com/2007/neurolucida}marker') is not None:
                 relocate_marker_elements.append({"owner": child, "ns": "http://www.mbfbioscience.com/2007/neurolucida"})
-            elif raw_tag in ["tree", "contour"] and child.find('.//{}marker'):
+            elif raw_tag in ["tree", "contour"] and child.find('.//{}marker') is not None:
                 relocate_marker_elements.append({"owner": child, "ns": ""})
 
         for marker_root_element in relocate_marker_elements:
             marker_element = marker_root_element["owner"].find(f'.//{{{marker_root_element["ns"]}}}marker')
             marker_element_parent = marker_root_element["owner"].find(f'.//{{{marker_root_element["ns"]}}}marker/..')
-            while marker_element:
+            while marker_element is not None:
                 marker_element_parent.remove(marker_element)
                 root.append(marker_element)
                 marker_element = marker_root_element["owner"].find(f'.//{{{marker_root_element["ns"]}}}marker')
