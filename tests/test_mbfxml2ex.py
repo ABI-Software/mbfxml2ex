@@ -137,7 +137,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: ChAT")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 252, len(lines))
+            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 265, len(lines))
 
 
 class NeurolucidaReadScaleInformation(unittest.TestCase):
@@ -169,6 +169,18 @@ class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
         xml_file = _resource_path("basic_heart_contours.xml")
         contents = read_xml(xml_file)
         self.assertEqual(1, len(contents))
+
+    def test_read_complex_contour_xml(self):
+        exf_file = _resource_path("complex_heart_contours.exf")
+        if os.path.exists(exf_file):
+            os.remove(exf_file)
+
+        xml_file = _resource_path("complex_heart_contours.xml")
+        contents = read_xml(xml_file)
+        self.assertEqual(11, len(contents))
+
+        write_ex(exf_file, contents)
+        self.assertTrue(os.path.exists(exf_file))
 
     def test_contour_multiple_properties(self):
         ex_file = _resource_path("contour_with_multiple_set_properties.ex")
@@ -267,7 +279,10 @@ class MBFPunctaTestCase(unittest.TestCase):
         self.assertEqual(3, len(marker['properties']))
 
         channel = marker['properties'][0]
-        self.assertEqual(2, channel.version())
+        items = channel.items()
+        self.assertEqual(5, len(items))
+        self.assertTrue('n' in items[0].keys())
+        self.assertEqual(2, items[0]['n'])
         punctum = marker['properties'][1]
         self.assertEqual(4, punctum.version())
         volume_rle = marker['properties'][2]
@@ -477,7 +492,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
 class ExWritingContoursTestCase(unittest.TestCase):
 
     def test_write_ex_basic(self):
-        ex_file = _resource_path("basic_contour.ex")
+        ex_file = _resource_path("basic_contour.exf")
         if os.path.exists(ex_file):
             os.remove(ex_file)
 

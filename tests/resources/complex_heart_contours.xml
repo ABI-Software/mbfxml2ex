@@ -1,4 +1,3 @@
-        
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <mbf version="4.0" xmlns="http://www.mbfbioscience.com/2007/neurolucida" xmlns:nl="http://www.mbfbioscience.com/2007/neurolucida" appname="Neurolucida 360" appversion="2018.2.1 (64-bit)">
 <contour name="Heart (7088)" color="#FF0000" closed="true" shape="Contour">

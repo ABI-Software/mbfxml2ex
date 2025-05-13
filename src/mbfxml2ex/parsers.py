@@ -1,6 +1,6 @@
 from mbfxml2ex.classes import MBFPropertyChannel, MBFProperty, NeurolucidaChannel, NeurolucidaChannels, \
     NeurolucidaZSpacing, MBFPoint, MBFPropertyPunctum, MBFPropertyVolumeRLE, MBFPropertySet, MBFPropertyTraceAssociation, \
-    MBFTree, MBFPropertyGUID, MBFPropertyFillDensity, MBFPropertyTreeOrder
+    MBFTree, MBFPropertyGUID, MBFPropertyFillDensity, MBFPropertyTreeOrder, MBFPropertyGeneric
 from mbfxml2ex.conversions import hex_to_rgb
 from mbfxml2ex.exceptions import MBFXMLException
 from mbfxml2ex.utilities import get_raw_tag
@@ -40,11 +40,14 @@ def parse_tree(tree_root):
 
 
 def parse_contour(contour_root):
-    contour = {'colour': contour_root.attrib['color'],
-               'rgb': hex_to_rgb(contour_root.attrib['color']),
-               'closed': contour_root.attrib['closed'] == 'true',
-               'name': contour_root.attrib['name'],
-               'properties': []}
+    contour = {
+        'colour': contour_root.attrib['color'],
+        'rgb': hex_to_rgb(contour_root.attrib['color']),
+        'closed': contour_root.attrib['closed'] == 'true',
+        'name': contour_root.attrib['name'],
+        'resolution': -1,
+        'properties': [],
+    }
     data = []
     for child in contour_root:
         raw_tag = get_raw_tag(child)
@@ -53,7 +56,7 @@ def parse_contour(contour_root):
         elif raw_tag == "property":
             contour['properties'].append(parse_property(child))
         elif raw_tag == "resolution":
-            pass
+            contour['resolution'] = float(child.text)
         else:
             raise MBFXMLException("XML format violation unknown tag '{0}'.".format(raw_tag))
 
@@ -127,16 +130,17 @@ def parse_volume_rle_property(property_root):
     return MBFPropertyVolumeRLE(volume_description)
 
 
-def parse_fill_density_property(property_root):
-    children = list(property_root)
-    if len(children) > 0:
-        fill_density_element = children[0]
-        fill_density_string = "".join(fill_density_element.itertext())
-        fill_density = float(fill_density_string)
-    else:
-        raise MBFXMLException("XML format violation fill density property has no children.")
+def parse_numeric_value(element):
+    return float(element.text)
 
-    return MBFPropertyFillDensity(fill_density)
+
+def parse_string_value(element):
+    return "" if element.text is None else element.text.strip()
+
+
+def parse_fill_density_property(property_root):
+    value = _parse_simple_property(property_root, "Fill Density", "n", parse_numeric_value)
+    return MBFPropertyFillDensity(value)
 
 
 def _property_text(property_root):
@@ -158,12 +162,29 @@ def parse_set_property(property_root):
     return MBFPropertySet(items)
 
 
+def _parse_simple_property(property_root, property_name, property_raw_tag, property_handler):
+    local_property = None
+    for child in property_root:
+        raw_tag = get_raw_tag(child)
+        if raw_tag == property_raw_tag:
+            local_property = property_handler(child)
+        else:
+            raise MBFXMLException(f"XML format violation '{property_name}' property has invalid child.")
+
+    if local_property is None:
+        raise MBFXMLException(f"XML format violation '{property_name}' property has no children.")
+
+    return local_property
+
+
 def parse_trace_association_property(property_root):
-    return MBFPropertyTraceAssociation(_property_text(property_root))
+    value = _parse_simple_property(property_root, "Trace Association", "s", parse_string_value)
+    return MBFPropertyTraceAssociation(value)
 
 
 def parse_guid_property(property_root):
-    return MBFPropertyGUID(_property_text(property_root))
+    value = _parse_simple_property(property_root, "GUID", "s", parse_string_value)
+    return MBFPropertyGUID(value)
 
 
 def parse_tree_order_property(property_root):
@@ -181,11 +202,25 @@ def parse_tree_order_property(property_root):
     return MBFPropertyTreeOrder(int(number_string))
 
 
+def parse_generic_property(name, property_root):
+    properties = []
+    for child in property_root:
+        raw_tag = get_raw_tag(child)
+        value = child.text if child.text else None
+        if raw_tag not in ["n", "s", "c", "l", "b"]:
+            print(f"Need to handle this property child tag '{raw_tag}'.")
+        if value is not None:
+            if raw_tag == "n":
+                value = float(value)
+
+        properties.append({raw_tag: value})
+
+    return MBFPropertyGeneric(name, properties)
+
+
 def parse_property(property_root) -> MBFProperty:
     name = property_root.attrib['name']
-    if name == "Channel":
-        return parse_channel_property(property_root)
-    elif name == "Punctum":
+    if name == "Punctum":
         return parse_punctum_property(property_root)
     elif name == "VolumeRLE":
         return parse_volume_rle_property(property_root)
@@ -193,16 +228,24 @@ def parse_property(property_root) -> MBFProperty:
         return parse_set_property(property_root)
     elif name == "TraceAssociation":
         return parse_trace_association_property(property_root)
-    elif name == "GUID":
-        return parse_guid_property(property_root)
-    elif name == "FillDensity":
-        return parse_fill_density_property(property_root)
-    elif name == "TreeOrder":
-        return parse_tree_order_property(property_root)
-    elif name == "zSmear":
-        pass
-    elif name == "Densitometry":
-        pass
+    elif name in ["Channel", "GUID", "FillDensity", "TreeOrder", "zSmear", "Densitometry"]:
+        return parse_generic_property(name, property_root)
+    # elif name == "Channel":
+    #     return parse_channel_property(property_root)
+    # elif name == "TreeOrder":
+    #     return parse_tree_order_property(property_root)
+    # elif name == "TraceAssociation":
+    #     return parse_trace_association_property(property_root)
+    # elif name == "GUID":
+    #     return parse_guid_property(property_root)
+    # elif name == "FillDensity":
+    #     return parse_fill_density_property(property_root)
+    # elif name == "TreeOrder":
+    #     return parse_tree_order_property(property_root)
+    # elif name == "zSmear":
+    #     pass
+    # elif name == "Densitometry":
+    #     pass
     else:
         raise MBFXMLException("Unhandled property '{0}'".format(name))
 

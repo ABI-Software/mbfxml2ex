@@ -8,7 +8,7 @@ from cmlibs.utils.zinc.field import create_field_finite_element, create_field_co
 from cmlibs.utils.zinc.general import create_node as create_zinc_node
 from cmlibs.utils.zinc.general import ChangeManager
 
-from mbfxml2ex.classes import MBFPropertyTraceAssociation, MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet, get_text_properties
+from mbfxml2ex.classes import MBFPropertyTraceAssociation, MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet, get_text_properties, MBFPropertyGeneric
 from mbfxml2ex.exceptions import MissingImplementationException, MBFDataException
 from mbfxml2ex.utilities import extract_vessel_node_locations
 from mbfxml2ex.templates import field_header_3d_template, grid_field_3d_template, field_data_template
@@ -174,11 +174,19 @@ def load(region, data, options):
             create_group_elements(field_module, sub_group, sub_groups[sub_group])
 
     for contour in data.get_contours():
+        _resolution_field = contour.get('resolution')
+        if _resolution_field is not None:
+            _resolution_field = create_field_finite_element(field_module, 'resolution', 1, type_coordinate=False)
+
         connectivity = determine_contour_connectivity(contour['data'], contour['closed'])
         node_identifiers = create_nodes(field_module, contour['data'])
+
         field_info = {'rgb': contour['rgb']}
+        if _resolution_field is not None:
+            field_info['resolution'] = contour['resolution']
+
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
-        element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
+        element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb', 'resolution'])
         create_group_elements(field_module, contour['name'], element_ids)
         create_group_nodes(field_module, contour['name'], node_identifiers)
 
@@ -193,6 +201,7 @@ def load(region, data, options):
             volume_rle = None
             punctum = None
             set_name = None
+            generics = []
             for property_ in marker['properties']:
                 if type(property_) is MBFPropertyVolumeRLE:
                     volume_rle = property_
@@ -200,6 +209,8 @@ def load(region, data, options):
                     punctum = property_
                 elif type(property_) is MBFPropertySet:
                     set_name = property_
+                elif type(property_) is MBFPropertyGeneric:
+                    generics.append(property_)
 
             if punctum and volume_rle:
                 voxel_counts = volume_rle.voxel_counts()
@@ -358,6 +369,8 @@ def merge_fields_with_nodes(field_module, node_identifiers, field_information, n
             if isinstance(field_values, ("".__class__, u"".__class__)):
                 field.assignString(field_cache, field_values)
             elif isinstance(field_values, list):
+                field.assignReal(field_cache, field_values)
+            elif isinstance(field_values, float):
                 field.assignReal(field_cache, field_values)
             else:
                 pass

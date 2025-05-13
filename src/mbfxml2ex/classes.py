@@ -206,6 +206,24 @@ class MBFPropertySet(MBFProperty):
         return 'Set: "{0}"'.format(', '.join(self._items))
 
 
+class MBFPropertyGeneric(MBFProperty):
+
+    def __init__(self, name, items):
+        super(MBFPropertyGeneric, self).__init__(-1.0)
+        self._name = name
+        self._items = items
+
+    def items(self):
+        return self._items
+
+    def name(self):
+        return self._name
+
+    def __repr__(self):
+        props = [f'{key}: {val}' for d in self._items for key, val in d.items()]
+        return 'Generic property: "{0}" --> "{1}"'.format(self._name, ', '.join(props))
+
+
 class MBFPropertyTraceAssociation(MBFPropertyText):
 
     def __init__(self, label):
