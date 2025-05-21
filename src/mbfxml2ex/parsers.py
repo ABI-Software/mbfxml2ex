@@ -7,9 +7,9 @@ from mbfxml2ex.utilities import get_raw_tag
 
 
 def _parse_tree_structure(tree_root):
-    tree = {'points': [], 'properties': []}
-    if 'class' in tree_root.attrib:
-        tree['class'] = tree_root.attrib['class']
+    tree = {'points': [], 'properties': [], 'attributes': {k: v for k, v in tree_root.attrib.items()}}
+    # if 'class' in tree_root.attrib:
+    #     tree['class'] = tree_root.attrib['class']
 
     for child in tree_root:
         raw_tag = get_raw_tag(child)
@@ -18,7 +18,8 @@ def _parse_tree_structure(tree_root):
         elif raw_tag == "branch":
             tree['points'].append(_parse_tree_structure(child))
         elif raw_tag == "property":
-            tree['properties'].append(parse_property(child))
+            prop = _parse_property(child)
+            tree['properties'].append((prop.name(), prop))
         else:
             raise MBFXMLException("XML format violation unknown tag '{0}'.".format(raw_tag))
 
@@ -26,17 +27,7 @@ def _parse_tree_structure(tree_root):
 
 
 def parse_tree(tree_root):
-    colour = tree_root.attrib['color']
-    type_ = tree_root.attrib['type']
-    leaf = tree_root.attrib['leaf']
-    structure = _parse_tree_structure(tree_root)
-    properties = []
-    for child in tree_root:
-        raw_tag = get_raw_tag(child)
-        if raw_tag == "property":
-            properties.append(parse_property(child))
-
-    return MBFTree(colour, type_, leaf, structure, properties)
+    return MBFTree(_parse_tree_structure(tree_root))
 
 
 def parse_contour(contour_root):
@@ -54,7 +45,7 @@ def parse_contour(contour_root):
         if raw_tag == "point":
             data.append(_create_mbf_point(child))
         elif raw_tag == "property":
-            contour['properties'].append(parse_property(child))
+            contour['properties'].append(_parse_property(child))
         elif raw_tag == "resolution":
             contour['resolution'] = float(child.text)
         else:
@@ -202,7 +193,9 @@ def parse_tree_order_property(property_root):
     return MBFPropertyTreeOrder(int(number_string))
 
 
-def parse_generic_property(name, property_root):
+def parse_generic_property(property_root):
+    # name = get_raw_tag(property_root)
+    name = property_root.attrib.get("name", "unnamed-property")
     properties = []
     for child in property_root:
         raw_tag = get_raw_tag(child)
@@ -218,7 +211,7 @@ def parse_generic_property(name, property_root):
     return MBFPropertyGeneric(name, properties)
 
 
-def parse_property(property_root) -> MBFProperty:
+def _parse_property(property_root) -> MBFProperty:
     name = property_root.attrib['name']
     if name == "Punctum":
         return parse_punctum_property(property_root)
@@ -229,7 +222,7 @@ def parse_property(property_root) -> MBFProperty:
     elif name == "TraceAssociation":
         return parse_trace_association_property(property_root)
     elif name in ["Channel", "GUID", "FillDensity", "TreeOrder", "zSmear", "Densitometry"]:
-        return parse_generic_property(name, property_root)
+        return parse_generic_property(property_root)
     # elif name == "Channel":
     #     return parse_channel_property(property_root)
     # elif name == "TreeOrder":
@@ -264,7 +257,7 @@ def parse_marker(marker_root):
         if raw_tag == "point":
             data.append(_create_mbf_point(child))
         elif raw_tag == "property":
-            marker['properties'].append(parse_property(child))
+            marker['properties'].append(_parse_property(child))
         else:
             raise MBFXMLException("XML format violation unknown tag '{0}'.".format(raw_tag))
 
@@ -355,7 +348,7 @@ def parse_edge(edge_root):
         if raw_tag == "point":
             data.append(_create_mbf_point(child))
         elif raw_tag == "property":
-            edge['properties'].append(parse_property(child))
+            edge['properties'].append(_parse_property(child))
         else:
             raise MBFXMLException("XML format violation unknown tag {0}".format(raw_tag))
 
@@ -418,7 +411,7 @@ def parse_vessel(vessel_root):
         elif raw_tag == "edgelists":
             vessel['edgelists'] = parse_edgelists(child)
         elif raw_tag == "property":
-            vessel['properties'].append(parse_property(child))
+            vessel['properties'].append(_parse_property(child))
         else:
             print(f"Unhandled tag in vessel: '{raw_tag}'")
 

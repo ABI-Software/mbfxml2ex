@@ -34,25 +34,32 @@ class MBFPoint(AbstractNodeDataObject):
         self._z = self._z + offset[2]
 
     def __repr__(self):
-        return 'x="{0}" y="{1}" z="{2}" r="{3}"'.format(self._x, self._y, self._z, self._radius)
+        return f'x="{self._x}" y="{self._y}" z="{self._z}" r="{self._radius}"'
 
 
-class MBFProperty(object):
+class MBFProperty:
 
-    def __init__(self, version):
+    def __init__(self, name, version):
+        self._name = name
         self._version = version
 
     def version(self):
         return self._version
 
+    def name(self):
+        return self._name
+
+    def get_group_names(self):
+        raise NotImplementedError("Subclasses that make groups must implement get_group_names()")
+
     def __repr__(self):
-        return 'version="{0}"'.format(self._version)
+        return f'name="{self._name}", version="{self._version}"'
 
 
 class MBFPropertyChannel(MBFProperty):
 
     def __init__(self, version, number, colour):
-        super(MBFPropertyChannel, self).__init__(version)
+        super(MBFPropertyChannel, self).__init__("Channel", version)
         self._number = number
         self._colour = colour
 
@@ -70,7 +77,7 @@ class MBFPropertyChannel(MBFProperty):
 class MBFPropertyFillDensity(MBFProperty):
 
     def __init__(self, number):
-        super(MBFPropertyFillDensity, self).__init__(-1.0)
+        super(MBFPropertyFillDensity, self).__init__("FillDensity", -1.0)
         self._number = number
 
     def number(self):
@@ -80,7 +87,7 @@ class MBFPropertyFillDensity(MBFProperty):
 class MBFPropertyTreeOrder(MBFProperty):
 
     def __init__(self, number):
-        super(MBFPropertyTreeOrder, self).__init__("1")
+        super(MBFPropertyTreeOrder, self).__init__("TreeOrder", "1")
         self._number = number
 
     def number(self):
@@ -95,7 +102,7 @@ class MBFPropertyPunctum(MBFProperty):
 
     def __init__(self, version, spread, mean_luminance, surface_area, voxel_count, flag_2d,
                  volume, location, colocalized_fraction, proximal_fraction):
-        super(MBFPropertyPunctum, self).__init__(version)
+        super(MBFPropertyPunctum, self).__init__("Punctum", version)
         self._spread = spread
         self._mean_luminance = mean_luminance
         self._surface_area = surface_area
@@ -144,7 +151,7 @@ class MBFPropertyPunctum(MBFProperty):
 class MBFPropertyVolumeRLE(MBFProperty):
 
     def __init__(self, volume_description):
-        super(MBFPropertyVolumeRLE, self).__init__(-1.0)
+        super(MBFPropertyVolumeRLE, self).__init__("VolumeRLE", -1.0)
         self._volume_description = volume_description
 
     def volume_description(self):
@@ -185,39 +192,56 @@ class MBFPropertyVolumeRLE(MBFProperty):
 
 class MBFPropertyText(MBFProperty):
 
-    def __init__(self, label, version=-1.0):
-        super(MBFPropertyText, self).__init__(version)
+    def __init__(self, name, label, version=-1.0):
+        super(MBFPropertyText, self).__init__(name, version)
         self._label = label
 
     def label(self):
         return self._label
 
+    def get_group_names(self):
+        return [self._label]
+
 
 class MBFPropertySet(MBFProperty):
 
     def __init__(self, items):
-        super(MBFPropertySet, self).__init__(-1.0)
+        super(MBFPropertySet, self).__init__("Set", -1.0)
         self._items = items
 
     def items(self):
+        return self._items
+
+    def get_group_names(self):
         return self._items
 
     def __repr__(self):
         return 'Set: "{0}"'.format(', '.join(self._items))
 
 
+class MBFAttribute:
+    def __init__(self, name, value):
+        self._name = name
+        self._value = value
+
+    def name(self):
+        return self._name
+
+    def value(self):
+        return self._value
+
+    def __repr__(self):
+        return f"{self._name} = {self._value}"
+
+
 class MBFPropertyGeneric(MBFProperty):
 
     def __init__(self, name, items):
-        super(MBFPropertyGeneric, self).__init__(-1.0)
-        self._name = name
+        super(MBFPropertyGeneric, self).__init__(name, -1.0)
         self._items = items
 
     def items(self):
         return self._items
-
-    def name(self):
-        return self._name
 
     def __repr__(self):
         props = [f'{key}: {val}' for d in self._items for key, val in d.items()]
@@ -227,22 +251,22 @@ class MBFPropertyGeneric(MBFProperty):
 class MBFPropertyTraceAssociation(MBFPropertyText):
 
     def __init__(self, label):
-        super(MBFPropertyTraceAssociation, self).__init__(label)
+        super(MBFPropertyTraceAssociation, self).__init__("TraceAssociation", label)
 
     def __repr__(self):
-        return 'Trace association "{0}"'.format(self._label)
+        return f'{self._name} "{self._label}"'
 
 
 class MBFPropertyGUID(MBFPropertyText):
 
     def __init__(self, label):
-        super(MBFPropertyGUID, self).__init__(label)
+        super(MBFPropertyGUID, self).__init__("GUID", label)
 
     def __repr__(self):
         return 'GUID "{0}"'.format(self._label)
 
 
-class NeurolucidaZSpacing(object):
+class NeurolucidaZSpacing:
 
     def __init__(self, z=1.0, slices=0):
         self._z = z
@@ -258,7 +282,7 @@ class NeurolucidaZSpacing(object):
         return 'z = "{0}", slices = "{1}"'.format(self._z, self._slices)
 
 
-class NeurolucidaChannel(object):
+class NeurolucidaChannel:
 
     def __init__(self, identifier=None, source=None):
         self._identifier = identifier
@@ -268,7 +292,7 @@ class NeurolucidaChannel(object):
         return 'id = "{0}", source = "{1}"'.format(self._identifier, self._source)
 
 
-class NeurolucidaChannels(object):
+class NeurolucidaChannels:
 
     def __init__(self, merge):
         self._merge = merge
@@ -285,7 +309,7 @@ class NeurolucidaChannels(object):
         return rep
 
 
-class BinaryTreeNode(object):
+class BinaryTreeNode:
 
     def __init__(self, data):
 
@@ -318,61 +342,42 @@ class BinaryTreeNode(object):
         return True
 
 
-class MBFTree(object):
+class MBFTree:
 
-    def __init__(self, colour, type_, leaf, structure, properties):
-        self._colour = colour
-        self._rgb = hex_to_rgb(colour)
-        self._type = type_
-        self._leaf = leaf
-        self._properties = properties
-        self._structure = structure
+    def __init__(self, mbf_points):
+        self._mbf_points = mbf_points
 
     def colour(self):
-        return self._colour
+        return self._mbf_points['attributes'].get('color', '#000000')
 
     def rgb(self):
-        return self._rgb
+        return hex_to_rgb(self.colour())
 
-    def properties(self):
-        return self._properties
-
-    def type_description(self):
-        return self._type
+    def properties(self, path):
+        props, attrs = _determine_branch_properties(self._mbf_points, path)
+        return props + [(k, v) for k, v in attrs.items()]
 
     def leaf(self):
-        return self._leaf
+        return self._mbf_points['attributes'].get('leaf')
+
+    def type(self):
+        return self._mbf_points['attributes'].get('type')
 
     def points(self):
-        return _retrieve_points(self._structure)
+        return _retrieve_points(self._mbf_points)
+    #
+    # def point_properties(self):
+    #     return _determine_point_properties(self._structure)
 
-    def point_properties(self):
-        return _determine_point_properties(self._structure)
 
+def _determine_branch_properties(branch, path):
+    parent_path = path[:-1]
+    attributes = branch['attributes']
+    for entry in parent_path:
+        branch = branch['points'][entry]
+        attributes = {**attributes, **branch['attributes']}
 
-def _determine_point_properties(structure, inherited_properties=None):
-
-    properties = []
-    current_properties = []
-    current_inherited_properties = [] if inherited_properties is None else inherited_properties[:]
-    if 'properties' in structure:
-        current_inherited_properties.extend(_get_inherited_properties(structure['properties']))
-        current_properties = get_text_properties(structure['properties'])
-
-    if 'class' in structure:
-        current_properties.append(structure['class'])
-
-    current_properties.extend(current_inherited_properties)
-    # Make the list of current properties unique.
-    current_properties = list(set(current_properties))
-
-    for item in structure['points']:
-        if type(item) is dict:
-            properties.extend(_determine_point_properties(item, current_inherited_properties))
-        else:
-            properties.append(current_properties)
-
-    return properties
+    return branch['properties'], attributes
 
 
 def _retrieve_points(structure):

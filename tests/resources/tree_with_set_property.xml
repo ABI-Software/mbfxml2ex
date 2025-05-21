@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <mbf version="4.0" appname="Neurolucida 360" appversion="2020.3.2" apprrid="SCR_016788" insrrid="SCR_004314">
-<tree color="#00FF00" type="Dendrite" leaf="Normal" create_cube_element="inner submucosal nerve plexus">
+<tree color="#00FF00" type="Dendrite" leaf="Normal" rootclass="inner submucosal nerve plexus">
   <point x="315.30" y="-598.82" z="-41.28" d="3.00"/>
   <property name="Set"><s>FIL: Filaments 1</s></property>
   <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777077</s></property>

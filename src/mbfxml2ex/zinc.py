@@ -8,12 +8,11 @@ from cmlibs.utils.zinc.field import create_field_finite_element, create_field_co
 from cmlibs.utils.zinc.general import create_node as create_zinc_node
 from cmlibs.utils.zinc.general import ChangeManager
 
-from mbfxml2ex.classes import MBFPropertyTraceAssociation, MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet, get_text_properties, MBFPropertyGeneric
+from mbfxml2ex.classes import MBFPropertyTraceAssociation, MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet, get_text_properties, MBFPropertyGeneric, MBFProperty
+from mbfxml2ex.definitions import INFOSET_RANK_MAP
 from mbfxml2ex.exceptions import MissingImplementationException, MBFDataException
-from mbfxml2ex.utilities import extract_vessel_node_locations
+from mbfxml2ex.utilities import extract_vessel_node_locations, get_minimal_list_paths, classify_attributes, get_elements_for_path
 from mbfxml2ex.templates import field_header_3d_template, grid_field_3d_template, field_data_template
-
-node_id = 0
 
 
 def write_ex(file_name, data, options=None):
@@ -25,105 +24,88 @@ def write_ex(file_name, data, options=None):
     region.writeFile(file_name)
 
 
-def determine_tree_connectivity(tree, parent_node_id=None):
-    global node_id
-    branching_node_id = None
-
+def determine_tree_connectivity(tree, current_node_id=0, parent_node_id=None):
     connectivity = []
     branch_markers = []
-    node_pair = [None, None]
+
+    previous_node_id = parent_node_id
+
     for pt in tree:
         if isinstance(pt, list):
-            # We have a branch
-            br = pt[:]
-            if branching_node_id is None:
-                branching_node_id = node_id
-            child_connectivity, child_branch_markers = determine_tree_connectivity(br, branching_node_id)
+            # Recurse into branch
+            child_connectivity, child_branch_markers, current_node_id = determine_tree_connectivity(pt, current_node_id, previous_node_id)
             connectivity.extend(child_connectivity)
             branch_markers.extend(child_branch_markers)
         else:
-            node_id += 1
-            if node_pair[0] is None:
-                node_pair[0] = node_id
-                if parent_node_id is not None:
-                    connectivity.append([parent_node_id, node_id])
-                    branch_markers.append(1)
-            elif node_pair[1] is None:
-                node_pair[1] = node_id
-                connectivity.append(node_pair)
-                branch_markers.append(0)
-                node_pair = [node_id, None]
+            current_node_id += 1
+            if previous_node_id is not None:
+                connectivity.append([previous_node_id, current_node_id])
+                branch_markers.append(1 if parent_node_id is not None else 0)
+            previous_node_id = current_node_id
 
-    return connectivity, branch_markers
+    return connectivity, branch_markers, current_node_id
 
 
-def determine_contour_connectivity(contour, closed):
-    global node_id
-
+def determine_contour_connectivity(contour, closed, start_node_id=0):
     connectivity = []
-    node_pair = [None, None]
-    first_node = None
-    last_node = None
-    for _ in contour:
-        node_id += 1
-        if node_pair[0] is None:
-            node_pair[0] = node_id
-            first_node = node_id
-        else:
-            node_pair[1] = node_id
-            connectivity.append(node_pair)
-            node_pair = [node_id, None]
-            last_node = node_id
+    node_ids = list(range(start_node_id + 1, start_node_id + 1 + len(contour)))
 
-    if closed:
-        connectivity.append([last_node, first_node])
+    for i in range(len(node_ids) - 1):
+        connectivity.append([node_ids[i], node_ids[i + 1]])
 
-    return connectivity
+    end_node_id = node_ids[-1]
+    if closed and len(node_ids) > 1:
+        connectivity.append([node_ids[-1], node_ids[0]])
+
+    return connectivity, end_node_id
 
 
-def determine_vessel_connectivity(vessel):
-    global node_id
-
+def determine_vessel_connectivity(vessel, start_node_id=0):
     connectivity = []
     associated_groups = []
     groups = []
     node_map = {}
-    node_pair = [None, None]
-    if 'edges' in vessel:
-        edges = vessel['edges']
-        for edge in edges:
-            edge_map = {}
+    edge_set = set()
+    current_node_id = start_node_id
 
-            groups.append({})
-            if 'class' in edge:
-                groups[-1]['name'] = edge['class']
+    if 'edges' not in vessel:
+        return connectivity, associated_groups, groups, current_node_id
 
-            if 'properties' in edge:
-                for property_ in edge['properties']:
-                    if type(property_) is MBFPropertyTraceAssociation:
-                        groups[-1]['TraceAssociation'] = property_.label()
+    for edge in vessel['edges']:
+        group = {}
 
-            if 'data' in edge:
-                for point in edge['data']:
-                    str_point = str(point)
-                    if str_point not in edge_map:
-                        edge_map[str_point] = node_id
-                        if str_point in node_map:
-                            next_node_id = node_map[str_point]
-                        else:
-                            node_id += 1
-                            next_node_id = node_id
-                            node_map[str_point] = node_id
-                        if node_pair[0] is None:
-                            node_pair[0] = next_node_id
-                        else:
-                            node_pair[1] = next_node_id
-                            connectivity.append(node_pair)
-                            associated_groups.append(len(groups) - 1)
-                            node_pair = [node_id, None]
-                node_pair = [None, None]
+        if 'class' in edge:
+            group['name'] = edge['class']
 
-    return connectivity, associated_groups, groups
+        if 'properties' in edge:
+            for prop in edge['properties']:
+                if isinstance(prop, MBFPropertyTraceAssociation):
+                    group['TraceAssociation'] = prop.label()
+
+        groups.append(group)
+        group_index = len(groups) - 1
+
+        if 'data' in edge:
+            previous_node_id = None
+            for point in edge['data']:
+                str_point = str(point)
+                if str_point in node_map:
+                    node_id = node_map[str_point]
+                else:
+                    current_node_id += 1
+                    node_id = current_node_id
+                    node_map[str_point] = node_id
+
+                if previous_node_id is not None and previous_node_id != node_id:
+                    edge_key = tuple(sorted((previous_node_id, node_id)))
+                    if edge_key not in edge_set:
+                        connectivity.append([previous_node_id, node_id])
+                        associated_groups.append(group_index)
+                        edge_set.add(edge_key)
+
+                previous_node_id = node_id
+
+    return connectivity, associated_groups, groups, current_node_id
 
 
 def load(region, data, options):
@@ -132,43 +114,88 @@ def load(region, data, options):
     _coordinate_field = create_field_coordinates(field_module)
     _radius_field = create_field_finite_element(field_module, 'radius', 1, type_coordinate=False)
     _rgb_field = create_field_finite_element(field_module, 'rgb', 3, type_coordinate=False)
-    annotation_stored_string_field = field_module.createFieldStoredString()
-    annotation_stored_string_field.setName('annotation')
-    reset_node_id()
+    # annotation_stored_string_field = field_module.createFieldStoredString()
+    # annotation_stored_string_field.setName('annotation')
+    final_node_id = 0
     for tree in data.get_trees():
         tree_data = tree.points()
-        point_properties = tree.point_properties()
-        connectivity, branch_markers = determine_tree_connectivity(tree_data)
-        node_identifiers = create_nodes(field_module, tree_data)
+        # if len(tree_data) < 10:
+        #     print(tree_data)
+        # point_properties = tree.point_properties()
+        # print(tree_data)
+        connectivity, branch_markers, final_node_id = determine_tree_connectivity(tree_data, current_node_id=final_node_id)
+        node_map = {}
+        node_identifiers = create_nodes(field_module, tree_data, node_map=node_map)
 
-        group_name = tree.type_description()
-        if group_name is None and len(point_properties) and len(point_properties[0]):
-            group_name = point_properties[0][0]
+        # print(node_map)
+        # group_name = tree.type_description()
+        # if group_name is None and len(point_properties) and len(point_properties[0]):
+        #     group_name = point_properties[0][0]
 
         field_info = {'rgb': tree.rgb()}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
-        if group_name is not None:
-            create_group_elements(field_module, group_name, element_ids)
+        # print(element_ids)
+        # print(node_identifiers)
+        # print(connectivity)
 
+        element_to_node_map = dict(zip(element_ids, connectivity))
+        # node_to_element_map = reverse_element_to_node_map(element_to_node_map)
+        # print(node_to_element_map)
+
+        unique_paths = get_minimal_list_paths(node_map)
+        # print(unique_paths)
         sub_groups = {}
-        for index, connection in enumerate(connectivity):
-            first_node = connection[0]
-            second_node = connection[1]
-            first_node_index = node_identifiers.index(first_node)
-            second_node_index = node_identifiers.index(second_node)
-            first_node_properties = point_properties[first_node_index]
-            if branch_markers[index]:
-                first_node_properties = []
-            second_node_properties = point_properties[second_node_index]
-            element_properties = list(set(first_node_properties + second_node_properties))
+        seen_unknown = set()
+        all_unknowns = []
+        for u in unique_paths:
+            p = tree.properties(u)
+            properties, metadata, unknown, group_name = classify_attributes(p, INFOSET_RANK_MAP)
+            # print(u, properties, metadata, group_name)
+            for un in unknown:
+                if un not in seen_unknown:
+                    all_unknowns.append(un)
+                    seen_unknown.add(un)
 
-            for element_property in element_properties:
-                element_id = element_ids[index]
-                if element_property in sub_groups:
-                    sub_groups[element_property].append(element_id)
+            element_ids = get_elements_for_path(node_map, element_to_node_map, u)
+            group_names = _expand_properties(properties)
+            for group_name in group_names:
+                if group_name in sub_groups:
+                    sub_groups[group_name].extend(element_ids)
                 else:
-                    sub_groups[element_property] = [element_id]
+                    sub_groups[group_name] = element_ids
+
+        if len(all_unknowns):
+            print("Unknown attributes, not classified.")
+            for un in all_unknowns:
+                print(un)
+        # properties = [tree.properties(u) for u in unique_paths]
+        # print(properties)
+        # if group_name is not None:
+        #     create_group_elements(field_module, group_name, element_ids)
+
+        # for p in properties:
+        #     print(classify_attributes(p, INFOSET_RANK_MAP))
+
+        # sub_groups = {}
+        # for index, connection in enumerate(connectivity):
+        #     first_node = connection[0]
+        #     second_node = connection[1]
+        #     first_node_index = node_identifiers.index(first_node)
+        #     second_node_index = node_identifiers.index(second_node)
+        #     # first_node_properties = point_properties[first_node_index]
+        #     if branch_markers[index]:
+        #         first_node_properties = []
+        #     # second_node_properties = point_properties[second_node_index]
+        #     # element_properties = list(set(first_node_properties + second_node_properties))
+        #     element_properties = []
+        #
+        #     for element_property in element_properties:
+        #         element_id = element_ids[index]
+        #         if element_property in sub_groups:
+        #             sub_groups[element_property].append(element_id)
+        #         else:
+        #             sub_groups[element_property] = [element_id]
 
         for sub_group in sub_groups:
             create_group_elements(field_module, sub_group, sub_groups[sub_group])
@@ -178,7 +205,7 @@ def load(region, data, options):
         if _resolution_field is not None:
             _resolution_field = create_field_finite_element(field_module, 'resolution', 1, type_coordinate=False)
 
-        connectivity = determine_contour_connectivity(contour['data'], contour['closed'])
+        connectivity, final_node_id = determine_contour_connectivity(contour['data'], contour['closed'], start_node_id=final_node_id)
         node_identifiers = create_nodes(field_module, contour['data'])
 
         field_info = {'rgb': contour['rgb']}
@@ -262,7 +289,7 @@ def load(region, data, options):
             create_group_nodes(field_module, marker_group_name, node_identifiers, node_set_name='datapoints')
 
     for vessel in data.get_vessels():
-        connectivity, associated_groups, groups = determine_vessel_connectivity(vessel)
+        connectivity, associated_groups, groups, final_node_id = determine_vessel_connectivity(vessel, start_node_id=final_node_id)
         node_locations = extract_vessel_node_locations(vessel)
         node_identifiers = create_nodes(field_module, node_locations)
         field_info = {'rgb': vessel['rgb']}
@@ -394,19 +421,28 @@ def merge_additional_fields(field_module, element_field_template, additional_fie
         element.merge(element_template)
 
 
-def reset_node_id():
-    global node_id
-    node_id = 0
+def create_nodes(field_module, embedded_lists, node_set_name='nodes', path=None, node_map=None, dupe_watch=None):
+    if path is None:
+        path = []
+    if node_map is None:
+        node_map = {}
+    if dupe_watch is None:
+        dupe_watch = {}
 
-
-def create_nodes(field_module, embedded_lists, node_set_name='nodes'):
     node_identifiers = []
-    for pt in embedded_lists:
+    for i, pt in enumerate(embedded_lists):
+        current_path = path + [i]
         if isinstance(pt, list):
-            node_ids = create_nodes(field_module, pt, node_set_name=node_set_name)
+            node_ids = create_nodes(field_module, pt, node_set_name=node_set_name, path=current_path, node_map=node_map, dupe_watch=dupe_watch)
             node_identifiers.extend(node_ids)
         else:
-            local_node_id = create_zinc_node(field_module, pt, node_set_name=node_set_name)
+            pos = tuple(str(f) for f in pt.coordinates())
+            if pos in dupe_watch:
+                local_node_id = dupe_watch[pos]
+            else:
+                local_node_id = create_zinc_node(field_module, pt, node_set_name=node_set_name)
+                dupe_watch[pos] = local_node_id
+                node_map[local_node_id] = current_path
             node_identifiers.append(local_node_id)
 
     return node_identifiers
@@ -448,3 +484,17 @@ def get_element_field_template(field_module, element_identifier):
     element = mesh.findElementByIdentifier(element_identifier)
     element_field_template = element.getElementfieldtemplate(coordinate_field, -1)
     return element_field_template
+
+
+def _expand_properties(properties):
+    group_names = []
+
+    for prop in properties.values():
+        if isinstance(prop, str):
+            group_names.append(prop)
+        elif isinstance(prop, MBFProperty):
+            group_names.extend(prop.get_group_names())
+        else:
+            raise TypeError(f"Unsupported property type: {type(prop)}")
+
+    return group_names

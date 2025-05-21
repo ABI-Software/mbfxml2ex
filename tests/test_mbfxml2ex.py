@@ -8,9 +8,10 @@ from cmlibs.zinc import __version__ as zinc_version
 
 from mbfxml2ex.app import read_xml
 from mbfxml2ex.classes import MBFPoint, MBFData, MBFPropertyVolumeRLE, MBFTree
+from mbfxml2ex.definitions import INFOSET_RANK_MAP
 from mbfxml2ex.exceptions import MBFXMLFile, MBFXMLFormat
 from mbfxml2ex.utilities import extract_vessel_node_locations, is_option
-from mbfxml2ex.zinc import write_ex, reset_node_id, determine_tree_connectivity, determine_contour_connectivity, \
+from mbfxml2ex.zinc import write_ex, determine_tree_connectivity, determine_contour_connectivity, \
     determine_vessel_connectivity
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -43,10 +44,10 @@ class NeurolucidaXmlReadTreesWithAnatomicalTermsTestCase(unittest.TestCase):
 
         self.assertEqual('#00FFFF', tree.colour())
         self.assertListEqual([0, 1, 1], tree.rgb())
-        self.assertEqual('Dendrite', tree.type_description())
+        self.assertEqual('Dendrite', tree.type())
         self.assertEqual('Generated', tree.leaf())
-        self.assertEqual(1, len(tree.properties()))
-        self.assertEqual('Thorasic Sympathetic Trunk', tree.properties()[0].items()[0])
+        self.assertEqual(4, len(tree.properties([0])))
+        self.assertEqual('Thorasic Sympathetic Trunk', tree.properties([0])[0][1].items()[0])
         self.assertListEqual([0.0, 1.0, 1.0], tree.rgb())
 
 
@@ -77,6 +78,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         xml_file = _resource_path("tree_with_marker_in_tree_structure.xml")
         neurolucida_data = read_xml(xml_file)
 
+        write_ex(_resource_path("tree_with_marker_in_tree_structure.xml.ex"), neurolucida_data)
         self.assertEqual(0, neurolucida_data.contours_count())
         self.assertEqual(1, neurolucida_data.markers_count())
         self.assertEqual(1, neurolucida_data.trees_count())
@@ -100,7 +102,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, regex))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(180 if Version(zinc_version) < Version("3.9.0") else 167, len(lines))
+            self.assertEqual(180 if Version(zinc_version) < Version("3.9.0") else 159, len(lines))
 
     def test_tree_with_set_property(self):
         ex_file = _resource_path("tree_with_set_property.ex")
@@ -121,7 +123,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: Dave")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 376, len(lines))
+            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 368, len(lines))
 
     def test_contours_with_markers(self):
         ex_file = _resource_path("contour_with_marker_names.ex")
@@ -385,17 +387,14 @@ class MBFPointTestCase(unittest.TestCase):
 class DetermineTreeConnectivityTestCase(unittest.TestCase):
 
     def test_determine_connectivity_basic(self):
-        reset_node_id()
         tree = [MBFPoint(3, 3, 4, 2), MBFPoint(2, 1, 5, 7), MBFPoint(3, 1, 4.2, 7.1)]
         self.assertListEqual([[1, 2], [2, 3]], determine_tree_connectivity(tree)[0])
 
     def test_determine_connectivity_branch(self):
-        reset_node_id()
         tree = [MBFPoint(3, 3, 4, 2), [MBFPoint(2, 1, 5, 7)], [MBFPoint(2, 4, 8, 5.7)]]
         self.assertListEqual([[1, 2], [1, 3]], determine_tree_connectivity(tree)[0])
 
     def test_determine_connectivity_multiple_branch(self):
-        reset_node_id()
         tree = [MBFPoint(3, 3, 4, 2), MBFPoint(3, 3, 4, 2), MBFPoint(3, 3, 4, 2),
                 [MBFPoint(2, 1, 5, 7), MBFPoint(2, 1, 5, 7), MBFPoint(2, 1, 5, 7),
                  [MBFPoint(2, 4, 8, 5.7), MBFPoint(2, 4, 8, 5.7), MBFPoint(2, 4, 8, 5.7),
@@ -410,19 +409,20 @@ class DetermineTreeConnectivityTestCase(unittest.TestCase):
 class DetermineContourConnectivityTestCase(unittest.TestCase):
 
     def test_determine_connectivity_open_contour(self):
-        reset_node_id()
         contour = {'colour': '#00ff00', 'closed': False, 'name': 'Heart',
                    'data': [MBFPoint(3, 3, 4, 1), MBFPoint(2, 1, 5, 1),
                             MBFPoint(3, 1, 4.2, 1)]}
-        self.assertListEqual([[1, 2], [2, 3]], determine_contour_connectivity(contour['data'], contour['closed']))
+        node_ids, final_node_id = determine_contour_connectivity(contour['data'], contour['closed'])
+        self.assertEqual(3, final_node_id)
+        self.assertListEqual([[1, 2], [2, 3]], node_ids)
 
     def test_determine_connectivity_closed_contour(self):
-        reset_node_id()
         contour = {'colour': '#00ff00', 'closed': True, 'name': 'Heart',
                    'data': [MBFPoint(3, 3, 4, 1), MBFPoint(2, 1, 5, 1),
                             MBFPoint(3, 1, 4.2, 1)]}
-        self.assertListEqual([[1, 2], [2, 3], [3, 1]],
-                             determine_contour_connectivity(contour['data'], contour['closed']))
+        node_ids, final_node_id = determine_contour_connectivity(contour['data'], contour['closed'])
+        self.assertEqual(3, final_node_id)
+        self.assertListEqual([[1, 2], [2, 3], [3, 1]], node_ids)
 
 
 class ExWritingTreeWithAnnotationTestCase(unittest.TestCase):
@@ -457,7 +457,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
-        tree = MBFTree('#000000', '', '', {'points': [MBFPoint(3, 3, 4, 2), MBFPoint(2, 1, 5, 7), MBFPoint(3, 1, 4.2, 7.1)]}, [])
+        tree = MBFTree({'points': [MBFPoint(3, 3, 4, 2), MBFPoint(2, 1, 5, 7), MBFPoint(3, 1, 4.2, 7.1)], 'attributes': {'color': '#000000'}, 'properties': []})
         data = MBFData()
         data.add_tree(tree)
 
@@ -469,7 +469,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
-        tree = MBFTree('#000000', '', '', {'points': [MBFPoint(3, 3, 4, 2), [MBFPoint(2, 1, 5, 7)], [MBFPoint(2, 4, 8, 5.7)]]}, [])
+        tree = MBFTree({'points': [MBFPoint(3, 3, 4, 2), {'points': [MBFPoint(2, 1, 5, 7)], 'attributes': {}, 'properties': []}, {'points': [MBFPoint(2, 4, 8, 5.7)], 'attributes': {}, 'properties': []}], 'attributes': {'color': '#000000'}, 'properties': []})
         data = MBFData()
         data.add_tree(tree)
 
@@ -519,10 +519,9 @@ class ExWritingContoursTestCase(unittest.TestCase):
 class VesselConnectionTestCase(unittest.TestCase):
 
     def test_vessel_connection_basic(self):
-        reset_node_id()
-
         vessel = _create_basic_vessel()
-        connectivity, _, _ = determine_vessel_connectivity(vessel)
+        connectivity, _, _, final_node_id = determine_vessel_connectivity(vessel)
+        self.assertEqual(13, final_node_id)
         self.assertListEqual([1, 2], connectivity[0])
         self.assertListEqual([2, 3], connectivity[1])
         self.assertListEqual([6, 7], connectivity[5])
@@ -530,18 +529,16 @@ class VesselConnectionTestCase(unittest.TestCase):
         self.assertListEqual([12, 13], connectivity[11])
 
     def test_vessel_connection_repeated_point(self):
-        reset_node_id()
-
         vessel = _create_repeated_vessel()
-        connectivity, _, _ = determine_vessel_connectivity(vessel)
+        connectivity, _, _, final_node_id = determine_vessel_connectivity(vessel)
+        self.assertEqual(2, final_node_id)
         self.assertListEqual([1, 2], connectivity[0])
         self.assertEqual(1, len(connectivity))
 
     def test_vessel_connection_branched(self):
-        reset_node_id()
-
         vessel = _create_advanced_vessel()
-        connectivity, _, _ = determine_vessel_connectivity(vessel)
+        connectivity, _, _, final_node_id = determine_vessel_connectivity(vessel)
+        self.assertEqual(32, final_node_id)
         self.assertListEqual([1, 2], connectivity[0])
         self.assertListEqual([2, 8], connectivity[6])
 
@@ -611,6 +608,22 @@ class VagusTracingTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: Spinal accessory nerve")))
 
 
+class TestAttributeGroups(unittest.TestCase):
+    def test_unique_ranks_within_groups(self):
+
+        # Organize ranks by group
+        group_ranks = {}
+        for attr, (group, rank) in INFOSET_RANK_MAP.items():
+            group_ranks.setdefault(group, []).append(rank)
+
+        # Assert uniqueness of ranks within each group
+        for group, ranks in group_ranks.items():
+            self.assertEqual(
+                len(ranks), len(set(ranks)),
+                f"Ranks are not unique within the group '{group}'"
+            )
+
+
 def _create_advanced_vessel():
     edges = [{'id': '0',
               'data': [MBFPoint(4612.96, -3183.24, -1880.82, 0.83), MBFPoint(4613.07, -3181.37, -1873.73, 0.83)]},
@@ -660,7 +673,8 @@ def _create_repeated_vessel():
     vessel = {'version': '3', 'colour': '#80FF00', 'rgb': [0.5019607843137255, 1.0, 0.0], 'type': 'directed',
               'name': 'Vessel Name 1',
               'nodes': [{'id': '0', 'data': MBFPoint(4613.07, -3181.37, -1873.73, 0.83)},
-                        {'id': '1', 'data': MBFPoint(4617.23, -3167.96, -1880.22, 3.11)}], 'edges': edges,
+                        {'id': '1', 'data': MBFPoint(4617.23, -3167.96, -1880.22, 3.11)}],
+              'edges': edges,
               'edgelists': [{'id': '0', 'edge': '0', 'sourcenode': '-1', 'targetnode': '0'},
                             {'id': '1', 'edge': '1', 'sourcenode': '0', 'targetnode': '-1'},
                             {'id': '2', 'edge': '2', 'sourcenode': '0', 'targetnode': '1'},
