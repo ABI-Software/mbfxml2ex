@@ -488,6 +488,15 @@ class ExWritingTreeTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(ex_file))
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: marker")))
 
+    def test_tree_order(self):
+        ex_file = _resource_path("large_tree_with_tree_order_prop.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        data = read_xml(_resource_path("large_tree_with_tree_order_prop.xml"))
+        write_ex(ex_file, data)
+        self.assertTrue(os.path.exists(ex_file))
+
 
 class ExWritingContoursTestCase(unittest.TestCase):
 
@@ -503,15 +512,6 @@ class ExWritingContoursTestCase(unittest.TestCase):
                    'properties': []}
         data.add_contour(contour)
 
-        write_ex(ex_file, data)
-        self.assertTrue(os.path.exists(ex_file))
-
-    def test_tree_order(self):
-        ex_file = _resource_path("large_tree_with_tree_order_prop.ex")
-        if os.path.exists(ex_file):
-            os.remove(ex_file)
-
-        data = read_xml(_resource_path("large_tree_with_tree_order_prop.xml"))
         write_ex(ex_file, data)
         self.assertTrue(os.path.exists(ex_file))
 
