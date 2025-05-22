@@ -79,52 +79,44 @@ def determine_contour_connectivity(node_map, closed):
     return connectivity
 
 
-def determine_vessel_connectivity(vessel, start_node_id=0):
+def determine_vessel_connectivity(vessel, node_map):
     connectivity = []
     associated_groups = []
     groups = []
-    node_map = {}
     edge_set = set()
-    current_node_id = start_node_id
 
     if 'edges' not in vessel:
-        return connectivity, associated_groups, groups, current_node_id
+        return connectivity, associated_groups, groups
 
+    point_index = 0
     for edge in vessel['edges']:
-        group = {}
+        group = {'id': f"edge_id_{edge.get('id', 'X')}"}
 
         if 'class' in edge:
             group['name'] = edge['class']
 
-        if 'properties' in edge:
-            for prop in edge['properties']:
-                if isinstance(prop, MBFPropertyTraceAssociation):
-                    group['TraceAssociation'] = prop.label()
+        for prop in edge.get('properties', []):
+            if isinstance(prop, MBFPropertyTraceAssociation):
+                group['TraceAssociation'] = prop.label()
 
+        group_index = len(groups)
         groups.append(group)
-        group_index = len(groups) - 1
 
-        if 'data' in edge:
-            previous_node_id = None
-            for point in edge['data']:
-                str_point = str(point)
-                if str_point in node_map:
-                    node_id = node_map[str_point]
-                else:
-                    current_node_id += 1
-                    node_id = current_node_id
-                    node_map[str_point] = node_id
+        previous_node_id = None
+        for _ in edge.get('data', []):
+            node_id = node_map[(point_index,)]
 
-                if previous_node_id is not None and previous_node_id != node_id:
-                    edge_key = tuple(sorted((previous_node_id, node_id)))
-                    if edge_key not in edge_set:
-                        connectivity.append([previous_node_id, node_id])
-                        associated_groups.append(group_index)
-                        edge_set.add(edge_key)
+            if previous_node_id is not None and previous_node_id != node_id:
+                edge_key = tuple(sorted((previous_node_id, node_id)))
+                if edge_key not in edge_set:
+                    connectivity.append([previous_node_id, node_id])
+                    associated_groups.append(group_index)
+                    edge_set.add(edge_key)
 
-                previous_node_id = node_id
+            previous_node_id = node_id
+            point_index += 1
 
-    return connectivity, associated_groups, groups, current_node_id
+    return connectivity, associated_groups, groups
 
 
 def load(region, data, options):
@@ -134,7 +126,6 @@ def load(region, data, options):
     _radius_field = create_field_finite_element(field_module, 'radius', 1, type_coordinate=False)
     _rgb_field = create_field_finite_element(field_module, 'rgb', 3, type_coordinate=False)
 
-    final_node_id = 0
     for tree in data.get_trees():
         tree_data = tree.points()
         node_map = {}
@@ -246,9 +237,10 @@ def load(region, data, options):
             create_group_nodes(field_module, marker_group_name, node_identifiers, node_set_name='datapoints')
 
     for vessel in data.get_vessels():
-        connectivity, associated_groups, groups, final_node_id = determine_vessel_connectivity(vessel, start_node_id=final_node_id)
+        node_map = {}
         node_locations = extract_vessel_node_locations(vessel)
-        node_identifiers = create_nodes(field_module, node_locations)
+        node_identifiers = create_nodes(field_module, node_locations, node_map=node_map)
+        connectivity, associated_groups, groups = determine_vessel_connectivity(vessel, node_map)
         field_info = {'rgb': vessel['rgb']}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
@@ -443,7 +435,7 @@ def create_nodes(field_module, embedded_lists, node_set_name='nodes', path=None,
             node_map[tuple(current_path)] = local_node_id
             node_identifiers.append(local_node_id)
 
-    return node_identifiers
+    return list(set(node_identifiers))
 
 
 def create_elements(field_module, connectivity, field_names=None):

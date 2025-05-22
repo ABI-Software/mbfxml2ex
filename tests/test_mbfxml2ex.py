@@ -519,9 +519,8 @@ class ExWritingContoursTestCase(unittest.TestCase):
 class VesselConnectionTestCase(unittest.TestCase):
 
     def test_vessel_connection_basic(self):
-        vessel = _create_basic_vessel()
-        connectivity, _, _, final_node_id = determine_vessel_connectivity(vessel)
-        self.assertEqual(13, final_node_id)
+        vessel, node_map = _create_basic_vessel()
+        connectivity, _, _ = determine_vessel_connectivity(vessel, node_map)
         self.assertListEqual([1, 2], connectivity[0])
         self.assertListEqual([2, 3], connectivity[1])
         self.assertListEqual([6, 7], connectivity[5])
@@ -529,21 +528,19 @@ class VesselConnectionTestCase(unittest.TestCase):
         self.assertListEqual([12, 13], connectivity[11])
 
     def test_vessel_connection_repeated_point(self):
-        vessel = _create_repeated_vessel()
-        connectivity, _, _, final_node_id = determine_vessel_connectivity(vessel)
-        self.assertEqual(2, final_node_id)
+        vessel, node_map = _create_repeated_vessel()
+        connectivity, _, _ = determine_vessel_connectivity(vessel, node_map)
         self.assertListEqual([1, 2], connectivity[0])
         self.assertEqual(1, len(connectivity))
 
     def test_vessel_connection_branched(self):
-        vessel = _create_advanced_vessel()
-        connectivity, _, _, final_node_id = determine_vessel_connectivity(vessel)
-        self.assertEqual(32, final_node_id)
+        vessel, node_map = _create_advanced_vessel()
+        connectivity, _, _ = determine_vessel_connectivity(vessel, node_map)
         self.assertListEqual([1, 2], connectivity[0])
         self.assertListEqual([2, 8], connectivity[6])
 
     def test_vessel_node_locations_basic(self):
-        vessel = _create_basic_vessel()
+        vessel, node_map = _create_basic_vessel()
         node_locations = extract_vessel_node_locations(vessel)
 
         self.assertEqual(13, len(node_locations))
@@ -561,6 +558,17 @@ class ExWritingVesselTestCase(unittest.TestCase):
             os.remove(ex_file)
 
         xml_file = _resource_path("tracing_vessels_and_markers.xml")
+        data = read_xml(xml_file)
+
+        write_ex(ex_file, data)
+        self.assertTrue(os.path.exists(ex_file))
+
+    def test_write_ex_1(self):
+        ex_file = _resource_path("vessel_ex_1.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("vessel_ex_1.xml")
         data = read_xml(xml_file)
 
         write_ex(ex_file, data)
@@ -660,8 +668,24 @@ def _create_advanced_vessel():
                             {'id': '2', 'edge': '2', 'sourcenode': '0', 'targetnode': '1'},
                             {'id': '3', 'edge': '3', 'sourcenode': '1', 'targetnode': '-1'},
                             {'id': '4', 'edge': '4', 'sourcenode': '1', 'targetnode': '-1'}]}
+    node_map = {}
+    dupe_watch = {}
+    point_index = 0
+    node_id = 0
+    for e in edges:
+        for p in e['data']:
+            st = str(p)
+            if st in dupe_watch:
+                local_node_id = node_map[dupe_watch[st]]
+            else:
+                dupe_watch[st] = (point_index,)
+                node_id += 1
+                local_node_id = node_id
 
-    return vessel
+            node_map[(point_index,)] = local_node_id
+            point_index += 1
+
+    return vessel, node_map
 
 
 def _create_repeated_vessel():
@@ -680,8 +704,9 @@ def _create_repeated_vessel():
                             {'id': '2', 'edge': '2', 'sourcenode': '0', 'targetnode': '1'},
                             {'id': '3', 'edge': '3', 'sourcenode': '1', 'targetnode': '-1'},
                             {'id': '4', 'edge': '4', 'sourcenode': '1', 'targetnode': '-1'}]}
+    node_map = {(0,): 1, (1,): 2, (2,): 2}
 
-    return vessel
+    return vessel, node_map
 
 
 def _create_basic_vessel():
@@ -702,8 +727,9 @@ def _create_basic_vessel():
               'name': 'Vessel Name 1', 'nodes': [],
               'edges': [{'id': '0', 'data': points}],
               'edgelists': [{'id': '0', 'edge': '0', 'sourcenode': '-1', 'targetnode': '-1'}]}
+    node_map = {(index,): index + 1 for index in range(len(points))}
 
-    return vessel
+    return vessel, node_map
 
 
 def _generate_lines_that_equal(string, fp):

@@ -309,39 +309,6 @@ class NeurolucidaChannels:
         return rep
 
 
-class BinaryTreeNode:
-
-    def __init__(self, data):
-
-        self._left = None
-        self._right = None
-        self._data = data
-
-    def insert(self, data):
-
-        if self._data:
-            if data < self._data:
-                if self._left is None:
-                    self._left = BinaryTreeNode(data)
-                else:
-                    self._left.insert(data)
-            elif data > self._data:
-                if self._right is None:
-                    self._right = BinaryTreeNode(data)
-                else:
-                    self._right.insert(data)
-        else:
-            self._data = data
-
-    def __contains__(self, data):
-        if data < self._data:
-            return False if self._left is None else data in self._left
-        elif data > self._data:
-            return False if self._right is None else data in self._right
-
-        return True
-
-
 class MBFTree:
 
     def __init__(self, mbf_points):
