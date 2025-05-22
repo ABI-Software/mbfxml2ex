@@ -27,7 +27,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["coverage", "packaging"]
+test = ["coverage", "packaging", "pytest"]
 
 [project.scripts]
 mbfxml2exconverter = "mbfxml2ex.app:main"
