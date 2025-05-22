@@ -11,7 +11,7 @@ from cmlibs.utils.zinc.general import ChangeManager
 from mbfxml2ex.classes import MBFPropertyTraceAssociation, MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet, get_text_properties, MBFPropertyGeneric, MBFProperty
 from mbfxml2ex.definitions import INFOSET_RANK_MAP
 from mbfxml2ex.exceptions import MissingImplementationException, MBFDataException
-from mbfxml2ex.utilities import extract_vessel_node_locations, get_minimal_list_paths, classify_attributes, get_elements_for_path
+from mbfxml2ex.utilities import extract_vessel_node_locations, get_minimal_list_paths, classify_attributes, get_elements_for_path, reverse_element_to_node_map
 from mbfxml2ex.templates import field_header_3d_template, grid_field_3d_template, field_data_template
 
 
@@ -24,26 +24,46 @@ def write_ex(file_name, data, options=None):
     region.writeFile(file_name)
 
 
+def determine_tree_connectivity_with_map(tree, node_map, path=None, parent_path=None):
+    if path is None:
+        path = []
+    connectivity = []
+
+    previous_path = parent_path
+
+    for i, pt in enumerate(tree):
+        current_path = path + [i]
+        if isinstance(pt, list):
+            # Recurse into branch
+            child_connectivity = determine_tree_connectivity_with_map(pt, node_map, current_path, previous_path)
+            connectivity.extend(child_connectivity)
+        else:
+            current_node_id = node_map[tuple(current_path)]
+            if previous_path is not None:
+                previous_node_id = node_map[tuple(previous_path)]
+                connectivity.append([previous_node_id, current_node_id])
+            previous_path = current_path
+
+    return connectivity
+
+
 def determine_tree_connectivity(tree, current_node_id=0, parent_node_id=None):
     connectivity = []
-    branch_markers = []
 
     previous_node_id = parent_node_id
 
     for pt in tree:
         if isinstance(pt, list):
             # Recurse into branch
-            child_connectivity, child_branch_markers, current_node_id = determine_tree_connectivity(pt, current_node_id, previous_node_id)
+            child_connectivity, current_node_id = determine_tree_connectivity(pt, current_node_id, previous_node_id)
             connectivity.extend(child_connectivity)
-            branch_markers.extend(child_branch_markers)
         else:
             current_node_id += 1
             if previous_node_id is not None:
                 connectivity.append([previous_node_id, current_node_id])
-                branch_markers.append(1 if parent_node_id is not None else 0)
             previous_node_id = current_node_id
 
-    return connectivity, branch_markers, current_node_id
+    return connectivity, current_node_id
 
 
 def determine_contour_connectivity(contour, closed, start_node_id=0):
@@ -114,50 +134,36 @@ def load(region, data, options):
     _coordinate_field = create_field_coordinates(field_module)
     _radius_field = create_field_finite_element(field_module, 'radius', 1, type_coordinate=False)
     _rgb_field = create_field_finite_element(field_module, 'rgb', 3, type_coordinate=False)
-    # annotation_stored_string_field = field_module.createFieldStoredString()
-    # annotation_stored_string_field.setName('annotation')
+
     final_node_id = 0
     for tree in data.get_trees():
         tree_data = tree.points()
-        # if len(tree_data) < 10:
-        #     print(tree_data)
-        # point_properties = tree.point_properties()
-        # print(tree_data)
-        connectivity, branch_markers, final_node_id = determine_tree_connectivity(tree_data, current_node_id=final_node_id)
         node_map = {}
         node_identifiers = create_nodes(field_module, tree_data, node_map=node_map)
-
-        # print(node_map)
-        # group_name = tree.type_description()
-        # if group_name is None and len(point_properties) and len(point_properties[0]):
-        #     group_name = point_properties[0][0]
+        connectivity = determine_tree_connectivity_with_map(tree_data, node_map)
 
         field_info = {'rgb': tree.rgb()}
         merge_fields_with_nodes(field_module, node_identifiers, field_info)
         element_ids = create_elements(field_module, connectivity, field_names=['coordinates', 'radius', 'rgb'])
-        # print(element_ids)
-        # print(node_identifiers)
-        # print(connectivity)
 
         element_to_node_map = dict(zip(element_ids, connectivity))
-        # node_to_element_map = reverse_element_to_node_map(element_to_node_map)
-        # print(node_to_element_map)
+        node_to_element_map = reverse_element_to_node_map(element_to_node_map)
 
         unique_paths = get_minimal_list_paths(node_map)
-        # print(unique_paths)
+        grouped_by_parent = _group_by_parent(node_map)
+
         sub_groups = {}
         seen_unknown = set()
         all_unknowns = []
         for u in unique_paths:
             p = tree.properties(u)
-            properties, metadata, unknown, group_name = classify_attributes(p, INFOSET_RANK_MAP)
-            # print(u, properties, metadata, group_name)
+            properties, metadata, unknown, group_primary_name = classify_attributes(p, INFOSET_RANK_MAP)
             for un in unknown:
                 if un not in seen_unknown:
                     all_unknowns.append(un)
                     seen_unknown.add(un)
 
-            element_ids = get_elements_for_path(node_map, element_to_node_map, u)
+            element_ids = get_elements_for_path(grouped_by_parent, node_to_element_map, u)
             group_names = _expand_properties(properties)
             for group_name in group_names:
                 if group_name in sub_groups:
@@ -169,33 +175,6 @@ def load(region, data, options):
             print("Unknown attributes, not classified.")
             for un in all_unknowns:
                 print(un)
-        # properties = [tree.properties(u) for u in unique_paths]
-        # print(properties)
-        # if group_name is not None:
-        #     create_group_elements(field_module, group_name, element_ids)
-
-        # for p in properties:
-        #     print(classify_attributes(p, INFOSET_RANK_MAP))
-
-        # sub_groups = {}
-        # for index, connection in enumerate(connectivity):
-        #     first_node = connection[0]
-        #     second_node = connection[1]
-        #     first_node_index = node_identifiers.index(first_node)
-        #     second_node_index = node_identifiers.index(second_node)
-        #     # first_node_properties = point_properties[first_node_index]
-        #     if branch_markers[index]:
-        #         first_node_properties = []
-        #     # second_node_properties = point_properties[second_node_index]
-        #     # element_properties = list(set(first_node_properties + second_node_properties))
-        #     element_properties = []
-        #
-        #     for element_property in element_properties:
-        #         element_id = element_ids[index]
-        #         if element_property in sub_groups:
-        #             sub_groups[element_property].append(element_id)
-        #         else:
-        #             sub_groups[element_property] = [element_id]
 
         for sub_group in sub_groups:
             create_group_elements(field_module, sub_group, sub_groups[sub_group])
@@ -321,6 +300,18 @@ def load(region, data, options):
         _process_punctum_data(region, punctum_data)
 
 
+def _group_by_parent(node_map):
+    grouped_by_parent = {}
+    for path, node_id in node_map.items():
+        parent = path[:-1]
+        if parent in grouped_by_parent:
+            grouped_by_parent[parent].append(node_id)
+        else:
+            grouped_by_parent[parent] = [node_id]
+
+    return grouped_by_parent
+
+
 def _process_punctum_data(region, punctum_data):
     r = region.createChild("punctum")
     field_module = r.getFieldmodule()
@@ -442,7 +433,8 @@ def create_nodes(field_module, embedded_lists, node_set_name='nodes', path=None,
             else:
                 local_node_id = create_zinc_node(field_module, pt, node_set_name=node_set_name)
                 dupe_watch[pos] = local_node_id
-                node_map[local_node_id] = current_path
+
+            node_map[tuple(current_path)] = local_node_id
             node_identifiers.append(local_node_id)
 
     return node_identifiers
