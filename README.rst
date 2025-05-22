@@ -42,11 +42,10 @@ To see the coverage statistics for the package run::
 
 For a nice HTML rendering of the coverage statistics run::
 
-  coverage html -d cover
+  coverage html -d html.cover
 
 To view the HTML coverage output::
 
-  cd cover
-  python -m http.server 9432
+  python -m http.server 9432 -d html.cover
 
 Then, in a web browser navigate to http://localhost:9432
