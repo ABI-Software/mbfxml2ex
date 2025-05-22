@@ -11,7 +11,7 @@ from cmlibs.utils.zinc.general import ChangeManager
 from mbfxml2ex.classes import MBFPropertyTraceAssociation, MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet, get_text_properties, MBFPropertyGeneric, MBFProperty
 from mbfxml2ex.definitions import INFOSET_RANK_MAP
 from mbfxml2ex.exceptions import MissingImplementationException, MBFDataException
-from mbfxml2ex.utilities import extract_vessel_node_locations, get_minimal_list_paths, classify_attributes, get_elements_for_path, reverse_element_to_node_map
+from mbfxml2ex.utilities import extract_vessel_node_locations, get_minimal_list_paths, classify_properties, get_elements_for_path, reverse_element_to_node_map
 from mbfxml2ex.templates import field_header_3d_template, grid_field_3d_template, field_data_template
 
 
@@ -152,29 +152,7 @@ def load(region, data, options):
         unique_paths = get_minimal_list_paths(node_map)
         grouped_by_parent = _group_by_parent(node_map)
 
-        sub_groups = {}
-        seen_unknown = set()
-        all_unknowns = []
-        for u in unique_paths:
-            p = tree.properties(u)
-            properties, metadata, unknown, group_primary_name = classify_attributes(p, INFOSET_RANK_MAP)
-            for un in unknown:
-                if un not in seen_unknown:
-                    all_unknowns.append(un)
-                    seen_unknown.add(un)
-
-            element_ids = get_elements_for_path(grouped_by_parent, node_to_element_map, u)
-            group_names = _expand_properties(properties)
-            for group_name in group_names:
-                if group_name in sub_groups:
-                    sub_groups[group_name].extend(element_ids)
-                else:
-                    sub_groups[group_name] = element_ids
-
-        if len(all_unknowns):
-            print("Unknown attributes, not classified.")
-            for un in all_unknowns:
-                print(un)
+        sub_groups = _determine_sub_groups(grouped_by_parent, node_to_element_map, tree, unique_paths)
 
         for sub_group in sub_groups:
             create_group_elements(field_module, sub_group, sub_groups[sub_group])
@@ -298,6 +276,34 @@ def load(region, data, options):
 
     if punctum_data:
         _process_punctum_data(region, punctum_data)
+
+
+def _determine_sub_groups(grouped_by_parent, node_to_element_map, tree, unique_paths):
+    sub_groups = {}
+    seen_unknown = set()
+    all_unknowns = []
+    for u in unique_paths:
+        p = tree.properties(u)
+        properties, metadata, unknown, group_primary_name = classify_properties(p, INFOSET_RANK_MAP)
+        for un in unknown:
+            if un not in seen_unknown:
+                all_unknowns.append(un)
+                seen_unknown.add(un)
+
+        element_ids = get_elements_for_path(grouped_by_parent, node_to_element_map, u)
+        group_names = _expand_properties(properties)
+        for group_name in group_names:
+            if group_name in sub_groups:
+                sub_groups[group_name].extend(element_ids)
+            else:
+                sub_groups[group_name] = element_ids
+
+    if len(all_unknowns):
+        print("Unknown attributes, not classified.")
+        for un in all_unknowns:
+            print(un)
+
+    return sub_groups
 
 
 def _group_by_parent(node_map):

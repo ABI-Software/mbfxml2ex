@@ -32,7 +32,7 @@ def is_option(option, options):
     return isinstance(options, dict) and option in options
 
 
-def classify_attributes(attributes, attribute_data):
+def classify_properties(attributes, attribute_data):
     """
     Classify attributes into data, metadata, and unknown groups, and determine the primary group.
 
