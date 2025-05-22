@@ -412,16 +412,16 @@ class DetermineContourConnectivityTestCase(unittest.TestCase):
         contour = {'colour': '#00ff00', 'closed': False, 'name': 'Heart',
                    'data': [MBFPoint(3, 3, 4, 1), MBFPoint(2, 1, 5, 1),
                             MBFPoint(3, 1, 4.2, 1)]}
-        node_ids, final_node_id = determine_contour_connectivity(contour['data'], contour['closed'])
-        self.assertEqual(3, final_node_id)
+        node_map = {(0,): 1, (1,): 2, (2,): 3}
+        node_ids = determine_contour_connectivity(node_map, contour['closed'])
         self.assertListEqual([[1, 2], [2, 3]], node_ids)
 
     def test_determine_connectivity_closed_contour(self):
         contour = {'colour': '#00ff00', 'closed': True, 'name': 'Heart',
                    'data': [MBFPoint(3, 3, 4, 1), MBFPoint(2, 1, 5, 1),
                             MBFPoint(3, 1, 4.2, 1)]}
-        node_ids, final_node_id = determine_contour_connectivity(contour['data'], contour['closed'])
-        self.assertEqual(3, final_node_id)
+        node_map = {(0,): 1, (1,): 2, (2,): 3}
+        node_ids = determine_contour_connectivity(node_map, contour['closed'])
         self.assertListEqual([[1, 2], [2, 3], [3, 1]], node_ids)
 
 

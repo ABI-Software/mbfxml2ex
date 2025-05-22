@@ -66,18 +66,17 @@ def determine_tree_connectivity(tree, current_node_id=0, parent_node_id=None):
     return connectivity, current_node_id
 
 
-def determine_contour_connectivity(contour, closed, start_node_id=0):
+def determine_contour_connectivity(node_map, closed):
     connectivity = []
-    node_ids = list(range(start_node_id + 1, start_node_id + 1 + len(contour)))
+    node_ids = [value for key, value in sorted(node_map.items(), key=lambda item: item[0][0])]
 
     for i in range(len(node_ids) - 1):
         connectivity.append([node_ids[i], node_ids[i + 1]])
 
-    end_node_id = node_ids[-1]
     if closed and len(node_ids) > 1:
         connectivity.append([node_ids[-1], node_ids[0]])
 
-    return connectivity, end_node_id
+    return connectivity
 
 
 def determine_vessel_connectivity(vessel, start_node_id=0):
@@ -162,8 +161,9 @@ def load(region, data, options):
         if _resolution_field is not None:
             _resolution_field = create_field_finite_element(field_module, 'resolution', 1, type_coordinate=False)
 
-        connectivity, final_node_id = determine_contour_connectivity(contour['data'], contour['closed'], start_node_id=final_node_id)
-        node_identifiers = create_nodes(field_module, contour['data'])
+        node_map = {}
+        node_identifiers = create_nodes(field_module, contour['data'], node_map=node_map)
+        connectivity = determine_contour_connectivity(node_map, contour['closed'])
 
         field_info = {'rgb': contour['rgb']}
         if _resolution_field is not None:
