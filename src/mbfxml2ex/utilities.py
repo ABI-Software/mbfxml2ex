@@ -1,5 +1,3 @@
-from mbfxml2ex.classes import BinaryTreeNode
-
 
 def get_raw_tag(element):
     element_tag = element.tag

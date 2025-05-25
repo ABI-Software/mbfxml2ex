@@ -4,7 +4,7 @@
   <point x="315.30" y="-598.82" z="-41.28" d="3.00"/>
   <property name="Set"><s>FIL: Filaments 1</s></property>
   <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777077</s></property>
-  <point x="315.30" y="-598.82" z="-41.28" d="3.00"/>
+  <point x="316.30" y="-598.82" z="-41.28" d="3.00"/>
   <branch class="inner submucosal nerve plexus">
     <property name="TraceAssociation"><s>http://uri.interlex.org/base/ilx_0777078</s></property>
     <point x="316.80" y="-597.99" z="-41.10" d="3.00"/>

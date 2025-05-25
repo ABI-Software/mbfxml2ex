@@ -102,7 +102,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, regex))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(180 if Version(zinc_version) < Version("3.9.0") else 159, len(lines))
+            self.assertEqual(180 if Version(zinc_version) < Version("3.9.0") else 167, len(lines))
 
     def test_tree_with_set_property(self):
         ex_file = _resource_path("tree_with_set_property.ex")
@@ -123,7 +123,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: Dave")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 368, len(lines))
+            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 376, len(lines))
 
     def test_contours_with_markers(self):
         ex_file = _resource_path("contour_with_marker_names.ex")
