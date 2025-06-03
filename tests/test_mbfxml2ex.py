@@ -171,6 +171,8 @@ class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
         xml_file = _resource_path("basic_heart_contours.xml")
         contents = read_xml(xml_file)
         self.assertEqual(1, len(contents))
+        exf_file = _resource_path("basic_heart_contours.exf")
+        write_ex(exf_file, contents)
 
     def test_read_complex_contour_xml(self):
         exf_file = _resource_path("complex_heart_contours.exf")
@@ -569,6 +571,17 @@ class ExWritingVesselTestCase(unittest.TestCase):
             os.remove(ex_file)
 
         xml_file = _resource_path("vessel_ex_1.xml")
+        data = read_xml(xml_file)
+
+        write_ex(ex_file, data)
+        self.assertTrue(os.path.exists(ex_file))
+
+    def test_write_simple_vessel_structure(self):
+        ex_file = _resource_path("simple_vessel_structure.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("simple_vessel_structure.xml")
         data = read_xml(xml_file)
 
         write_ex(ex_file, data)

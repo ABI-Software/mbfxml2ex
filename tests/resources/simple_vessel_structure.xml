@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<mbf version="4.0" xmlns="http://www.mbfbioscience.com/2007/neurolucida" appname="Vesselucida" appversion="2018.1.1 (64-bit)">
+<vessel version="3" color="#80FF00" type="directed" name="Vessel Name 1">
+  <nodes>
+    <node id="0">
+      <point x="22.65" y="192.34" z="0" d="1.0" />
+    </node>
+    <node id="1">
+      <point x="204.03" y="210.23" z="0" d="1.0" />
+    </node>
+    <node id="2">
+      <point x="446.75" y="320.79" z="0" d="1.0" />
+    </node>
+    <node id="3">
+      <point x="297.7" y="92.65" z="0" d="1.0" />
+    </node>
+    <node id="4">
+      <point x="517.5" y="135.94" z="0" d="1.0" />
+    </node>
+    <node id="5">
+      <point x="658.56" y="106.89" z="0" d="1.0" />
+    </node>
+  </nodes>
+  <edges>
+    <edge id="0">
+      <point x="22.65" y="192.34" z="0" d="1.0" />
+      <point x="45.3" y="183.44" z="0" d="1.0" />
+      <point x="66.31" y="178.15" z="0" d="1.0" />
+      <point x="99.64" y="176.3" z="0" d="1.0" />
+      <point x="134.04" y="174.44" z="0" d="1.0" />
+      <point x="172.57" y="188.34" z="0" d="1.0" />
+      <point x="204.03" y="210.23" z="0" d="1.0" />
+    </edge>
+    <edge id="1">
+      <point x="204.03" y="210.23" z="0" d="1.0" />
+      <point x="223.59" y="240.17" z="0" d="1.0" />
+      <point x="247.45" y="269.35" z="0" d="1.0" />
+      <point x="276.19" y="294.87" z="0" d="1.0" />
+      <point x="317.27" y="321.67" z="0" d="1.0" />
+      <point x="362.27" y="332.61" z="0" d="1.0" />
+      <point x="407.41" y="332.06" z="0" d="1.0" />
+      <point x="446.75" y="320.79" z="0" d="1.0" />
+    </edge>
+    <edge id="2">
+      <point x="446.75" y="320.79" z="0" d="1.0" />
+      <point x="466.87" y="297.55" z="0" d="1.0" />
+      <point x="487.1" y="264.96" z="0" d="1.0" />
+      <point x="502.05" y="223.09" z="0" d="1.0" />
+      <point x="509.45" y="184.91" z="0" d="1.0" />
+      <point x="517.5" y="135.94" z="0" d="1.0" />
+    </edge>
+    <edge id="3">
+      <point x="517.5" y="135.94" z="0" d="1.0" />
+      <point x="539.06" y="128.48" z="0" d="1.0" />
+      <point x="568.65" y="125.25" z="0" d="1.0" />
+      <point x="599.29" y="123.43" z="0" d="1.0" />
+      <point x="630.45" y="123.05" z="0" d="1.0" />
+      <point x="658.56" y="106.89" z="0" d="1.0" />
+    </edge>
+    <edge id="4">
+      <point x="517.5" y="135.94" z="0" d="1.0" />
+      <point x="502.64" y="118.87" z="0" d="1.0" />
+      <point x="464.79" y="91.31" z="0" d="1.0" />
+      <point x="426.83" y="74.53" z="0" d="1.0" />
+      <point x="383.33" y="72.91" z="0" d="1.0" />
+      <point x="339.21" y="79.2" z="0" d="1.0" />
+      <point x="297.7" y="92.65" z="0" d="1.0" />
+    </edge>
+    <edge id="5">
+      <point x="204.03" y="210.23" z="0" d="1.0" />
+      <point x="214.58" y="178.48" z="0" d="1.0" />
+      <point x="228.82" y="153.15" z="0" d="1.0" />
+      <point x="246.25" y="131.37" z="0" d="1.0" />
+      <point x="270.13" y="108.8" z="0" d="1.0" />
+      <point x="297.7" y="92.65" z="0" d="1.0" />
+    </edge>
+    <edge id="6">
+      <point x="297.7" y="92.65" z="0" d="1.0" />
+      <point x="325.41" y="113.87" z="0" d="1.0" />
+      <point x="354.74" y="133.63" z="0" d="1.0" />
+      <point x="379.16" y="160.64" z="0" d="1.0" />
+      <point x="391.57" y="205.76" z="0" d="1.0" />
+      <point x="405.65" y="245.84" z="0" d="1.0" />
+      <point x="427.77" y="286.53" z="0" d="1.0" />
+      <point x="446.75" y="320.79" z="0" d="1.0" />
+    </edge>
+  </edges>
+  <edgelists>
+    <edgelist id="0" edge="0" sourcenode="0" targetnode="1" />
+    <edgelist id="1" edge="1" sourcenode="1" targetnode="2" />
+    <edgelist id="2" edge="2" sourcenode="2" targetnode="4" />
+    <edgelist id="3" edge="3" sourcenode="4" targetnode="5" />
+    <edgelist id="4" edge="4" sourcenode="4" targetnode="3" />
+    <edgelist id="5" edge="5" sourcenode="1" targetnode="3" />
+    <edgelist id="6" edge="6" sourcenode="3" targetnode="2" />
+  </edgelists>
+</vessel>
+</mbf>

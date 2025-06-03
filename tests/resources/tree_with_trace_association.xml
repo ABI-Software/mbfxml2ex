@@ -13,7 +13,7 @@
   <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma14984</s></property>
   <point x="396.07" y="-245.16" z="-47.50" d="4.40"/>
   <branch class="Mucosa of colon">
-    <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma14984</s></property>
+    <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma14986</s></property>
     <point x="396.53" y="-244.89" z="-47.66" d="4.40"/>
     <branch leaf="Normal" class="Mucosa of ascending colon">
       <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma15005</s></property>

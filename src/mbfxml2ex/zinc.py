@@ -144,8 +144,9 @@ def load(region, data, options):
 
         sub_groups = _determine_sub_groups(grouped_by_parent, node_to_element_map, tree, unique_paths)
 
-        for sub_group in sub_groups:
-            create_group_elements(field_module, sub_group, sub_groups[sub_group])
+        for name, members in sub_groups.items():
+            create_group_elements(field_module, name, members['el'])
+            create_group_nodes(field_module, name, members['no'])
 
     for contour in data.get_contours():
         _resolution_field = contour.get('resolution')
@@ -286,9 +287,10 @@ def _determine_sub_groups(grouped_by_parent, node_to_element_map, tree, unique_p
         group_names = _expand_properties(properties)
         for group_name in group_names:
             if group_name in sub_groups:
-                sub_groups[group_name].extend(element_ids)
+                sub_groups[group_name]['el'].extend(element_ids[:])
+                sub_groups[group_name]['no'].extend(grouped_by_parent[u[:-1]][:])
             else:
-                sub_groups[group_name] = element_ids
+                sub_groups[group_name] = {'el': element_ids[:], 'no': grouped_by_parent[u[:-1]][:]}
 
     if len(all_unknowns):
         print("Unknown attributes, not classified.")
@@ -302,10 +304,7 @@ def _group_by_parent(node_map):
     grouped_by_parent = {}
     for path, node_id in node_map.items():
         parent = path[:-1]
-        if parent in grouped_by_parent:
-            grouped_by_parent[parent].append(node_id)
-        else:
-            grouped_by_parent[parent] = [node_id]
+        grouped_by_parent[parent] = grouped_by_parent.get(parent, []) + [node_id]
 
     return grouped_by_parent
 
@@ -447,7 +446,7 @@ def create_elements(field_module, connectivity, field_names=None):
 def create_group_elements(field_module, group_name, element_ids, dimension=1):
     with ChangeManager(field_module):
         group = find_or_create_field_group(field_module, name=group_name)
-        group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
+        # group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
 
         mesh = field_module.findMeshByDimension(dimension)
         mesh_group = group.getOrCreateMeshGroup(mesh)
@@ -459,7 +458,7 @@ def create_group_elements(field_module, group_name, element_ids, dimension=1):
 def create_group_nodes(field_module, group_name, node_ids, node_set_name='nodes'):
     with ChangeManager(field_module):
         group = find_or_create_field_group(field_module, name=group_name)
-        group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
+        # group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
 
         nodeset = field_module.findNodesetByName(node_set_name)
         nodeset_group = group.getOrCreateNodesetGroup(nodeset)

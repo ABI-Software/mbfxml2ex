@@ -1,4 +1,5 @@
 import itertools
+import xml.etree.ElementTree as ET
 
 from cmlibs.utils.zinc.general import AbstractNodeDataObject
 
@@ -42,6 +43,9 @@ class MBFProperty:
     def __init__(self, name, version):
         self._name = name
         self._version = version
+
+    def is_valid(self):
+        return True
 
     def version(self):
         return self._version
@@ -243,6 +247,31 @@ class MBFPropertyGeneric(MBFProperty):
     def items(self):
         return self._items
 
+    def is_valid(self):
+        valid = True
+        for item in self._items:
+            for k, v in item.items():
+                if k == 'n':
+                    valid = isinstance(v, float)
+                elif k == 's':
+                    valid = isinstance(v, str) and v
+                else:
+                    raise NotImplementedError
+
+        return valid
+
+    def text(self):
+        s = [f'{key}={val}' for item in self._items for key, val in item.items()]
+        return f'<name={self.name()}><{"=".join(s)}>'
+
+    def to_xml(self):
+        root = ET.Element("property", name=self._name)
+        for item in self._items:
+            for key, value in item.items():
+                child = ET.SubElement(root, key)
+                child.text = str(int(value))  # Convert float to int string
+        return ET.tostring(root, encoding='utf-8').decode()
+
     def __repr__(self):
         props = [f'{key}: {val}' for d in self._items for key, val in d.items()]
         return 'Generic property: "{0}" --> "{1}"'.format(self._name, ', '.join(props))
@@ -261,6 +290,16 @@ class MBFPropertyGUID(MBFPropertyText):
 
     def __init__(self, label):
         super(MBFPropertyGUID, self).__init__("GUID", label)
+
+    def is_valid(self):
+        print(self._label)
+        return self._label is not None
+
+    def to_xml(self):
+        root = ET.Element("property", name="GUID")
+        child = ET.SubElement(root, "s")
+        child.text = self._label
+        return ET.tostring(root, encoding='utf-8')
 
     def __repr__(self):
         return 'GUID "{0}"'.format(self._label)
@@ -491,6 +530,10 @@ def get_text_properties(properties):
             text_properties.append(property_.label())
         elif isinstance(property_, MBFPropertySet) and len(property_.items()):
             text_properties.extend(property_.items())
+        elif isinstance(property_, MBFPropertyGUID) and property_.is_valid():
+            text_properties.append(property_.to_xml())
+        elif isinstance(property_, MBFPropertyGeneric) and property_.is_valid():
+            text_properties.append(property_.to_xml())
 
     return text_properties
 
