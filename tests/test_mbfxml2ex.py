@@ -2,10 +2,6 @@ import os
 import re
 import unittest
 
-from packaging.version import Version
-
-from cmlibs.zinc import __version__ as zinc_version
-
 from mbfxml2ex.app import read_xml
 from mbfxml2ex.classes import MBFPoint, MBFData, MBFPropertyVolumeRLE, MBFTree
 from mbfxml2ex.definitions import INFOSET_RANK_MAP
@@ -102,7 +98,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, regex))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(180 if Version(zinc_version) < Version("3.9.0") else 174, len(lines))
+            self.assertEqual(174, len(lines))
 
     def test_tree_with_set_property(self):
         ex_file = _resource_path("tree_with_set_property.ex")
@@ -123,7 +119,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: Dave")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 376, len(lines))
+            self.assertEqual(376, len(lines))
 
     def test_contours_with_markers(self):
         ex_file = _resource_path("contour_with_marker_names.ex")
@@ -139,7 +135,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: ChAT")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 279, len(lines))
+            self.assertEqual(279, len(lines))
 
 
 class NeurolucidaReadScaleInformation(unittest.TestCase):
@@ -324,7 +320,7 @@ class MBFPunctaTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(ex_file))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(290 if Version(zinc_version) < Version("3.9.0") else 301, len(lines))
+            self.assertEqual(301, len(lines))
 
     def test_write_puncta(self):
         ex_file = _resource_path("puncta.ex")
@@ -337,7 +333,7 @@ class MBFPunctaTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(ex_file))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(3370 if Version(zinc_version) < Version("3.9.0") else 3387, len(lines))
+            self.assertEqual(3387, len(lines))
 
     def test_read_puncta_with_set_property(self):
         ex_file = _resource_path("puncta_with_set_prop.ex")
@@ -352,7 +348,7 @@ class MBFPunctaTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: inner submucosal nerve plexus")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(1055 if Version(zinc_version) < Version("3.9.0") else 1021, len(lines))
+            self.assertEqual(1021, len(lines))
 
 
 class MBFPropertyVolumeRLETestCase(unittest.TestCase):
