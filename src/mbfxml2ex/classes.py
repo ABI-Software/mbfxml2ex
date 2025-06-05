@@ -253,9 +253,10 @@ class MBFPropertyGeneric(MBFProperty):
             for k, v in item.items():
                 if k == 'n':
                     valid = isinstance(v, float)
-                elif k == 's':
+                elif k in ['s', 'c']:
                     valid = isinstance(v, str) and v
                 else:
+                    print(k, v)
                     raise NotImplementedError
 
         return valid
@@ -269,7 +270,10 @@ class MBFPropertyGeneric(MBFProperty):
         for item in self._items:
             for key, value in item.items():
                 child = ET.SubElement(root, key)
-                child.text = str(int(value))  # Convert float to int string
+                if key == 'n':
+                    child.text = str(int(value))  # Convert float to int string
+                else:
+                    child.text = value
         return ET.tostring(root, encoding='utf-8').decode()
 
     def __repr__(self):

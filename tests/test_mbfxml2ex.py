@@ -102,7 +102,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, regex))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(180 if Version(zinc_version) < Version("3.9.0") else 167, len(lines))
+            self.assertEqual(180 if Version(zinc_version) < Version("3.9.0") else 174, len(lines))
 
     def test_tree_with_set_property(self):
         ex_file = _resource_path("tree_with_set_property.ex")
@@ -139,7 +139,7 @@ class NeurolucidaXmlReadTreesWithMarkersTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" *Group name: ChAT")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 265, len(lines))
+            self.assertEqual(552 if Version(zinc_version) < Version("3.9.0") else 279, len(lines))
 
 
 class NeurolucidaReadScaleInformation(unittest.TestCase):
@@ -352,7 +352,7 @@ class MBFPunctaTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: inner submucosal nerve plexus")))
         with open(ex_file) as f:
             lines = f.readlines()
-            self.assertEqual(1055 if Version(zinc_version) < Version("3.9.0") else 1030, len(lines))
+            self.assertEqual(1055 if Version(zinc_version) < Version("3.9.0") else 1021, len(lines))
 
 
 class MBFPropertyVolumeRLETestCase(unittest.TestCase):
