@@ -11,7 +11,7 @@ from cmlibs.utils.zinc.general import ChangeManager
 from mbfxml2ex.classes import MBFPropertyTraceAssociation, MBFPropertyVolumeRLE, MBFPropertyPunctum, MBFPropertySet, get_text_properties, MBFPropertyGeneric, MBFProperty
 from mbfxml2ex.definitions import INFOSET_RANK_MAP
 from mbfxml2ex.exceptions import MissingImplementationException, MBFDataException
-from mbfxml2ex.utilities import extract_vessel_node_locations, get_minimal_list_paths, classify_properties, get_elements_for_path, reverse_element_to_node_map
+from mbfxml2ex.utilities import extract_vessel_node_locations, get_minimal_list_paths, classify_properties, get_elements_for_node_ids, reverse_element_to_node_map
 from mbfxml2ex.templates import field_header_3d_template, grid_field_3d_template, field_data_template
 
 
@@ -142,7 +142,7 @@ def load(region, data, options):
         unique_paths = get_minimal_list_paths(node_map)
         grouped_by_parent = _group_by_parent(node_map)
 
-        sub_groups = _determine_sub_groups(grouped_by_parent, node_to_element_map, tree, unique_paths)
+        sub_groups = _determine_sub_groups(grouped_by_parent, node_to_element_map, element_to_node_map, tree, unique_paths)
 
         for name, members in sub_groups.items():
             create_group_elements(field_module, name, members['el'])
@@ -271,7 +271,7 @@ def load(region, data, options):
         _process_punctum_data(region, punctum_data)
 
 
-def _determine_sub_groups(grouped_by_parent, node_to_element_map, tree, unique_paths):
+def _determine_sub_groups(grouped_by_parent, node_to_element_map, element_to_node_map, tree, unique_paths):
     sub_groups = {}
     seen_unknown = set()
     all_unknowns = []
@@ -283,11 +283,11 @@ def _determine_sub_groups(grouped_by_parent, node_to_element_map, tree, unique_p
                 all_unknowns.append(un)
                 seen_unknown.add(un)
 
-        element_ids = get_elements_for_path(grouped_by_parent, node_to_element_map, u)
+        node_ids = grouped_by_parent[u[:-1]][:]
+        node_ids.append(grouped_by_parent[u[:-2]][-1])
+        element_ids = get_elements_for_node_ids(node_ids, node_to_element_map, element_to_node_map)
         group_names = _expand_properties(properties)
         for group_name in group_names:
-            node_ids = grouped_by_parent[u[:-1]][:]
-            node_ids.append(grouped_by_parent[u[:-2]][-1])
             if group_name in sub_groups:
                 sub_groups[group_name]['el'].extend(element_ids[:])
                 sub_groups[group_name]['no'].extend(node_ids)
