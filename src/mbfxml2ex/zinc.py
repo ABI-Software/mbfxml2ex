@@ -286,11 +286,13 @@ def _determine_sub_groups(grouped_by_parent, node_to_element_map, tree, unique_p
         element_ids = get_elements_for_path(grouped_by_parent, node_to_element_map, u)
         group_names = _expand_properties(properties)
         for group_name in group_names:
+            node_ids = grouped_by_parent[u[:-1]][:]
+            node_ids.append(grouped_by_parent[u[:-2]][-1])
             if group_name in sub_groups:
                 sub_groups[group_name]['el'].extend(element_ids[:])
-                sub_groups[group_name]['no'].extend(grouped_by_parent[u[:-1]][:])
+                sub_groups[group_name]['no'].extend(node_ids)
             else:
-                sub_groups[group_name] = {'el': element_ids[:], 'no': grouped_by_parent[u[:-1]][:]}
+                sub_groups[group_name] = {'el': element_ids[:], 'no': node_ids}
 
     if len(all_unknowns):
         print("Unknown attributes, not classified.")

@@ -54,8 +54,8 @@
   <point x="1082.81" y="-983.07" z="-87.35" d="4.09"/>
   <point x="1077.82" y="-982.74" z="-87.47" d="4.09"/>
   <point x="1074.39" y="-981.33" z="-87.06" d="4.09"/>
-  <branch class="Circular muscle layer of ascending colon">
-    <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma15009</s></property>
+  <branch class="Circular muscle layer of ascending colon II">
+    <property name="TraceAssociation"><s>http://purl.org/sig/ont/fma/fma15010</s></property>
     <point x="1068.70" y="-979.08" z="-86.12" d="4.09"/>
     <point x="1065.56" y="-978.07" z="-84.77" d="4.09"/>
     <point x="1063.63" y="-977.96" z="-83.53" d="4.09"/>
