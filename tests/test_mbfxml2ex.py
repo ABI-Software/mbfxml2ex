@@ -210,6 +210,20 @@ class NeurolucidaXmlReadContoursTestCase(unittest.TestCase):
             self.assertEqual(1 if i != 2 else 2, len(contour['data']))
         write_ex(ex_file, neurolucida_data)
 
+    def test_contour_with_one_single_point_contour(self):
+        ex_file = _resource_path("contour_with_one_single_point_contour.ex")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("contour_with_one_single_point_contour.xml")
+        neurolucida_data = read_xml(xml_file)
+        self.assertEqual(5, neurolucida_data.contours_count())
+        sizes = [27, 21, 35, 5, 1]
+        for i in range(5):
+            contour = neurolucida_data.get_contour(i)
+            self.assertEqual(sizes[i], len(contour['data']))
+        write_ex(ex_file, neurolucida_data)
+
 
 class NeurolucidaXmlReadTreesAndContoursWithMarkersTestCase(unittest.TestCase):
 
@@ -455,7 +469,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
-        tree = MBFTree({'points': [MBFPoint(3, 3, 4, 2), MBFPoint(2, 1, 5, 7), MBFPoint(3, 1, 4.2, 7.1)], 'attributes': {'color': '#000000'}, 'properties': []})
+        tree = MBFTree({'points': [MBFPoint(3, 3, 4, 2), MBFPoint(2, 1, 5, 7), MBFPoint(3, 1, 4.2, 7.1)], 'attributes': {'color': '#FFFFFF'}, 'properties': []})
         data = MBFData()
         data.add_tree(tree)
 
@@ -467,7 +481,7 @@ class ExWritingTreeTestCase(unittest.TestCase):
         if os.path.exists(ex_file):
             os.remove(ex_file)
 
-        tree = MBFTree({'points': [MBFPoint(3, 3, 4, 2), {'points': [MBFPoint(2, 1, 5, 7)], 'attributes': {}, 'properties': []}, {'points': [MBFPoint(2, 4, 8, 5.7)], 'attributes': {}, 'properties': []}], 'attributes': {'color': '#000000'}, 'properties': []})
+        tree = MBFTree({'points': [MBFPoint(3, 3, 4, 2), {'points': [MBFPoint(2, 1, 5, 7)], 'attributes': {}, 'properties': []}, {'points': [MBFPoint(2, 4, 8, 5.7)], 'attributes': {}, 'properties': []}], 'attributes': {'color': '#FFFFFF'}, 'properties': []})
         data = MBFData()
         data.add_tree(tree)
 
