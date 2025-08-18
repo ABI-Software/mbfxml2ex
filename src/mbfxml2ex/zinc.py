@@ -265,7 +265,7 @@ def load(region, data, options):
                 group_element_ids = group['elements']
                 del group['elements']
                 for key in group:
-                    create_group_elements(field_module, group[key], group_element_ids)
+                    create_group_elements(field_module, group[key], group_element_ids, include_subelements=True)
 
     if punctum_data:
         _process_punctum_data(region, punctum_data)
@@ -445,10 +445,11 @@ def create_elements(field_module, connectivity, field_names=None):
     return create_line_elements(field_module, connectivity, field_names)
 
 
-def create_group_elements(field_module, group_name, element_ids, dimension=1):
+def create_group_elements(field_module, group_name, element_ids, dimension=1, include_subelements=False):
     with ChangeManager(field_module):
         group = find_or_create_field_group(field_module, name=group_name)
-        # group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
+        if include_subelements:
+            group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
 
         mesh = field_module.findMeshByDimension(dimension)
         mesh_group = group.getOrCreateMeshGroup(mesh)
@@ -460,7 +461,6 @@ def create_group_elements(field_module, group_name, element_ids, dimension=1):
 def create_group_nodes(field_module, group_name, node_ids, node_set_name='nodes'):
     with ChangeManager(field_module):
         group = find_or_create_field_group(field_module, name=group_name)
-        # group.setSubelementHandlingMode(FieldGroup.SUBELEMENT_HANDLING_MODE_FULL)
 
         nodeset = field_module.findNodesetByName(node_set_name)
         nodeset_group = group.getOrCreateNodesetGroup(nodeset)
