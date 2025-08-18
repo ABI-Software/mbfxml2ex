@@ -2,6 +2,7 @@ import os
 import re
 import unittest
 
+from cmlibs.zinc.context import Context
 from mbfxml2ex.app import read_xml
 from mbfxml2ex.classes import MBFPoint, MBFData, MBFPropertyVolumeRLE, MBFTree
 from mbfxml2ex.definitions import INFOSET_RANK_MAP
@@ -281,6 +282,35 @@ class VessellucidaXmlReadTestCase(unittest.TestCase):
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: Serosa of fundus of stomach")))
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: http://purl.org/sig/ont/fma/fma17073")))
         self.assertTrue(_match_line_in_file(ex_file, re.compile(" ?Group name: http://uri.interlex.org/base/ilx_0738426")))
+
+    def test_vessel_node_groups(self):
+        ex_file = _resource_path("vessel_node_groups.exf")
+        if os.path.exists(ex_file):
+            os.remove(ex_file)
+
+        xml_file = _resource_path("vessel_node_groups.xml")
+        data = read_xml(xml_file)
+
+        write_ex(ex_file, data)
+
+        self.assertTrue(os.path.exists(ex_file))
+        c = Context("Checking vessel node groups")
+        r = c.getDefaultRegion()
+        r.readFile(ex_file)
+
+        fm = r.getFieldmodule()
+
+        def _check_group_size(group_name, expected_size):
+            f = fm.findFieldByName(group_name).castGroup()
+            self.assertTrue(f.isValid())
+            d = fm.findNodesetByName("nodes")
+            fg = f.getNodesetGroup(d)
+            self.assertTrue(fg.isValid())
+            self.assertEqual(expected_size, fg.getSize())
+
+        _check_group_size("left cervical vagus nerve", 554)
+        _check_group_size("left C cardiovascular branch of cervical vagus nerve", 2)
+        _check_group_size("left B cardiovascular branch of cervical vagus nerve", 2)
 
 
 class MBFPunctaTestCase(unittest.TestCase):
